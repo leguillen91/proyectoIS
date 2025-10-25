@@ -1,0 +1,83 @@
+verificar conexcion:
+    php -r "require 'config/connection.php'; echo '✅ Connection successful';"
+
+hacer puebas de token en el jwtService.php:
+    S C:\Users\HP\Desktop\projectUnah> php -r '$cfg=require "config/env.php"; require "classes/services/jwtService.php"; $jwt=new JwtService($cfg["jwt"]); echo $jwt->issue(["sub"=>1,"email"=>"test@unah.edu","role"=>"admin"], bin2hex(random_bytes(8))).PHP_EOL;'
+    >>
+    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoidGVzdEB1bmFoLmVkdSIsInJvbGUiOiJhZG1pbiIsImlzcyI6InByb2plY3RVbmFoU2lzdGVtcy5sb2NhbCIsImF1ZCI6InByb2plY3RVbmFoU2lzdGVtcy5jbGllbnQiLCJpYXQiOjE3NjEzNDQwODgsImV4cCI6MTc2MTM1MTI4OCwianRpIjoiM2U2ODE1MDNkZGIwYWJmNSJ9.0G55iBsYzPjSz1K-aFjLN36V9BIP7-uf7sa16Jw0ReA
+
+probar el userModel.php:
+    php -r "require 'config/connection.php'; require 'classes/models/userModel.php';
+    PS C:\Users\HP\Desktop\projectUnah> php tests/testUserModel.php
+    >>
+    ❌ No se encontró el usuario.
+
+Probar crear el administrador
+    PS C:\Users\HP\Desktop\projectUnah> php scripts/createAdmin.php
+    >>
+    ✅ Admin creado con éxito:
+      ID: 1
+      Email: admin@unisys.local
+      Password: ChangeMe#2025
+
+probar el userModel.php:
+    php -r "require 'config/connection.php'; require 'classes/models/userModel.php';
+    PS C:\Users\HP\Desktop\projectUnah> php tests/testUserModel.php
+    >>
+    ✅ Usuario encontrado: System Administrator (admin)
+
+probar el requireAuth
+    PS C:\Users\HP\Desktop\projectUnah> php tests/testRequireAuth.php
+    >>
+        {
+            "ok": true,
+            "context": {
+                "userId": 1,
+                "email": "admin@unisys.local",
+                "fullName": "System Administrator",
+                "role": "admin",
+                "permissions": [
+                    "library.approve",
+                    "library.download",
+                    "library.edit",
+                    "library.upload",
+                    "library.view",
+                    "users.manage"
+                ]
+            }
+        }
+
+probar el authController.php
+            PS C:\Users\HP\Desktop\projectUnah> php tests/testAuthController.php
+            >>
+            <!-- Objetivo del archivo
+            Encargarse de:
+
+            Generar un salt único por usuario.
+            Combinar salt + pepper + password.
+            Aplicar el hash Argon2id.
+            Verificar contraseñas en login. -->
+
+            Array
+            (
+                [ok] => 1
+                [token] => eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5AdW5pc3lzLmxvY2FsIiwicm9sZSI6ImFkbWluIiwicGVybXMiOlsibGlicmFyeS5hcHByb3ZlIiwibGlicmFyeS5kb3dubG9hZCIsImxpYnJhcnkuZWRpdCIsImxpYnJhcnkudXBsb2FkIiwibGlicmFyeS52aWV3IiwidXNlcnMubWFuYWdlIl0sImlzcyI6InByb2plY3RVbmFoU2lzdGVtcy5sb2NhbCIsImF1ZCI6InByb2plY3RVbmFoU2lzdGVtcy5jbGllbnQiLCJpYXQiOjE3NjEzNDgwMzUsImV4cCI6MTc2MTM1NTIzNSwianRpIjoiNDc1ZjM0Yjg4M2RmNzk4YjE1ODRiODg4ZDEyYmJhZDYifQ.wFztoDsJPIgPjkQz6J00wNMKEP9nZcN35RZdDypjej4
+                [user] => Array
+                    (
+                        [id] => 1
+                        [fullName] => System Administrator
+                        [email] => admin@unisys.local
+                        [role] => admin
+                        [permissions] => Array
+                            (
+                                [0] => library.approve
+                                [1] => library.download
+                                [2] => library.edit
+                                [3] => library.upload
+                                [4] => library.view
+                                [5] => users.manage
+                            )
+
+                    )
+
+            )
