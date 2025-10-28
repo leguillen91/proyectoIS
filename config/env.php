@@ -7,7 +7,7 @@ return [
   'db' => [
     'host' => '127.0.0.1',
     'port' => 3306,
-    'name' => 'identidad',
+    'name' => 'projectUnahSistems',
     'user' => 'milton',
     'pass' => '12345',   // recuerden cambiarlo segun su entorno
     'charset' => 'utf8mb4'

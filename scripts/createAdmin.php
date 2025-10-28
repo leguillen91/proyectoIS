@@ -9,7 +9,7 @@ $authService = new AuthService($config['security']['pepper']);
 $userModel = new UserModel($pdo);
 
 // Obtener el ID del rol admin
-$stmt = $pdo->prepare("SELECT id FROM roles WHERE roleName = 'ADMIN' LIMIT 1");
+$stmt = $pdo->prepare("SELECT id FROM roles WHERE roleName = 'admin' LIMIT 1");
 $stmt->execute();
 $role = $stmt->fetch();
 
