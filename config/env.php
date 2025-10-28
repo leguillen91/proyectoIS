@@ -7,11 +7,12 @@ return [
   'db' => [
     'host' => '127.0.0.1',
     'port' => 3306,
-    'name' => 'projectUnahSistems',
+    'name' => 'identidad',
     'user' => 'milton',
     'pass' => '12345',   // recuerden cambiarlo segun su entorno
     'charset' => 'utf8mb4'
   ],
+  
 
   //  Configuración JWT
   'jwt' => [

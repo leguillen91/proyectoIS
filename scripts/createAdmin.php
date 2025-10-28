@@ -9,12 +9,13 @@ $authService = new AuthService($config['security']['pepper']);
 $userModel = new UserModel($pdo);
 
 // Obtener el ID del rol admin
-$stmt = $pdo->prepare("SELECT id FROM roles WHERE roleName = 'admin' LIMIT 1");
+$stmt = $pdo->prepare("SELECT id FROM roles WHERE roleName = 'ADMIN' LIMIT 1");
 $stmt->execute();
 $role = $stmt->fetch();
 
+
 if (!$role) {
-  die("❌ No se encontró el rol 'admin' en la base de datos.\n");
+  die("No se encontró el rol 'admin' en la base de datos.\n");
 }
 
 $fullName = 'System Administrator';
@@ -31,5 +32,5 @@ try {
   echo "  Email: {$email}\n";
   echo "  Password: {$password}\n";
 } catch (Exception $e) {
-  echo "❌ Error al crear el admin: " . $e->getMessage() . "\n";
+  echo "Error al crear el admin: " . $e->getMessage() . "\n";
 }
