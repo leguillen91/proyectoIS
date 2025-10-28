@@ -1,0 +1,439 @@
+/*
+    Estilos base para las vistas de la Biblioteca Virtual.
+    Paleta basada en los valores proporcionados por el usuario:
+    - Paleta 3 (azules oscuros) para fondos de cabecera y navegación.
+    - Paleta 2 (amarillos/dorados) para acentos y títulos.
+    - Paleta 1 (grises) para bordes y elementos neutros.
+    Algunas variables pueden ajustarse para personalizar fácilmente los colores.
+*/
+
+:root {
+    /* Colores principales */
+    --color-dark: #011c57;       /* Fondo de cabecera y navegación */
+    --color-dark-alt: #012566;   /* Tonalidad alternativa para gradientes */
+    --color-primary: #dba025;    /* Amarillo/dorado para el logotipo */
+    --color-secondary: #e4b83e;  /* Amarillo claro para indicadores */
+    --color-accent: #edd058;     /* Para resaltes sutiles */
+    --color-light: #ffff8a;      /* Texto claro sobre fondos oscuros */
+    --color-grey-dark: #2b2b2b;  /* Gris oscuro */
+    --color-grey: #555555;       /* Gris medio */
+    --color-grey-light: #808080; /* Gris claro */
+    --color-grey-very-light: #aaaaaa; /* Gris muy claro */
+    --color-background: #ffffff; /* Fondo por defecto */
+}
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-dark);
+    min-height: 100vh;
+}
+
+/* Cabecera */
+header {
+    background: var(--color-dark);
+    color: var(--color-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+header .page-title {
+    color: var(--color-light);
+    margin-left: 8px;
+    font-weight: normal;
+}
+
+/* Navegación */
+nav {
+    background: var(--color-dark);
+    border-top: 1px solid var(--color-dark-alt);
+}
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 0.5rem 0;
+}
+nav li {
+    position: relative;
+}
+nav a {
+    color: var(--color-light);
+    text-decoration: none;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+}
+nav a:hover {
+    color: var(--color-primary);
+}
+nav a.active {
+    color: var(--color-primary);
+}
+/* Triángulo indicador debajo del enlace activo */
+nav a.active::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 7px solid var(--color-secondary);
+}
+
+/* Sección de héroe */
+.hero {
+    background-image: url('https://blog.step.org/wp-content/uploads/2022/02/books_shelves.jpg?w=1440&h=411&crop=1');
+    background-size: cover;
+    background-position: center;
+    height: 220px;
+    position: relative;
+}
+.hero::after {
+    /* capa oscura para mejorar la legibilidad del contenido que se superpone */
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Sección de recientes */
+.recent-section {
+    max-width: 1100px;
+    margin: 30px auto;
+    text-align: center;
+    padding: 0 20px;
+}
+.recent-section h2 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+.card {
+    width: 210px;
+    background: #fff;
+    border: 1px solid var(--color-grey-very-light);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+.card:hover {
+    transform: translateY(-4px);
+}
+.card .title-bar {
+    background: var(--color-dark);
+    color: #fff;
+    padding: 6px 8px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+.card img {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+}
+.card .card-content {
+    padding: 8px;
+    font-size: 0.85rem;
+    color: var(--color-dark);
+}
+
+/* Modales/Overlays */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+.modal {
+    background: #fff;
+    border: 3px solid var(--color-dark);
+    border-radius: 25px;
+    width: 90%;
+    max-width: 600px;
+    min-height: 300px;
+    display: flex;
+    padding: 20px;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+.modal h2 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: var(--color-dark);
+    font-weight: bold;
+}
+
+/* Columna de pasos/íconos dentro del modal */
+.steps {
+    list-style: none;
+    margin: 0;
+    padding: 10px 0;
+    width: 80px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+.steps::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    bottom: 10%;
+    transform: translateX(-50%);
+    border-left: 2px dashed var(--color-dark);
+}
+.steps li {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-secondary);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* Cruz dentro de cada círculo usando degradados en ángulo */
+.steps li::before {
+    content: "";
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-image: linear-gradient(45deg, transparent 46%, var(--color-dark) 46%, var(--color-dark) 54%, transparent 54%),
+                      linear-gradient(-45deg, transparent 46%, var(--color-dark) 46%, var(--color-dark) 54%, transparent 54%);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+/* Contenido del modal */
+.modal-content {
+    flex: 1;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+}
+.search-bar {
+    margin-bottom: 15px;
+}
+.search-bar input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--color-grey-very-light);
+    border-radius: 12px;
+    font-size: 0.95rem;
+    color: var(--color-dark);
+    background: #f9f9f9;
+}
+.list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+    flex-grow: 1;
+    max-height: 250px;
+}
+.list li {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--color-grey-very-light);
+    font-size: 0.9rem;
+    color: var(--color-dark);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+.list li:hover {
+    background: var(--color-accent);
+}
+
+/* Grupos de formularios dentro del modal */
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+.form-group label {
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+    color: var(--color-dark);
+    font-weight: bold;
+}
+.form-group input {
+    padding: 10px;
+    border: 1px solid var(--color-grey-very-light);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    color: var(--color-dark);
+}
+
+/* Área de carga de archivos */
+.file-upload {
+    border: 2px dashed var(--color-grey-very-light);
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--color-grey);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+.file-upload p {
+    margin-bottom: 10px;
+}
+.file-upload button {
+    margin-top: 10px;
+}
+.file-upload .preview img {
+    max-width: 100%;
+    height: auto;
+    margin-top: 10px;
+}
+
+/* Botón genérico */
+.button {
+    padding: 10px 20px;
+    background: var(--color-dark);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+.button:hover {
+    background: var(--color-secondary);
+    color: var(--color-dark);
+}
+.button-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+/* Mensaje de no autorizado */
+.subject {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+.subject h2 {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: var(--color-dark);
+    text-transform: uppercase;
+}
+.subject hr {
+    border: none;
+    border-top: 3px solid var(--color-dark);
+    width: 50%;
+    margin-bottom: 20px;
+}
+.unauthorized {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: var(--color-dark);
+    font-size: 0.95rem;
+}
+.unauthorized .icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--color-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.unauthorized .icon svg {
+    fill: var(--color-secondary);
+}
+
+/* Página de opciones de recursos */
+.resource-options {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+    text-align: center;
+}
+.resource-options h2 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+.resource-options ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+.resource-options li .button {
+    width: 200px;
+}
+
+/* Responsivo: adapta los pasos en móviles a una fila horizontal */
+@media (max-width: 768px) {
+    .modal {
+        flex-direction: column;
+    }
+    .steps {
+        flex-direction: row;
+        width: 100%;
+        height: 80px;
+        padding: 0;
+        justify-content: space-around;
+    }
+    .steps::before {
+        left: 10%;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 80%;
+        height: 0;
+        border-left: none;
+        border-top: 2px dashed var(--color-dark);
+    }
+    .steps li {
+        width: 35px;
+        height: 35px;
+    }
+}
