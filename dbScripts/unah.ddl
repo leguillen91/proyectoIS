@@ -126,7 +126,33 @@ CREATE TABLE coordinador (
 ) ENGINE=InnoDB;
 
 
+CREATE TABLE IF NOT EXISTS permissions (
+  idPermission   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  permissionCode VARCHAR(100) NOT NULL UNIQUE,
+  description    VARCHAR(255) NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+/* --- A.2 rolePermissions (N:M perfil <-> permiso) --- */
+CREATE TABLE IF NOT EXISTS rolePermissions (
+  idPerfil      TINYINT UNSIGNED NOT NULL,
+  idPermission  INT UNSIGNED NOT NULL,
+  PRIMARY KEY (idPerfil, idPermission),
+  CONSTRAINT fkRolePermPerfil
+    FOREIGN KEY (idPerfil) REFERENCES perfil(idPerfil) ON DELETE CASCADE,
+  CONSTRAINT fkRolePermPerm
+    FOREIGN KEY (idPermission) REFERENCES permissions(idPermission) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/* --- A.3 revokedTokens (tokens JWT revocados, con traza del dueño) --- */
+CREATE TABLE IF NOT EXISTS revokedTokens (
+  idRevoked        BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  jti              VARCHAR(64) NOT NULL UNIQUE,
+  idCredenciales   INT UNSIGNED NULL,
+  revokedAt        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fkRevokedTokenCred
+    FOREIGN KEY (idCredenciales) REFERENCES credenciales(idCredenciales)
+    ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 
@@ -651,129 +677,25 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 
 
-
-
-
-
-
-
 /* =======================================================
-    INSERTAR EN TABLAS PERSONAS
+   VISTA para listar usuarios con su perfil principal
+   - Une persona + credenciales + credencialesXperfil + perfil
 ======================================================= */
 USE identidad;
 
-INSERT INTO persona
-  (numeroIdentidad, nombres, apellidos, correoInstitucional, correoPersonal, telefonoContacto, direccion)
-VALUES
-  -- ADMIN (sin institucional; login con correo personal)
-  ('0801-2000-02941', 'admin',  'admin',     NULL,                'admina@gmail.com',  '11111111', 'unah'),
+CREATE OR REPLACE VIEW viewUsersProfiles AS
+SELECT
+  c.idCredenciales,
+  per.idPersona,
+  CONCAT(per.nombres,' ',per.apellidos) AS fullName,
+  c.usuario AS email,
+  c.rol     AS legacyRol,          -- enum histórico en credenciales
+  pr.clavePerfil AS perfil,
+  per.numeroIdentidad,
+  per.estadoCuenta,
+  c.fechaCreacion AS createdAt
+FROM credenciales c
+JOIN persona per           ON per.idPersona = c.idPersona
+LEFT JOIN credencialesXperfil cxp ON cxp.idCredenciales = c.idCredenciales
+LEFT JOIN perfil pr              ON pr.idPerfil = cxp.idPerfil;
 
-  -- ESTUDIANTE (institucional @unah.hn)
-  ('0801-2000-02942', 'Milton', 'Alvarado',  'malvarado@unah.hn', 'miltona@gmail.com', '22222222', 'unah'),
-
-  -- DOCENTE (institucional @unah.edu.hn)
-  ('0801-2000-02943', 'Manuel', 'Inestroza', 'minestroza@unah.edu.hn', 'manueli@gmail.com', '33333333', 'unah'),
-
-  -- COORDINADOR (login con correo personal)
-  ('0801-2000-02944', 'Jose',   'Mario',     NULL,                'josem@gmail.com',   '44444444', 'unah'),
-
-  -- JEFE_DEPTO (login con correo personal)
-  ('0801-2000-02945', 'Irma',   'Gamez',     NULL,                'irmag@gmail.com',   '55555555', 'unah'),
-
-  -- ASPIRANTE (login con correo personal)
-  ('0801-2000-02946', 'Miguel', 'Zepeda',    NULL,                'miguelz@gmail.com', '66666666', 'unah')
-;
-
-/* =======================================================
-   FILAS DE ROL
-======================================================= */
-
--- ESTUDIANTE -> identidad.alumno 
-INSERT INTO alumno (idPersona, numeroCuenta, preparacionAcademica, idCarrera, idCarreraSecundaria, indiceAcademico, fechaIngreso)
-SELECT p.idPersona, '20202002001', 'Pregrado', NULL, NULL, NULL, NULL
-FROM persona p
-WHERE p.numeroIdentidad = '0801-2000-02942';
-
--- DOCENTE -> identidad.docente 
-INSERT INTO docente (idPersona, numeroEmpleado, idDepartamentoAcademico, fechaContrato, shift, cubiculo)
-SELECT p.idPersona, '20102002001', NULL, NULL, NULL, NULL
-FROM persona p
-WHERE p.numeroIdentidad = '0801-2000-02943';
-
--- COORDINADOR -> identidad.coordinador
-INSERT INTO coordinador (idPersona, area, activo)
-SELECT p.idPersona, 'Software', 1
-FROM persona p
-WHERE p.numeroIdentidad = '0801-2000-02944';
-
--- JEFE_DEPTO -> identidad.jefeDepartamento
-INSERT INTO jefeDepartamento (idPersona, idDepartamentoAcademico, fechaInicioCargo, fechaFinCargo, razonFinalizacion)
-SELECT p.idPersona, NULL, DATE('2025-02-01'), NULL, NULL
-FROM persona p
-WHERE p.numeroIdentidad = '0801-2000-02945';
-
--- ASPIRANTE -> admisiones.aspirante
-USE admisiones;
-
-INSERT INTO aspirante (idPersona, correoPersonal, telefono, estado)
-SELECT p.idPersona, p.correoPersonal, p.telefonoContacto, 'Activo'
-FROM identidad.persona p
-WHERE p.numeroIdentidad = '0801-2000-02946';
-
-/* =======================================================
-   CREDENCIALES (UN USUARIO = UN ROL)
-======================================================= */
-USE identidad;
-
-/* Hash de pruebas */
-SET @DUMMY_HASH := '$argon2id$v=19$m=65536,t=3,p=1$ZHVtbXlTYWx0$ZHVtbXlIYXNoRm9yVGVzdA';
-
-/* ADMIN */
-INSERT INTO credenciales (idPersona, usuario, rol, claveHash, ultimoLogin, intentosLogin, bloqueado, tokenRecuperacion)
-SELECT p.idPersona, p.correoPersonal, 'ADMIN', @DUMMY_HASH, NULL, 0, 0, NULL
-FROM persona p
-WHERE p.numeroIdentidad = '0801-2000-02941';
-
-/* ESTUDIANTE */
-INSERT INTO credenciales (idPersona, usuario, rol, claveHash, ultimoLogin, intentosLogin, bloqueado, tokenRecuperacion)
-SELECT p.idPersona, p.correoInstitucional, 'ESTUDIANTE', @DUMMY_HASH, NULL, 0, 0, NULL
-FROM persona p
-WHERE p.numeroIdentidad = '0801-2000-02942';
-
-/* DOCENTE */
-INSERT INTO credenciales (idPersona, usuario, rol, claveHash, ultimoLogin, intentosLogin, bloqueado, tokenRecuperacion)
-SELECT p.idPersona, p.correoInstitucional, 'DOCENTE', @DUMMY_HASH, NULL, 0, 0, NULL
-FROM persona p
-WHERE p.numeroIdentidad = '0801-2000-02943';
-
-/* COORDINADOR */
-INSERT INTO credenciales (idPersona, usuario, rol, claveHash, ultimoLogin, intentosLogin, bloqueado, tokenRecuperacion)
-SELECT p.idPersona, p.correoPersonal, 'COORDINADOR', @DUMMY_HASH, NULL, 0, 0, NULL
-FROM persona p
-WHERE p.numeroIdentidad = '0801-2000-02944';
-
-/* JEFE_DEPTO */
-INSERT INTO credenciales (idPersona, usuario, rol, claveHash, ultimoLogin, intentosLogin, bloqueado, tokenRecuperacion)
-SELECT p.idPersona, p.correoPersonal, 'JEFE_DEPTO', @DUMMY_HASH, NULL, 0, 0, NULL
-FROM persona p
-WHERE p.numeroIdentidad = '0801-2000-02945';
-
-/* ASPIRANTE */
-INSERT INTO credenciales (idPersona, usuario, rol, claveHash, ultimoLogin, intentosLogin, bloqueado, tokenRecuperacion)
-SELECT p.idPersona, p.correoPersonal, 'ASPIRANTE', @DUMMY_HASH, NULL, 0, 0, NULL
-FROM persona p
-WHERE p.numeroIdentidad = '0801-2000-02946';
-
-
-
-
-
-/* =======================================================
-   Para cambiar los hash por claves normales
-======================================================= */
-UPDATE identidad.credenciales SET claveHash='admin123' WHERE usuario='admina@gmail.com';
-UPDATE identidad.credenciales SET claveHash='estudiante123' WHERE usuario='malvarado@unah.hn';
-UPDATE identidad.credenciales SET claveHash='docente123' WHERE usuario='minestroza@unah.edu.hn';
-UPDATE identidad.credenciales SET claveHash='coordinador123' WHERE usuario='josem@gmail.com';
-UPDATE identidad.credenciales SET claveHash='jefe123' WHERE usuario='irmag@gmail.com';
-UPDATE identidad.credenciales SET claveHash='aspirante123' WHERE usuario='miguelz@gmail.com';
