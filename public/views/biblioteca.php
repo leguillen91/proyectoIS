@@ -23,7 +23,7 @@
     <main class="recent-section">
         <h2>Recursos electrónicos vistos recientemente</h2>
         <div class="cards">
-            <!-- Tarjeta de ejemplo 1 -->
+            
             <div class="card">
                 <div class="title-bar">IS-802 Somerville E.9</div>
                 <!-- Sustituir src por la ruta al archivo de portada correspondiente -->
