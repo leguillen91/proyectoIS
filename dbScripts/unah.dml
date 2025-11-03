@@ -1,0 +1,653 @@
+
+/* ======================================================================
+   1. PERSONAS
+   ----------------------------------------------------------------------*/
+USE identidad;
+
+INSERT INTO persona
+  (numeroIdentidad, nombres, apellidos, correoInstitucional, correoPersonal, telefonoContacto, direccion)
+VALUES
+  -- ADMIN (sin institucional; login con correo personal)
+  ('0801-2000-02941', 'admin',  'admin',     NULL,                'admina@gmail.com',  '11111111', 'unah'),
+
+  -- Estudiantes
+  ('0801-2000-02942', 'Milton', 'Alvarado',  'malvarado@unah.hn', 'miltona@gmail.com', '22222222', 'unah'),
+  ('0801-2000-02947','Luis','Guillen','lguillen@unah.hn','luisg@gmail.com','77777777','Ciudad Universitaria'),
+  ('0801-2000-02948','Javiary','Ramos','jramos@unah.hn','javiaryr@gmail.com','88888888','Ciudad Universitaria'),
+  ('0801-2000-02949','Jhonny','Hernandez','jhernandez@unah.hn','jhonnyh@gmail.com','99999999','Ciudad Universitaria'),
+  ('0801-2000-02950','Carlos','Lopez','clopez@unah.hn','carlosl@gmail.com','66664444','Centro Regional'),
+
+  -- Docentes
+  ('0801-2000-02951','Jose','Inestroza','jinestroza@unah.edu.hn','josei@gmail.com','11112222','Ciudad Universitaria'),
+  ('0801-2000-02952','Uayeb','Caballeros','ucaballeros@unah.edu.hn','uayebc@gmail.com','11113333','Ciudad Universitaria'),
+  ('0801-2000-02953','Miguel','Sauceda','msauceda@unah.edu.hn','miguels@gmail.com','11114444','Ciudad Universitaria'),
+  ('0801-2000-02954','Alex','Moncada','amoncada@unah.edu.hn','alexm@gmail.com','11115555','Ciudad Universitaria'),
+  ('0801-2000-02955','Vladimir','Marin','vmarin@unah.edu.hn','vladimir@gmail.com','11116666','Ciudad Universitaria'),
+
+  -- Coordinadores
+  ('0801-2000-02956','Maria','Gomez',NULL,'mariag@gmail.com','33331111','Ciudad Universitaria'),
+  ('0801-2000-02957','Carlos','Sanchez',NULL,'carloss@gmail.com','33332222','Ciudad Universitaria'),
+  ('0801-2000-02958','Patricia','Hernandez',NULL,'patriciah@gmail.com','33333333','Ciudad Universitaria'),
+  ('0801-2000-02959','Roberto','Alvarez',NULL,'robertoa@gmail.com','33334444','Ciudad Universitaria'),
+
+  -- Jefes de departamento
+  ('0801-2000-02960','Sandra','Rivera',NULL,'sandrar@gmail.com','44441111','Ciudad Universitaria'),
+  ('0801-2000-02961','David','Mendoza',NULL,'davidm@gmail.com','44442222','Ciudad Universitaria'),
+  ('0801-2000-02962','Marisol','Padilla',NULL,'marisolp@gmail.com','44443333','Ciudad Universitaria'),
+  ('0801-2000-02963','Fernando','Pereira',NULL,'fernandop@gmail.com','44444444','Ciudad Universitaria'),
+
+  -- Aspirantes (correos personales)
+  ('0801-2000-02964','Carlos','Perez',NULL,'carlosperez@gmail.com','55551111','Ciudad Universitaria'),
+  ('0801-2000-02965','Ana','Lopez',NULL,'analopez@gmail.com','55552222','Ciudad Universitaria'),
+  ('0801-2000-02966','Roberto','Ruiz',NULL,'robertoruiz@gmail.com','55553333','Ciudad Universitaria'),
+  ('0801-2000-02967','Patricia','Flores',NULL,'patriciaflores@gmail.com','55554444','Ciudad Universitaria')
+ON DUPLICATE KEY UPDATE telefonoContacto=VALUES(telefonoContacto);
+
+
+
+/* ======================================================================
+   2. CREDENCIALES Y PERFILES
+   ----------------------------------------------------------------------*/
+-- Hash de prueba reutilizado
+SET @DUMMY_HASH := '$argon2id$v=19$m=65536,t=3,p=1$ZHVtbXlTYWx0$ZHVtbXlIYXNoRm9yVGVzdA';
+
+-- ADMIN
+INSERT IGNORE INTO credenciales (idPersona, usuario, rol, claveHash, ultimoLogin, intentosLogin, bloqueado, tokenRecuperacion)
+SELECT p.idPersona, p.correoPersonal, 'ADMIN', @DUMMY_HASH, NULL, 0, 0, NULL
+FROM persona p WHERE p.numeroIdentidad = '0801-2000-02941';
+
+-- Estudiantes 
+INSERT IGNORE INTO credenciales (idPersona, usuario, rol, claveHash)
+SELECT p.idPersona, p.correoInstitucional, 'ESTUDIANTE', @DUMMY_HASH
+FROM persona p
+WHERE p.numeroIdentidad IN ('0801-2000-02942','0801-2000-02947','0801-2000-02948','0801-2000-02949','0801-2000-02950');
+
+-- Docentes
+INSERT IGNORE INTO credenciales (idPersona, usuario, rol, claveHash)
+SELECT p.idPersona, p.correoInstitucional, 'DOCENTE', @DUMMY_HASH
+FROM persona p
+WHERE p.numeroIdentidad IN ('0801-2000-02951','0801-2000-02952','0801-2000-02953','0801-2000-02954','0801-2000-02955');
+
+-- Coordinadores (cuentas por correo personal)
+INSERT IGNORE INTO credenciales (idPersona, usuario, rol, claveHash)
+SELECT p.idPersona, p.correoPersonal, 'COORDINADOR', @DUMMY_HASH
+FROM persona p
+WHERE p.numeroIdentidad IN ('0801-2000-02956','0801-2000-02957','0801-2000-02958','0801-2000-02959');
+
+-- Jefes de departamento (cuentas por correo personal)
+INSERT IGNORE INTO credenciales (idPersona, usuario, rol, claveHash)
+SELECT p.idPersona, p.correoPersonal, 'JEFE_DEPTO', @DUMMY_HASH
+FROM persona p
+WHERE p.numeroIdentidad IN ('0801-2000-02960','0801-2000-02961','0801-2000-02962','0801-2000-02963');
+
+-- Aspirantes
+INSERT IGNORE INTO credenciales (idPersona, usuario, rol, claveHash)
+SELECT p.idPersona, p.correoPersonal, 'ASPIRANTE', @DUMMY_HASH
+FROM persona p
+WHERE p.numeroIdentidad IN ('0801-2000-02964','0801-2000-02965','0801-2000-02966','0801-2000-02967');
+
+
+/* =======================================================
+   B. SEED DE PERFILES Y PERMISOS (NUEVO)
+======================================================= */
+USE identidad;
+
+INSERT IGNORE INTO perfil (idPerfil, clavePerfil, descripcion) VALUES
+  (1,'ADMIN','Administrador del sistema'),
+  (2,'ESTUDIANTE','Estudiante UNAH'),
+  (3,'DOCENTE','Docente UNAH'),
+  (4,'COORDINADOR','Coordinación de módulo'),
+  (5,'JEFE_DEPTO','Jefatura de departamento'),
+  (6,'ASPIRANTE','Aspirante a ingreso');
+
+INSERT IGNORE INTO permissions (permissionCode, description) VALUES
+ ('library.view',      'Ver recursos'),
+ ('library.download',  'Descargar recursos'),
+ ('library.upload',    'Subir recursos'),
+ ('library.edit',      'Editar recursos'),
+ ('library.approve',   'Aprobar/validar recursos'),
+ ('users.manage',      'Gestión de usuarios');
+
+-- ESTUDIANTE: view + download
+INSERT IGNORE INTO rolePermissions (idPerfil, idPermission)
+SELECT p.idPerfil, perm.idPermission
+FROM perfil p
+JOIN permissions perm ON perm.permissionCode IN ('library.view','library.download')
+WHERE p.clavePerfil='ESTUDIANTE';
+
+-- DOCENTE / COORDINADOR / JEFE_DEPTO: biblioteca completa
+INSERT IGNORE INTO rolePermissions (idPerfil, idPermission)
+SELECT p.idPerfil, perm.idPermission
+FROM perfil p
+JOIN permissions perm ON perm.permissionCode IN ('library.view','library.download','library.upload','library.edit','library.approve')
+WHERE p.clavePerfil IN ('DOCENTE','COORDINADOR','JEFE_DEPTO');
+
+-- ADMIN: todos los permisos
+INSERT IGNORE INTO rolePermissions (idPerfil, idPermission)
+SELECT p.idPerfil, perm.idPermission
+FROM perfil p
+CROSS JOIN permissions perm
+WHERE p.clavePerfil='ADMIN';
+
+-- Vincular automáticamente el perfil al rol de cada credencial 
+INSERT IGNORE INTO credencialesXperfil (idCredenciales, idPerfil)
+SELECT c.idCredenciales, pf.idPerfil
+FROM credenciales c
+JOIN perfil pf ON pf.clavePerfil = c.rol
+WHERE NOT EXISTS (
+  SELECT 1 FROM credencialesXperfil x
+  WHERE x.idCredenciales = c.idCredenciales AND x.idPerfil = pf.idPerfil
+);
+
+
+
+/* ======================================================================
+   3. ROLES ESPECÍFICOS (ALUMNOS, DOCENTES, COORDINADORES, JEFES)
+   ----------------------------------------------------------------------*/
+-- ALUMNO:
+INSERT IGNORE INTO alumno (idPersona, numeroCuenta, preparacionAcademica, idCarrera, idCarreraSecundaria, indiceAcademico, fechaIngreso)
+SELECT p.idPersona,
+       CASE p.numeroIdentidad
+         WHEN '0801-2000-02942' THEN '20202002001'  -- Milton
+         WHEN '0801-2000-02947' THEN '20202002002'
+         WHEN '0801-2000-02948' THEN '20202002003'
+         WHEN '0801-2000-02949' THEN '20202002004'
+         WHEN '0801-2000-02950' THEN '20202002005'
+       END AS numeroCuenta,
+       'Pregrado', NULL, NULL, NULL, NULL
+FROM persona p
+WHERE p.numeroIdentidad IN ('0801-2000-02942','0801-2000-02947','0801-2000-02948','0801-2000-02949','0801-2000-02950');
+
+-- DOCENTES (nuevos)
+INSERT IGNORE INTO docente (idPersona, numeroEmpleado, idDepartamentoAcademico, fechaContrato, shift, cubiculo)
+SELECT p.idPersona,
+       CASE p.numeroIdentidad
+         WHEN '0801-2000-02951' THEN '20102002002'
+         WHEN '0801-2000-02952' THEN '20102002003'
+         WHEN '0801-2000-02953' THEN '20102002004'
+         WHEN '0801-2000-02954' THEN '20102002005'
+         WHEN '0801-2000-02955' THEN '20102002006'
+       END,
+       NULL, NULL, 'TiempoCompleto', NULL
+FROM persona p
+WHERE p.numeroIdentidad IN ('0801-2000-02951','0801-2000-02952','0801-2000-02953','0801-2000-02954','0801-2000-02955');
+
+-- COORDINADORES (4, según áreas nuevas)
+INSERT IGNORE INTO coordinador (idPersona, area, activo)
+SELECT p.idPersona,
+       CASE p.numeroIdentidad
+         WHEN '0801-2000-02956' THEN 'BibliotecaVirtual'
+         WHEN '0801-2000-02957' THEN 'Musica'
+         WHEN '0801-2000-02958' THEN 'Admisiones'
+         WHEN '0801-2000-02959' THEN 'Matricula'
+       END,
+       1
+FROM persona p
+WHERE p.numeroIdentidad IN ('0801-2000-02956','0801-2000-02957','0801-2000-02958','0801-2000-02959');
+
+-- JEFES DE DEPARTAMENTO (4 nuevos)
+INSERT IGNORE INTO jefeDepartamento (idPersona, idDepartamentoAcademico, fechaInicioCargo, fechaFinCargo, razonFinalizacion)
+SELECT p.idPersona, NULL, DATE('2025-03-01'), NULL, NULL
+FROM persona p
+WHERE p.numeroIdentidad IN ('0801-2000-02960','0801-2000-02961','0801-2000-02962','0801-2000-02963');
+
+
+
+/* ======================================================================
+   4. FACULTADES, CAMPUS, EDIFICIOS Y AULAS
+   ----------------------------------------------------------------------*/
+USE academico;
+
+-- Facultades
+INSERT IGNORE INTO facultad (codigoFacultad, nombre, estado)
+VALUES
+  ('FI','Facultad de Ingeniería','Activo'),
+  ('FCJ','Facultad de Ciencias Jurídicas','Activo'),
+  ('FCS','Facultad de Ciencias Sociales','Activo'),
+  ('FCM','Facultad de Ciencias Médicas','Activo'),
+  ('FHA','Facultad de Humanidades y Artes','Activo');
+
+-- Campus
+INSERT IGNORE INTO campus (codigoCampus, nombre, direccion, telefono, estado)
+VALUES
+  ('CU','Ciudad Universitaria','Boulevard Suyapa, Tegucigalpa','2216-3000','Activo'),
+  ('VS','UNAH-VS (Valle de Sula)','San Pedro Sula, Valle de Sula','2645-3000','Activo'),
+  ('LP','CURLP (Litoral Pacífico)','Choluteca, Litoral Pacífico','2780-3000','Activo'),
+  ('CR','CURC (Centro Regional Centro)','Comayagua, Región Central','2772-3000','Activo'),
+  ('CO','CUROC (Occidente)','Santa Rosa de Copán, Occidente','2662-3000','Activo');
+
+-- Edificios
+INSERT INTO edificio (idCampus, nombre, estado)
+SELECT c.idCampus, 
+       CASE c.codigoCampus
+         WHEN 'CU' THEN 'Edificio F1'
+         WHEN 'VS' THEN 'Edificio J1'
+         WHEN 'LP' THEN 'Edificio C1'
+         WHEN 'CR' THEN 'Edificio B1'
+         WHEN 'CO' THEN 'Edificio H1'
+       END AS nombre,
+       'Activo' AS estado
+FROM campus c
+ON DUPLICATE KEY UPDATE estado='Activo';
+
+-- Aulas
+INSERT INTO aula (idEdificio, numeroAula, capacidad, tipoAula, estado)
+SELECT e.idEdificio,
+       CASE e.nombre
+         WHEN 'Edificio F1' THEN '101'
+         WHEN 'Edificio J1' THEN '201'
+         WHEN 'Edificio C1' THEN '301'
+         WHEN 'Edificio B1' THEN '401'
+         WHEN 'Edificio H1' THEN '501'
+       END AS numeroAula,
+       CASE e.nombre
+         WHEN 'Edificio F1' THEN 40
+         WHEN 'Edificio J1' THEN 35
+         WHEN 'Edificio C1' THEN 30
+         WHEN 'Edificio B1' THEN 25
+         WHEN 'Edificio H1' THEN 20
+       END AS capacidad,
+       CASE e.nombre
+         WHEN 'Edificio J1' THEN 'Laboratorio'
+         WHEN 'Edificio H1' THEN 'Laboratorio'
+         ELSE 'Salon'
+       END AS tipoAula,
+       'Activo' AS estado
+FROM edificio e
+ON DUPLICATE KEY UPDATE estado='Activo';
+
+
+
+/* ======================================================================
+   5. CARRERAS Y ASIGNATURAS
+   ----------------------------------------------------------------------*/
+-- Carreras
+INSERT INTO carrera (codigoCarrera, nombre, idFacultad, uvTotales, duracionSemestre, estado, idCampus, modalidad)
+SELECT 'IS-01','Ingeniería en Sistemas',  f1.idFacultad, 165,10,'Activo', ca1.idCampus,'Presencial'  FROM facultad f1 JOIN campus ca1 WHERE f1.codigoFacultad='FI'  AND ca1.codigoCampus='CU'
+UNION ALL
+SELECT 'DERE-01','Licenciatura en Derecho',   f2.idFacultad,150,10,'Activo', ca1.idCampus,'Presencial'  FROM facultad f2 JOIN campus ca1 WHERE f2.codigoFacultad='FCJ' AND ca1.codigoCampus='CU'
+UNION ALL
+SELECT 'PSI-01','Licenciatura en Psicología', f3.idFacultad,160,9,'Activo',  ca1.idCampus,'Presencial'  FROM facultad f3 JOIN campus ca1 WHERE f3.codigoFacultad='FCS' AND ca1.codigoCampus='CU'
+UNION ALL
+SELECT 'MED-01','Medicina y Cirugía',         f4.idFacultad,200,12,'Activo', ca1.idCampus,'Presencial'  FROM facultad f4 JOIN campus ca1 WHERE f4.codigoFacultad='FCM' AND ca1.codigoCampus='CU'
+UNION ALL
+SELECT 'ARC-01','Arquitectura',               f5.idFacultad,180,10,'Activo', ca1.idCampus,'Presencial'  FROM facultad f5 JOIN campus ca1 WHERE f5.codigoFacultad='FHA' AND ca1.codigoCampus='CU'
+ON DUPLICATE KEY UPDATE estado='Activo';
+
+-- Asignaturas 
+INSERT IGNORE INTO asignatura (codigoAsignatura, nombre, uv, categoria, estado)
+VALUES
+  ('IS-110','Introducción a la Ingeniería en Sistemas',3,'Obligatoria','Activa'),
+  ('MM-110','Matemática I',5,'Obligatoria','Activa'),
+  ('SC-101','Sociología',4,'Obligatoria','Activa'),
+  ('IS-210','Programación II',4,'Obligatoria','Activa'),
+  ('IS-410','Sistemas Operativos I',4,'Obligatoria','Activa'),
+  ('DER-101','Introducción al Derecho',4,'Obligatoria','Activa'),
+  ('DER-201','Derecho Civil I',4,'Obligatoria','Activa'),
+  ('PSI-101','Introducción a la Psicología',4,'Obligatoria','Activa'),
+  ('MED-101','Anatomía Humana',5,'Obligatoria','Activa'),
+  ('ARC-101','Introducción a la Arquitectura',4,'Obligatoria','Activa');
+
+-- Prerrequisitos
+INSERT IGNORE INTO prerequisito (idAsignatura, idPrerequisito)
+SELECT a2.idAsignatura, a1.idAsignatura
+FROM asignatura a1, asignatura a2
+WHERE (a2.codigoAsignatura, a1.codigoAsignatura) IN
+  (('IS-210','IS-110'),
+   ('IS-410','IS-210'),
+   ('DER-201','DER-101'),
+   ('MED-101','PSI-101'),
+   ('ARC-101','MM-110'));
+
+-- Plan curricular para algunas carreras
+INSERT IGNORE INTO planCurricular (idCarrera, idAsignatura, semestre, tipo)
+SELECT c.idCarrera, a.idAsignatura, 1, 'Obligatorio'
+FROM carrera c JOIN asignatura a
+WHERE c.codigoCarrera='IS-01' AND a.codigoAsignatura IN ('IS-110','MM-110','SC-101')
+UNION ALL
+SELECT c.idCarrera, a.idAsignatura, 2, 'Obligatorio'
+FROM carrera c JOIN asignatura a
+WHERE c.codigoCarrera='IS-01' AND a.codigoAsignatura='IS-210'
+UNION ALL
+SELECT c.idCarrera, a.idAsignatura, 4, 'Obligatorio'
+FROM carrera c JOIN asignatura a
+WHERE c.codigoCarrera='IS-01' AND a.codigoAsignatura='IS-410'
+UNION ALL
+SELECT c.idCarrera, a.idAsignatura, 1, 'Obligatorio'
+FROM carrera c JOIN asignatura a
+WHERE c.codigoCarrera='DERE-01' AND a.codigoAsignatura='DER-101'
+UNION ALL
+SELECT c.idCarrera, a.idAsignatura, 3, 'Obligatorio'
+FROM carrera c JOIN asignatura a
+WHERE c.codigoCarrera='DERE-01' AND a.codigoAsignatura='DER-201';
+
+
+
+/* ======================================================================
+   6. PERÍODOS ACADÉMICOS
+   ----------------------------------------------------------------------*/
+INSERT IGNORE INTO periodoAcademico (anio, numero, nombre, fechaInicio, fechaFin, fechaInicioMatricula, fechaFinMatricula, fechaInicioClases, fechaFinClases, estado)
+VALUES
+  (2024,1,'2024-1','2024-01-15','2024-05-15','2023-12-01','2023-12-20','2024-01-15','2024-05-01','Finalizado'),
+  (2024,2,'2024-2','2024-05-16','2024-09-15','2024-04-01','2024-04-20','2024-05-16','2024-09-01','Finalizado'),
+  (2024,3,'2024-3','2024-09-16','2024-12-31','2024-08-01','2024-08-20','2024-09-16','2024-12-20','Finalizado'),
+  (2025,1,'2025-1','2025-01-15','2025-05-15','2024-12-01','2024-12-20','2025-01-15','2025-05-01','EnCurso'),
+  (2025,2,'2025-2','2025-05-16','2025-09-15','2025-04-01','2025-04-20','2025-05-16','2025-09-01','Matricula');
+
+
+
+/* ======================================================================
+   7. SECCIONES Y HORARIOS
+   ----------------------------------------------------------------------*/
+-- Secciones (con esquemas calificados y docentes existentes 02..06)
+INSERT INTO matricula.seccion (idAsignatura, idPeriodo, idDocente, idAula, codigoSeccion, cupoMaximo, modalidad, estado)
+SELECT a.idAsignatura, p.idPeriodo, d.idPersona, au.idAula,
+       CONCAT(a.codigoAsignatura,'-',p.anio,'-',LPAD(p.numero,2,'0')) AS codigoSeccion,
+       30, 'Presencial', 'Activa'
+FROM academico.asignatura a
+JOIN academico.periodoAcademico p ON p.anio=2025 AND p.numero=1
+JOIN identidad.docente d ON d.numeroEmpleado IN ('20102002002','20102002003','20102002004','20102002005','20102002006')
+JOIN academico.aula au ON au.numeroAula IN ('101','201','301','401','501')
+WHERE a.codigoAsignatura IN ('IS-110','MM-110','DER-101','PSI-101','MED-101')
+LIMIT 5;
+
+-- Horarios para cada sección
+INSERT INTO matricula.horarioSeccion (idSeccion, dias, horaInicio, horaFin, idAula)
+SELECT s.idSeccion,
+       CASE ROW_NUMBER() OVER (ORDER BY s.idSeccion)
+         WHEN 1 THEN 'LU-MI'
+         WHEN 2 THEN 'LU-MI'
+         WHEN 3 THEN 'MA-JU'
+         WHEN 4 THEN 'MA-JU'
+         WHEN 5 THEN 'VI'
+       END,
+       CASE ROW_NUMBER() OVER (ORDER BY s.idSeccion)
+         WHEN 1 THEN '08:00:00'
+         WHEN 2 THEN '10:00:00'
+         WHEN 3 THEN '08:00:00'
+         WHEN 4 THEN '10:00:00'
+         WHEN 5 THEN '08:00:00'
+       END,
+       CASE ROW_NUMBER() OVER (ORDER BY s.idSeccion)
+         WHEN 1 THEN '10:00:00'
+         WHEN 2 THEN '12:00:00'
+         WHEN 3 THEN '10:00:00'
+         WHEN 4 THEN '12:00:00'
+         WHEN 5 THEN '12:00:00'
+       END,
+       s.idAula
+FROM matricula.seccion s;
+
+
+
+/* ======================================================================
+   8. LISTAS DE ESPERA, PAGOS Y MATRÍCULAS
+   ----------------------------------------------------------------------*/
+-- Lista de espera
+INSERT INTO matricula.listaEspera (idEstudiante, idSeccion, posicion, prioridad)
+SELECT al.idPersona, s.idSeccion, ROW_NUMBER() OVER (ORDER BY al.idPersona), 1
+FROM identidad.alumno al
+JOIN matricula.seccion s ON s.idSeccion IN (SELECT idSeccion FROM matricula.seccion ORDER BY idSeccion LIMIT 5)
+WHERE al.numeroCuenta IN ('20202002001','20202002002','20202002003','20202002004','20202002005')
+LIMIT 5;
+
+-- Pagos de matrícula
+INSERT INTO matricula.pago (idEstudiante, idPeriodo, concepto, monto, metodoPago, estado, fechaPago)
+SELECT al.idPersona, p.idPeriodo, 'Matricula', 1000.00, 'Tarjeta', 'Confirmado', NOW()
+FROM identidad.alumno al
+JOIN academico.periodoAcademico p ON p.anio=2025 AND p.numero=1
+WHERE al.numeroCuenta IN ('20202002001','20202002002','20202002003','20202002004','20202002005')
+LIMIT 5;
+
+-- Matrículas de estudiantes
+INSERT INTO matricula.matricula_estudiante (idEstudiante, idSeccion, estado, idPago)
+SELECT al.idPersona, s.idSeccion, 'Activa', pg.idPago
+FROM identidad.alumno al
+JOIN matricula.seccion s ON s.idSeccion IN (SELECT idSeccion FROM matricula.seccion ORDER BY idSeccion LIMIT 5)
+JOIN matricula.pago pg ON pg.idEstudiante = al.idPersona
+WHERE al.numeroCuenta IN ('20202002001','20202002002','20202002003','20202002004','20202002005')
+LIMIT 5;
+
+
+
+/* ======================================================================
+   9. SOLICITUDES DE ESTUDIANTES
+   ----------------------------------------------------------------------*/
+INSERT INTO matricula.solicitudEstudiante
+  (idEstudiante, idCarreraActual, idCarreraSolicitada, idCentroActual, idCentroSolicitado, idPeriodo,
+   tipoSolicitud, justificacion, estado, coordinadorAsignado, aprobadoPor)
+SELECT al.idPersona,
+       c1.idCarrera,
+       c2.idCarrera,
+       cam1.idCampus,
+       cam2.idCampus,
+       p.idPeriodo,
+       'CambioCarrera',
+       'Motivos académicos',
+       'Revision',
+       coord.idPersona,
+       jefe.idPersona
+FROM identidad.alumno al
+JOIN academico.carrera c1 ON c1.codigoCarrera='IS-01'
+JOIN academico.carrera c2 ON c2.codigoCarrera='PSI-01'
+JOIN academico.campus  cam1 ON cam1.codigoCampus='CU'
+JOIN academico.campus  cam2 ON cam2.codigoCampus='CU'
+JOIN academico.periodoAcademico p ON p.anio=2025 AND p.numero=1
+JOIN identidad.coordinador coord ON coord.area='BibliotecaVirtual'
+JOIN identidad.jefeDepartamento jefe ON jefe.idDepartamentoAcademico IS NULL
+LIMIT 5;
+
+INSERT INTO matricula.solicitudSeccion (idSolicitud, idSeccion, motivo, estado, aprobadoPor)
+SELECT se.idSolicitud, s.idSeccion, 'Cambio de sección', 'Pendiente', se.aprobadoPor
+FROM matricula.solicitudEstudiante se
+JOIN matricula.seccion s ON s.idSeccion IN (SELECT idSeccion FROM matricula.seccion ORDER BY idSeccion LIMIT 5)
+LIMIT 5;
+
+
+
+/* ======================================================================
+   10. RECURSOS DE BIBLIOTECA Y MÚSICA
+   ----------------------------------------------------------------------*/
+USE recursos;
+
+-- Tags
+INSERT IGNORE INTO tags (nombre, descripcion)
+VALUES
+  ('Base de Datos','Material relacionado con bases de datos y almacenamiento'),
+  ('Programación','Libros y artículos de programación de software'),
+  ('Redes','Recursos sobre redes de computadores'),
+  ('Matemáticas','Libros de matemáticas básicas y avanzadas'),
+  ('Psicología','Material de psicología general');
+
+-- Biblioteca
+INSERT INTO recurso_biblioteca (id_asignatura, id_departamento, titulo, autor, anio_publicacion, descripcion, tipo_recurso, tamanio_bytes)
+SELECT a.idAsignatura, c.idCarrera,
+       CASE a.codigoAsignatura
+         WHEN 'IS-410' THEN 'Fundamentos de Sistemas Operativos'
+         WHEN 'MM-110' THEN 'Cálculo I para Ingenierías'
+         WHEN 'DER-101' THEN 'Introducción al Derecho Hondureño'
+         WHEN 'PSI-101' THEN 'Principios de Psicología'
+         WHEN 'MED-101' THEN 'Atlas de Anatomía Humana'
+       END,
+       CASE a.codigoAsignatura
+         WHEN 'IS-410' THEN 'A. Silberschatz'
+         WHEN 'MM-110' THEN 'James Stewart'
+         WHEN 'DER-101' THEN 'R. Aguilar'
+         WHEN 'PSI-101' THEN 'David Myers'
+         WHEN 'MED-101' THEN 'Frank Netter'
+       END,
+       2020,'Recurso académico de referencia','Libro',1048576
+FROM academico.asignatura a
+JOIN academico.carrera c ON c.codigoCarrera IN ('IS-01','DERE-01','PSI-01','MED-01','ARC-01')
+WHERE a.codigoAsignatura IN ('IS-410','MM-110','DER-101','PSI-101','MED-101')
+LIMIT 5;
+
+INSERT INTO recurso_biblioteca_x_tag (id_recurso_biblioteca, id_tags)
+SELECT rb.id_recurso_biblioteca, t.id_tags
+FROM recurso_biblioteca rb
+JOIN tags t
+WHERE (rb.titulo LIKE '%Sistemas Operativos%' AND t.nombre='Programación') OR
+      (rb.titulo LIKE '%Cálculo I%'           AND t.nombre='Matemáticas') OR
+      (rb.titulo LIKE '%Derecho Hondureño%'   AND t.nombre='Base de Datos') OR
+      (rb.titulo LIKE '%Psicología%'          AND t.nombre='Psicología') OR
+      (rb.titulo LIKE '%Anatomía Humana%'     AND t.nombre='Redes')
+LIMIT 5;
+
+-- Música
+INSERT INTO recurso_musica (id_asignatura, id_departamento, titulo, compositor, autor, anio_publicacion, descripcion, tipo_recurso, formato_recurso, tamanio_bytes, duracion_segundos)
+SELECT a.idAsignatura, c.idCarrera,
+       CASE a.codigoAsignatura
+         WHEN 'IS-110' THEN 'Canción de Programadores'
+         WHEN 'SC-101' THEN 'Himno a la Sociología'
+         WHEN 'PSI-101' THEN 'Melodía de la Mente'
+         WHEN 'MED-101' THEN 'Ritmo del Corazón'
+         WHEN 'ARC-101' THEN 'Sinfonía de la Arquitectura'
+       END,
+       NULL,'Autor Desconocido',2019,'Pieza musical educativa','Audio','MP3',512000,180
+FROM academico.asignatura a
+JOIN academico.carrera c ON c.codigoCarrera IN ('IS-01','DERE-01','PSI-01','MED-01','ARC-01')
+WHERE a.codigoAsignatura IN ('IS-110','SC-101','PSI-101','MED-101','ARC-101')
+LIMIT 5;
+
+INSERT INTO recurso_musica_x_tag (id_recurso_musica, id_tags)
+SELECT rm.id_recurso_musica, t.id_tags
+FROM recurso_musica rm
+JOIN tags t
+WHERE (rm.titulo LIKE '%Programadores%' AND t.nombre='Programación') OR
+      (rm.titulo LIKE '%Sociología%'    AND t.nombre='Psicología') OR
+      (rm.titulo LIKE '%Mente%'         AND t.nombre='Psicología') OR
+      (rm.titulo LIKE '%Corazón%'       AND t.nombre='Redes') OR
+      (rm.titulo LIKE '%Arquitectura%'  AND t.nombre='Matemáticas')
+LIMIT 5;
+
+
+
+/* ======================================================================
+   11. ADMISIONES
+   ----------------------------------------------------------------------*/
+USE admisiones;
+
+-- Aspirantes (crear filas desde identidad.persona)
+INSERT IGNORE INTO aspirante (idPersona, correoPersonal, telefono, estado)
+SELECT p.idPersona, p.correoPersonal, p.telefonoContacto, 'Activo'
+FROM identidad.persona p
+WHERE p.numeroIdentidad IN ('0801-2000-02964','0801-2000-02965','0801-2000-02966','0801-2000-02967');
+
+-- Solicitudes de admisión
+INSERT INTO solicitudAdmision (idAspirante, idPeriodo, idCarreraPrincipal, idCampus, idCarreraSecundaria, estado, fechaCreacion)
+SELECT asp.idAspirante, p.idPeriodo, c1.idCarrera, cam.idCampus, c2.idCarrera, 'Pendiente', NOW()
+FROM aspirante asp
+JOIN academico.carrera c1 ON c1.codigoCarrera='IS-01'
+JOIN academico.carrera c2 ON c2.codigoCarrera='PSI-01'
+JOIN academico.periodoAcademico p ON p.anio=2025 AND p.numero=1
+JOIN academico.campus cam ON cam.codigoCampus='CU'
+LIMIT 4;
+
+-- Documentación
+INSERT INTO documentacion (idSolicitud, tipoDocumento, archivoPdf, tamanioBytes)
+SELECT sa.idSolicitud, 'CertificadoSecundaria', 0x25, 1024
+FROM solicitudAdmision sa
+LIMIT 4;
+
+-- Tipos de examen
+INSERT IGNORE INTO tipoExamen (idTipoExamen, nombre, rangoMaximo, descripcion)
+VALUES
+  (1,'PAA',2000,'Prueba de Aptitud Académica'),
+  (2,'PAM',800,'Prueba de Aptitud para Medicina'),
+  (3,'PCCNS',800,'Prueba de Conocimientos de Ciencias Naturales y Sociales');
+
+-- Carreras por examen (puntajes mínimos)
+INSERT IGNORE INTO carrerasXexamen (idCarrera, idTipoExamen, puntajeMinimo, obligatorio)
+SELECT c.idCarrera, te.idTipoExamen, 
+       CASE c.codigoCarrera
+         WHEN 'IS-01'  THEN 900
+         WHEN 'DERE-01' THEN 800
+         WHEN 'PSI-01' THEN 850
+         WHEN 'MED-01' THEN 1000
+         WHEN 'ARC-01' THEN 900
+       END,
+       1
+FROM academico.carrera c
+CROSS JOIN tipoExamen te
+WHERE te.nombre='PAA' AND c.codigoCarrera IN ('IS-01','DERE-01','PSI-01','MED-01','ARC-01');
+
+-- Exámenes programados
+INSERT INTO examen (idSolicitud, idTipoExamen, idPeriodo, idCampus, idAula, fecha, hora, asistio, nota, calificadoPor, estado)
+SELECT sa.idSolicitud, te.idTipoExamen, p.idPeriodo, cam.idCampus, au.idAula,
+       DATE('2025-03-10'), TIME('08:00:00'), 0, NULL, NULL, 'Programado'
+FROM solicitudAdmision sa
+JOIN tipoExamen te ON te.nombre='PAA'
+JOIN academico.periodoAcademico p ON p.anio=2025 AND p.numero=1
+JOIN academico.campus cam ON cam.codigoCampus='CU'
+JOIN academico.aula au ON au.numeroAula='101'
+LIMIT 4;
+
+-- Cupos
+INSERT IGNORE INTO cuposCarreraCampusPeriodo (idCarrera, idCampus, idPeriodo, cuposDisponibles, cuposAsignados, fechaApertura, fechaCierre)
+SELECT c.idCarrera, cam.idCampus, p.idPeriodo, 50, 0, DATE('2025-02-01'), DATE('2025-02-28')
+FROM academico.carrera c
+JOIN academico.campus cam ON cam.codigoCampus='CU'
+JOIN academico.periodoAcademico p ON p.anio=2025 AND p.numero=1
+WHERE c.codigoCarrera IN ('IS-01','DERE-01','PSI-01','MED-01','ARC-01');
+
+-- Lista de espera de admisión
+INSERT INTO listaEsperaAdmision (idCarrera, idCampus, idPeriodo, idSolicitud, posicion, estado)
+SELECT c.idCarrera, cam.idCampus, p.idPeriodo, sa.idSolicitud, ROW_NUMBER() OVER (ORDER BY sa.idSolicitud), 'EnEspera'
+FROM academico.carrera c
+JOIN academico.campus cam ON cam.codigoCampus='CU'
+JOIN academico.periodoAcademico p ON p.anio=2025 AND p.numero=1
+JOIN solicitudAdmision sa ON sa.idCarreraPrincipal = c.idCarrera
+WHERE c.codigoCarrera IN ('IS-01','DERE-01','PSI-01','MED-01','ARC-01')
+LIMIT 4;
+
+-- Resultados
+INSERT INTO resultadoAdmision (idSolicitud, decision, puntajePAA, idCarreraAsignada, idCampusAsignado, idPeriodo, observaciones)
+SELECT sa.idSolicitud,
+       'AprobadoPrincipal',
+       1000,
+       sa.idCarreraPrincipal,
+       sa.idCampus,
+       sa.idPeriodo,
+       'Admitido en primera opción'
+FROM solicitudAdmision sa
+LIMIT 4;
+
+-- Aceptación
+INSERT INTO aceptacionCupo (idResultado, tokenConfirmacion, fechaLimiteToken, estado)
+SELECT r.idResultado,
+       UPPER(SHA2(CONCAT('token',r.idResultado,NOW()),256)),
+       DATE_ADD(r.fechaResultado, INTERVAL 15 DAY),
+       'Pendiente'
+FROM resultadoAdmision r;
+
+
+
+/* ======================================================================
+   12. Cambiar hashes por claves de prueba (opcional)
+   ----------------------------------------------------------------------*/
+USE identidad;
+
+-- Admin
+UPDATE credenciales SET claveHash='admin123' WHERE usuario='admina@gmail.com';
+
+-- Estudiantes
+UPDATE credenciales SET claveHash='estudiante123'
+WHERE usuario IN ('malvarado@unah.hn','lguillen@unah.hn','jramos@unah.hn','jhernandez@unah.hn','clopez@unah.hn');
+
+-- Docentes
+UPDATE credenciales SET claveHash='docente123'
+WHERE usuario IN ('jinestroza@unah.edu.hn','ucaballeros@unah.edu.hn','msauceda@unah.edu.hn','amoncada@unah.edu.hn','vmarin@unah.edu.hn');
+
+-- Coordinadores
+UPDATE credenciales SET claveHash='coordinador123'
+WHERE usuario IN ('mariag@gmail.com','carloss@gmail.com','patriciah@gmail.com','robertoa@gmail.com');
+
+-- Jefes de departamento
+UPDATE credenciales SET claveHash='jefe123'
+WHERE usuario IN ('sandrar@gmail.com','davidm@gmail.com','marisolp@gmail.com','fernandop@gmail.com');
+
+-- Aspirantes
+UPDATE credenciales SET claveHash='aspirante123'
+WHERE usuario IN ('carlosperez@gmail.com','analopez@gmail.com','robertoruiz@gmail.com','patriciaflores@gmail.com');
+
+
