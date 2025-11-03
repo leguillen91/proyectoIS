@@ -1,5 +1,4 @@
 <?php
-// middleware/authorize.php
 
 /**
  * Verifica si el usuario autenticado tiene acceso a una acción según:
@@ -34,8 +33,8 @@ function authorize(array $ctx, array $neededAnyPermission = [], array $allowedRo
   if (!$isAuthorized) {
     http_response_code(403);
     echo json_encode([
-      'error' => 'Access denied',
-      'message' => 'You do not have permission to perform this action.'
+      'error' => 'Acceso denegado',
+      'message' => 'No tienes permiso para realizar esta acción.'
     ]);
     exit;
   }

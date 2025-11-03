@@ -39,6 +39,6 @@ setcookie(
 // Respuesta
 echo json_encode([
   'ok' => true,
-  'message' => 'Session closed successfully',
+  'message' => 'Sesión cerrada con éxito',
   'user' => $ctx['email']
 ]);

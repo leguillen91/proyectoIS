@@ -81,3 +81,27 @@ probar el authController.php
                     )
 
             )
+
+probar el studentsModule
+PS C:\Users\HP\Desktop\projectUnahSystem> php tests/testStudentsModule.php
+ Iniciando pruebas del módulo STUDENTS...
+
+1  Probando LOGIN de admin...
+ Login exitoso. Token obtenido.
+
+2  Probando LISTADO de estudiantes...
+ No hay registros de estudiantes todavía.
+
+3  Probando CREACIÓN de nuevo estudiante...
+ Estudiante creado exitosamente (ID: 1).
+
+4  Probando ACTUALIZACIÓN de estudiante...
+ Estudiante actualizado correctamente.
+
+5  Probando GET ONE...
+ Estudiante obtenido: Nuevo Estudiante
+
+6  Probando ELIMINACIÓN...
+ Estudiante eliminado correctamente.
+
+ Todas las pruebas del módulo STUDENTS completadas correctamente.

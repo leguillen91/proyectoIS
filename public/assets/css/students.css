@@ -1,0 +1,120 @@
+:root {
+  --blue-dark: #003366;
+  --blue-light: #0055A4;
+  --gold: #FFCC00;
+  --gray-bg: #F5F6FA;
+  --white: #FFFFFF;
+}
+
+body {
+  background-color: var(--gray-bg);
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* SIDEBAR */
+.sidebar {
+  background-color: var(--blue-dark);
+  color: var(--white);
+  width: 250px;
+  min-height: 100vh;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar h4 {
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: 700;
+}
+
+.sidebar a {
+  color: var(--white);
+  text-decoration: none;
+  display: block;
+  padding: 0.7rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+.sidebar a:hover, 
+.sidebar a.active {
+  background-color: var(--blue-light);
+  color: var(--gold);
+}
+
+/* MAIN CONTENT */
+.main-content {
+  flex-grow: 1;
+  background-color: var(--gray-bg);
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h2 {
+  color: var(--blue-dark);
+  font-weight: 700;
+}
+
+/* BUTTONS */
+.btn-primary {
+  background-color: var(--blue-light);
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: var(--blue-dark);
+}
+
+/* CARDS Y TABLAS */
+.card {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.table th {
+  background-color: var(--blue-dark);
+  color: var(--white);
+  border: none;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+/* MODAL */
+.modal-header {
+  background-color: var(--blue-light);
+  color: var(--white);
+  border-bottom: none;
+}
+
+.modal-footer {
+  border-top: none;
+}
+
+/* SCROLLBAR PERSONALIZADA */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--blue-light);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--blue-dark);
+}

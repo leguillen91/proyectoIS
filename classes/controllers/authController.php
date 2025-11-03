@@ -27,12 +27,12 @@ class AuthController {
     $user = $this->userModel->findByEmail($email);
 
     if (!$user || (int)$user['status'] !== 1) {
-      return ['ok' => false, 'error' => 'Invalid credentials'];
+      return ['ok' => false, 'error' => 'Credenciales Invalidas'];
     }
 
     $valid = $this->authService->verifyPassword($password, $user['passwordSalt'], $user['passwordHash']);
     if (!$valid) {
-      return ['ok' => false, 'error' => 'Invalid credentials'];
+      return ['ok' => false, 'error' => 'Credenciales Invalidas'];
     }
 
     $permissions = $this->userModel->getPermissionsByRoleId((int)$user['roleId']);
@@ -74,7 +74,7 @@ class AuthController {
     $role = $stmt->fetch();
 
     if (!$role) {
-      return ['ok' => false, 'error' => 'Invalid role'];
+      return ['ok' => false, 'error' => 'Rol invalido'];
     }
 
     $salt = $this->authService->generateSalt();
@@ -84,7 +84,7 @@ class AuthController {
       $userId = $this->userModel->create($fullName, $email, $identityNumber ?? '', $accountNumber, (int)$role['id'], $hash, $salt);
       return ['ok' => true, 'userId' => $userId];
     } catch (Exception $e) {
-      return ['ok' => false, 'error' => 'Email already registered'];
+      return ['ok' => false, 'error' => 'Email ya registrado'];
     }
   }
 }

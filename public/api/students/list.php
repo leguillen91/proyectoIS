@@ -2,8 +2,10 @@
 header('Content-Type: application/json');
 
 require_once __DIR__ . '/../../../bootstrap/init.php';
+require_once __DIR__ . '/../../../classes/controllers/studentController.php';
 require_once __DIR__ . '/../../../middleware/requireAuth.php';
 
 $ctx = requireAuth();
-echo json_encode(['ok' => true, 'user' => $ctx]);
-//Esto lo utiliza el frontend para obtener los datos del usuario autenticado
+
+$controller = new StudentController($pdo);
+$controller->listAll($ctx);

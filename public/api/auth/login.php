@@ -7,7 +7,7 @@ require_once __DIR__ . '/../../../classes/controllers/authController.php';
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method !== 'POST') {
   http_response_code(405);
-  echo json_encode(['error' => 'Method not allowed']);
+  echo json_encode(['error' => 'Metodo no permitido']);
   exit;
 }
 

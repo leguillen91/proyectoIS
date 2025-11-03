@@ -37,8 +37,8 @@ try {
       </div>
       <div class="d-grid gap-3 mt-3">
         <a href="./views/login.html" class="btn btn-primary">Ir al Login</a>
-        <a href="./views/dashboard.html" class="btn btn-outline-secondary">Dashboard</a>
-        <a href="./views/adminPanel.html" class="btn btn-outline-dark">Panel Admin</a>
+        <!--<a href="./views/dashboard.html" class="btn btn-outline-secondary">Dashboard</a>-->
+        <!--<a href="./views/adminPanel.html" class="btn btn-outline-dark">Panel Admin</a>-->
       </div>
     <?php else: ?>
       <div class="alert alert-danger">

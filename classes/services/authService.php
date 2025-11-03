@@ -38,10 +38,4 @@ class AuthService {
     return password_verify($toVerify, $storedHash);
   }
 
-  /**
-   * Permite verificar si el hash requiere ser actualizado (opcional).
-   */
-  public function needsRehash(string $storedHash): bool {
-    return password_needs_rehash($storedHash, PASSWORD_ARGON2ID);
-  }
 }

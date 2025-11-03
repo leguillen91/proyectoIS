@@ -48,29 +48,29 @@ class JwtService {
 
   public function verify(string $jwt): array {
     $parts = explode('.', $jwt);
-    if (count($parts) !== 3) throw new Exception('Invalid token format');
+    if (count($parts) !== 3) throw new Exception('formato invalido de token');
     [$h, $p, $s] = $parts;
 
     // Validar firma
     $calc = $this->base64UrlEncode(hash_hmac('sha256', "$h.$p", $this->secret, true));
-    if (!hash_equals($calc, $s)) throw new Exception('Invalid signature');
+    if (!hash_equals($calc, $s)) throw new Exception('firma invalida');
 
     // Decodificar payload
     $payloadJson = $this->base64UrlDecode($p);
     $payload = json_decode($payloadJson, true);
-    if (!is_array($payload)) throw new Exception('Invalid payload');
+    if (!is_array($payload)) throw new Exception('payload invalido');
 
     // Validar expiración
     if (isset($payload['exp']) && time() > (int)$payload['exp']) {
-      throw new Exception('Token expired');
+      throw new Exception('Token expirado');
     }
 
     // (Opcional) Validar iss/aud si querés más dureza
     if (!empty($payload['iss']) && $payload['iss'] !== $this->issuer) {
-      throw new Exception('Invalid issuer');
+      throw new Exception('issuer invalido');
     }
     if (!empty($payload['aud']) && $payload['aud'] !== $this->audience) {
-      throw new Exception('Invalid audience');
+      throw new Exception('audience invalida');
     }
 
     return $payload;

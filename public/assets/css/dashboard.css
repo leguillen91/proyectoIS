@@ -1,0 +1,30 @@
+:root{
+  --blue-dark:#003366; --blue-light:#0055A4; --gold:#FFCC00;
+  --white:#FFFFFF; --gray-bg:#F5F6FA;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--gray-bg); font-family:'Segoe UI',system-ui,Roboto,Arial,sans-serif;
+  height:100vh; display:flex; overflow:hidden;
+}
+.sidebar{
+  width:250px; min-height:100vh; background:var(--blue-dark); color:var(--white);
+  padding:1.5rem 1rem; display:flex; flex-direction:column; justify-content:space-between;
+}
+.sidebar h4{color:var(--gold); text-align:center; margin-bottom:2rem; font-weight:700}
+.sidebar a{
+  color:var(--white); text-decoration:none; display:block; padding:.7rem 1rem;
+  border-radius:.5rem; transition:.25s; font-weight:500;
+}
+.sidebar a:hover, .sidebar a.active{background:var(--blue-light); color:var(--gold)}
+.main-content{
+  flex:1; padding:2rem; overflow:auto;
+}
+.header h2{color:var(--blue-dark); font-weight:700; margin-bottom:.25rem}
+.card{
+  border:none; border-radius:1rem; box-shadow:0 4px 12px rgba(0,0,0,.1);
+}
+.metric{font-weight:800}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-thumb{background:var(--blue-light); border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--blue-dark)}

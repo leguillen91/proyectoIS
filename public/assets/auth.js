@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       localStorage.removeItem("accessToken");
-      window.location.href = "../views/login.html";
+      window.location.href = "./../index.php";
     });
   }
 
@@ -94,7 +94,7 @@ async function loadAdminPanel() {
 
   const data = await res.json();
   if (!res.ok || !data.ok) {
-    alert("Acceso denegado");
+    alert("Acceso denegado, no tienes permiso para realizar esta acción.");
     return (window.location.href = "../views/login.html");
   }
 

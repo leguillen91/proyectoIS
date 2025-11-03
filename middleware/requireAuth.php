@@ -1,5 +1,5 @@
 <?php
-// middleware/requireAuth.php
+//“Verificar que el usuario esté autenticado y devolver su contexto (ID, email, rol, permisos).”
 
 require_once __DIR__ . '/../config/connection.php';
 $config = require __DIR__ . '/../config/env.php';
@@ -39,7 +39,7 @@ function requireAuth(): array {
 
   if (!$token) {
     http_response_code(401);
-    echo json_encode(['error' => 'Missing token']);
+    echo json_encode(['error' => 'Token Faltante']);
     exit;
   }
 
@@ -51,21 +51,22 @@ function requireAuth(): array {
       $stmt->execute([$payload['jti']]);
       if ($stmt->fetch()) {
         http_response_code(401);
-        echo json_encode(['error' => 'Token has been revoked']);
+        echo json_encode(['error' => 'Token revocado']);
         exit;
       }
     }
   } catch (Exception $e) {
     http_response_code(401);
-    echo json_encode(['error' => 'Invalid or expired token', 'detail' => $e->getMessage()]);
+    echo json_encode(['error' => 'Token invalido o expirado', 'detail' => $e->getMessage()]);
     exit;
   }
+  //El token se verifica y revoca en cada logout para impedir que un token antiguo o robado siga siendo válido
 
   // Buscar usuario por ID del token
   $user = $userModel->findById((int)$payload['sub']);
   if (!$user || (int)$user['status'] !== 1) {
     http_response_code(401);
-    echo json_encode(['error' => 'User not found or inactive']);
+    echo json_encode(['error' => 'Usuario no encontrado o inactivo']);
     exit;
   }
 

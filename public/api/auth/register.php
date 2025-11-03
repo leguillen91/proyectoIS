@@ -41,6 +41,6 @@ if (!$result['ok']) {
 
 echo json_encode([
   'ok' => true,
-  'message' => 'User registered successfully',
+  'message' => 'Usuario registrado con éxito',
   'userId' => $result['userId']
 ]);
