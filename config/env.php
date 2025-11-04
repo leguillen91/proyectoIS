@@ -8,8 +8,8 @@ return [
     'host' => '127.0.0.1',
     'port' => 3306,
     'name' => 'projectUnahSistems',
-    'user' => 'milton',
-    'pass' => '12345',   // recuerden cambiarlo segun su entorno
+    'user' => 'root',
+    'pass' => 'Sistemas_12@',   // recuerden cambiarlo segun su entorno
     'charset' => 'utf8mb4'
   ],
   
