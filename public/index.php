@@ -1,57 +1,48 @@
 <?php
 // public/index.php
-// Página inicial del sistema Project UNAH Systems
-
 require_once __DIR__ . '/../bootstrap/init.php';
 
 $conexionOk = false;
-
 try {
-  // Verificar conexión PDO
   $stmt = $pdo->query('SELECT 1');
   $conexionOk = $stmt ? true : false;
 } catch (Exception $e) {
   $conexionOk = false;
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Project UNAH Systems</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <style>
-    body { background: #f8f9fa; }
-    .card { border-radius: 1rem; }
-  </style>
+  <title>Project UNAH Systems - Inicio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/index.css">
 </head>
-<body class="d-flex justify-content-center align-items-center vh-100">
-  <div class="card shadow-lg p-5 text-center" style="width: 500px;">
-    <h2 class="mb-3"> Project UNAH Systems</h2>
-    <p class="text-muted mb-4">Sistema de gestión universitaria desarrollado en PHP puro</p>
+<body>
+  <div class="overlay d-flex flex-column justify-content-center align-items-center text-center text-white">
+    <div class="container">
+      <img src="./assets/unah_logo.png" alt="UNAH" width="90" class="mb-3" />
+      <h5 class="fw-light mb-2">Universidad Nacional Autónoma de Honduras</h5>
+      <h1 class="fw-bold mb-4">Bienvenido(a) al Portal Universitario</h1>
 
-    <?php if ($conexionOk): ?>
-      <div class="alert alert-success">
-         Conexión a la base de datos establecida correctamente.
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a href="./views/login.html" class="btn btn-warning fw-bold px-4 py-2 shadow">
+          <i class="bi bi-person-fill"></i> Acceso al portal
+        </a>
       </div>
-      <div class="d-grid gap-3 mt-3">
-        <a href="./views/login.html" class="btn btn-primary">Ir al Login</a>
-        <!--<a href="./views/dashboard.html" class="btn btn-outline-secondary">Dashboard</a>-->
-        <!--<a href="./views/adminPanel.html" class="btn btn-outline-dark">Panel Admin</a>-->
-      </div>
-    <?php else: ?>
-      <div class="alert alert-danger">
-         Error al conectar con la base de datos o entorno.
-      </div>
-      <p class="text-muted">Verifica tu archivo <code>bootstrap/init.php</code> y la configuración en <code>config/connection.php</code>.</p>
-    <?php endif; ?>
 
-    <hr class="mt-4">
-    <small class="text-muted">
-        Servidor local activo <br>
-      <?= date('d/m/Y H:i:s') ?>
-    </small>
+      <p class="mt-5 text-light small">
+        <?= $conexionOk
+          ? '<span class="text-success fw-bold"> Conexión a la base de datos establecida</span>'
+          : '<span class="text-danger fw-bold"> Error en la conexión con la base de datos</span>' ?>
+      </p>
+      <p class="text-light small mb-0">
+        <strong>Project UNAH Systems</strong> © <?= date('Y') ?> - Desarrollado por Jhonny Hernández
+      </p>
+    </div>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Crear Usuario - Project UNAH Systems</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/css/dashboard.css">
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div>
+      <h4>Project UNAH</h4>
+      <a href="./dashboard.html"> Inicio</a>
+      <a href="./createUser.html" class="active"> Crear Usuario</a>
+    </div>
+    <button id="btnLogout" class="btn btn-warning text-dark fw-bold w-100 mt-3">Cerrar sesión</button>
+  </div>
+
+  <!-- Main -->
+  <div class="main-content">
+    <div class="header d-flex justify-content-between align-items-center">
+      <h2>Crear nuevo usuario</h2>
+      <a href="./dashboard.html" class="btn btn-outline-secondary">
+         Regresar al Dashboard
+      </a>
+    </div>
+
+    <div class="card p-4 shadow-sm mt-3">
+      <form id="createUserForm" class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Nombre completo</label>
+          <input type="text" id="fullName" class="form-control" placeholder="Ej. Juan Pérez" required>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Correo institucional</label>
+          <input type="email" id="email" class="form-control" placeholder="usuario@unah.hn" required>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Contraseña</label>
+          <input type="password" id="password" class="form-control" placeholder="Contraseña temporal" required>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Rol de usuario</label>
+          <select id="role" class="form-select" required>
+            <option value="">Seleccionar...</option>
+            <option value="student">Estudiante</option>
+            <option value="teacher">Docente</option>
+            <option value="coordinator">Coordinador</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+
+        <div class="col-md-12 text-end mt-4">
+          <button type="submit" class="btn btn-primary px-4 me-2">Crear usuario</button>
+          <a href="./dashboard.html" class="btn btn-outline-dark px-4">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../assets/js/createUser.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
