@@ -1,0 +1,59 @@
+DELIMITER $$
+
+/* ---------------------------------------------
+   Asignar revisor automáticamente
+---------------------------------------------- */
+
+DROP PROCEDURE IF EXISTS recursos.sp_sw_asignar_revisor_auto $$
+CREATE PROCEDURE recursos.sp_sw_asignar_revisor_auto(IN p_id_meta INT UNSIGNED)
+BEGIN
+  DECLARE v_idCarrera   INT UNSIGNED;
+  DECLARE v_asignado    INT UNSIGNED;
+  DECLARE v_tipo        VARCHAR(20);
+
+  /* Carrera del recurso */
+  SELECT rb.id_departamento
+    INTO v_idCarrera
+  FROM recurso_software_meta m
+  JOIN recurso_biblioteca rb ON rb.id_recurso_biblioteca = m.id_recurso_biblioteca
+  WHERE m.id_meta = p_id_meta;
+
+  /* Intentar con Jefe de Depto de esa carrera (activo) */
+  SELECT j.idPersona
+    INTO v_asignado
+  FROM identidad.jefeDepartamento j
+  WHERE j.idDepartamentoAcademico = v_idCarrera
+    AND j.fechaFinCargo IS NULL
+  ORDER BY j.fechaInicioCargo DESC
+  LIMIT 1;
+
+  IF v_asignado IS NOT NULL THEN
+    SET v_tipo := 'JEFE_DEPTO';
+  ELSE
+    /* Coordinador de área Software con menos carga */
+    SELECT c.idPersona
+      INTO v_asignado
+    FROM identidad.coordinador c
+    WHERE c.area='Software' AND c.activo=1
+    ORDER BY (
+       SELECT COUNT(*)
+       FROM recurso_software_revision r
+       WHERE r.asignadoA = c.idPersona
+    ) ASC, c.idPersona ASC
+    LIMIT 1;
+
+    SET v_tipo := 'COORDINADOR';
+  END IF;
+
+  /* Registrar asignación (estado Pendiente) */
+  INSERT INTO recurso_software_revision (id_meta, asignadoA, tipoRevisor, comentario, estado)
+  VALUES (p_id_meta, v_asignado, v_tipo, 'Asignación automática', 'Pendiente');
+
+  /* Mantener meta en Pendiente */
+  UPDATE recurso_software_meta
+     SET estado='Pendiente'
+   WHERE id_meta = p_id_meta;
+END $$
+
+
+DELIMITER ;
