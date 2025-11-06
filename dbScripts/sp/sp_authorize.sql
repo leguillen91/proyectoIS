@@ -3,14 +3,14 @@
    Envío al backend: email (usuario)
    Backend hace:
      - CALL spGetUserContext(:email)
-     - Parte1: usuario+perfil; Parte2: permisos (permissionCode)
+     -usuario+perfil; permisos (permissionCode)
 ======================================================= */
 DROP PROCEDURE IF EXISTS spGetUserContext $$
 CREATE PROCEDURE spGetUserContext(
   IN pEmail VARCHAR(120)
 )
 BEGIN
-  /* Parte 1 */
+  /* usuario+perfil */
   SELECT
     c.idCredenciales, per.idPersona,
     CONCAT(per.nombres,' ',per.apellidos) AS fullName,
@@ -26,7 +26,7 @@ BEGIN
   WHERE c.usuario = pEmail
   LIMIT 1;
 
-  /* Parte 2 */
+  /* permisos (permissionCode) */
   SELECT DISTINCT pm.permissionCode
   FROM credenciales c
   JOIN credencialesXperfil cxp ON cxp.idCredenciales=c.idCredenciales
