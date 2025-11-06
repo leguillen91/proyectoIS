@@ -448,78 +448,189 @@ LIMIT 5;
 /* ======================================================================
    10. LIBRARY & MUSIC RESOURCES
    ----------------------------------------------------------------------*/
+
 USE resources;
 
--- Tags
-INSERT IGNORE INTO tags (name, description)
+/* ---------------------------------------------
+   Tipos de recurso y licencia base
+--------------------------------------------- */
+INSERT IGNORE INTO resource_type (code, description) VALUES
+ ('PDF','Portable Document Format'),
+ ('AUDIO','Audio file (MP3/WAV)'),
+ ('SCORE','Musical score (PDF/MSCZ/MSCX/MXL)'),
+ ('VIDEO','Video file'),
+ ('IMAGE','Image file'),
+ ('ARCHIVE','Compressed archive'),
+ ('CODE','Source/project code');
+
+INSERT IGNORE INTO license (code, name, url) VALUES
+ ('UNAH-INT','Uso interno UNAH', NULL);
+
+/* ---------------------------------------------
+   Tags 
+--------------------------------------------- */
+INSERT IGNORE INTO tag (name, description) VALUES
+ ('Base de Datos','Material relacionado con bases de datos y almacenamiento'),
+ ('Programación','Libros y artículos de programación de software'),
+ ('Redes','Recursos sobre redes de computadores'),
+ ('Matemáticas','Libros de matemáticas básicas y avanzadas'),
+ ('Psicología','Material de psicología general');
+
+/* =======================================================
+   Biblioteca (PDF – no descargable)
+======================================================= */
+
+/* Recursos */
+INSERT INTO resource
+  (title, description, module, resourceTypeId, careerId, courseId, licenseId, visibility, downloadPolicy, status)
 VALUES
-  ('Base de Datos','Material relacionado con bases de datos y almacenamiento'),
-  ('Programación','Libros y artículos de programación de software'),
-  ('Redes','Recursos sobre redes de computadores'),
-  ('Matemáticas','Libros de matemáticas básicas y avanzadas'),
-  ('Psicología','Material de psicología general');
+  (
+    'Fundamentos de Sistemas Operativos', 'Recurso académico de referencia',
+    'Library', (SELECT idResourceType FROM resource_type WHERE code='PDF'),
+    (SELECT idCareer FROM academic.career WHERE careerCode='IS-01'),
+    (SELECT idCourse  FROM academic.course  WHERE courseCode='IS-410'),
+    (SELECT idLicense FROM license WHERE code='UNAH-INT'),
+    'UniversityOnly','ViewOnly','Submitted'
+  ),
+  (
+    'Cálculo I para Ingenierías', 'Recurso académico de referencia',
+    'Library', (SELECT idResourceType FROM resource_type WHERE code='PDF'),
+    (SELECT idCareer FROM academic.career WHERE careerCode='IS-01'),
+    (SELECT idCourse  FROM academic.course  WHERE courseCode='MM-110'),
+    (SELECT idLicense FROM license WHERE code='UNAH-INT'),
+    'UniversityOnly','ViewOnly','Submitted'
+  ),
+  (
+    'Introducción al Derecho Hondureño', 'Recurso académico de referencia',
+    'Library', (SELECT idResourceType FROM resource_type WHERE code='PDF'),
+    (SELECT idCareer FROM academic.career WHERE careerCode='DERE-01'),
+    (SELECT idCourse  FROM academic.course  WHERE courseCode='DER-101'),
+    (SELECT idLicense FROM license WHERE code='UNAH-INT'),
+    'UniversityOnly','ViewOnly','Submitted'
+  ),
+  (
+    'Principios de Psicología', 'Recurso académico de referencia',
+    'Library', (SELECT idResourceType FROM resource_type WHERE code='PDF'),
+    (SELECT idCareer FROM academic.career WHERE careerCode='PSI-01'),
+    (SELECT idCourse  FROM academic.course  WHERE courseCode='PSI-101'),
+    (SELECT idLicense FROM license WHERE code='UNAH-INT'),
+    'UniversityOnly','ViewOnly','Submitted'
+  ),
+  (
+    'Atlas de Anatomía Humana', 'Recurso académico de referencia',
+    'Library', (SELECT idResourceType FROM resource_type WHERE code='PDF'),
+    (SELECT idCareer FROM academic.career WHERE careerCode='MED-01'),
+    (SELECT idCourse  FROM academic.course  WHERE courseCode='MED-101'),
+    (SELECT idLicense FROM license WHERE code='UNAH-INT'),
+    'UniversityOnly','ViewOnly','Submitted'
+  );
 
--- Library
-INSERT INTO libraryResource (courseId, departmentId, title, author, publishYear, description, resourceType, sizeBytes)
-SELECT c.id, p.id,
-       CASE c.courseCode
-         WHEN 'IS-410' THEN 'Fundamentos de Sistemas Operativos'
-         WHEN 'MM-110' THEN 'Cálculo I para Ingenierías'
-         WHEN 'DER-101' THEN 'Introducción al Derecho Hondureño'
-         WHEN 'PSI-101' THEN 'Principios de Psicología'
-         WHEN 'MED-101' THEN 'Atlas de Anatomía Humana'
+/* Archivos primarios (PDF – BLOB) */
+INSERT INTO resource_file (resourceId, fileKind, fileBlob, originalFilename, mimeType, sizeBytes, pages)
+SELECT r.idResource, 'Primary', 0x25,
+       CONCAT(REPLACE(r.title,' ','_'),'.pdf') AS originalFilename,
+       'application/pdf', 1048576, NULL
+FROM resource r
+WHERE r.module='Library';
+
+/* Autores  */
+INSERT INTO resource_author (resourceId, authorName, role)
+SELECT r.idResource,
+       CASE r.title
+         WHEN 'Fundamentos de Sistemas Operativos' THEN 'A. Silberschatz'
+         WHEN 'Cálculo I para Ingenierías'         THEN 'James Stewart'
+         WHEN 'Introducción al Derecho Hondureño'  THEN 'R. Aguilar'
+         WHEN 'Principios de Psicología'           THEN 'David Myers'
+         WHEN 'Atlas de Anatomía Humana'           THEN 'Frank Netter'
        END,
-       CASE c.courseCode
-         WHEN 'IS-410' THEN 'A. Silberschatz'
-         WHEN 'MM-110' THEN 'James Stewart'
-         WHEN 'DER-101' THEN 'R. Aguilar'
-         WHEN 'PSI-101' THEN 'David Myers'
-         WHEN 'MED-101' THEN 'Frank Netter'
-       END,
-       2020,'Recurso académico de referencia','Book',1048576
-FROM academic.course c
-JOIN academic.program p ON p.programCode IN ('IS-01','DERE-01','PSI-01','MED-01','ARC-01')
-WHERE c.courseCode IN ('IS-410','MM-110','DER-101','PSI-101','MED-101')
-LIMIT 5;
+       'Author'
+FROM resource r
+WHERE r.module='Library';
 
-INSERT INTO libraryResourceTag (libraryResourceId, tagId)
-SELECT lr.id, t.id
-FROM libraryResource lr
-JOIN tags t
-WHERE (lr.title LIKE '%Sistemas Operativos%' AND t.name='Programación') OR
-      (lr.title LIKE '%Cálculo I%'           AND t.name='Matemáticas') OR
-      (lr.title LIKE '%Derecho Hondureño%'   AND t.name='Base de Datos') OR
-      (lr.title LIKE '%Psicología%'          AND t.name='Psicología') OR
-      (lr.title LIKE '%Anatomía Humana%'     AND t.name='Redes')
-LIMIT 5;
+/* Etiquetas por título */
+INSERT INTO resource_tag (resourceId, tagId)
+SELECT r.idResource, t.idTag
+FROM resource r
+JOIN tag t
+  ON (r.title LIKE '%Sistemas Operativos%' AND t.name='Programación')
+  OR (r.title LIKE '%Cálculo I%'           AND t.name='Matemáticas')
+  OR (r.title LIKE '%Derecho Hondureño%'   AND t.name='Base de Datos')
+  OR (r.title LIKE '%Psicología%'          AND t.name='Psicología')
+  OR (r.title LIKE '%Anatomía Humana%'     AND t.name='Redes')
+WHERE r.module='Library';
 
--- Music
-INSERT INTO musicResource (courseId, departmentId, title, composer, author, publishYear, description, resourceType, resourceFormat, sizeBytes, durationSeconds)
-SELECT c.id, p.id,
-       CASE c.courseCode
-         WHEN 'IS-110' THEN 'Canción de Programadores'
-         WHEN 'SC-101' THEN 'Himno a la Sociología'
-         WHEN 'PSI-101' THEN 'Melodía de la Mente'
-         WHEN 'MED-101' THEN 'Ritmo del Corazón'
-         WHEN 'ARC-101' THEN 'Sinfonía de la Arquitectura'
-       END,
-       NULL,'Autor Desconocido',2019,'Pieza musical educativa','Audio','MP3',512000,180
-FROM academic.course c
-JOIN academic.program p ON p.programCode IN ('IS-01','DERE-01','PSI-01','MED-01','ARC-01')
-WHERE c.courseCode IN ('IS-110','SC-101','PSI-101','MED-101','ARC-101')
-LIMIT 5;
+/* =======================================================
+   Música (MP3 – no descargable)
+======================================================= */
+INSERT INTO resource
+  (title, description, module, resourceTypeId, careerId, courseId, licenseId, visibility, downloadPolicy, status)
+VALUES
+  (
+    'Canción de Programadores','Pieza musical educativa',
+    'Music', (SELECT idResourceType FROM resource_type WHERE code='AUDIO'),
+    (SELECT idCareer FROM academic.career WHERE careerCode='IS-01'),
+    (SELECT idCourse  FROM academic.course  WHERE courseCode='IS-110'),
+    (SELECT idLicense FROM license WHERE code='UNAH-INT'),
+    'UniversityOnly','ViewOnly','Submitted'
+  ),
+  (
+    'Himno a la Sociología','Pieza musical educativa',
+    'Music', (SELECT idResourceType FROM resource_type WHERE code='AUDIO'),
+    (SELECT idCareer FROM academic.career WHERE careerCode='IS-01'), -- o la carrera que corresponda en tu plan
+    (SELECT idCourse  FROM academic.course  WHERE courseCode='SC-101'),
+    (SELECT idLicense FROM license WHERE code='UNAH-INT'),
+    'UniversityOnly','ViewOnly','Submitted'
+  ),
+  (
+    'Melodía de la Mente','Pieza musical educativa',
+    'Music', (SELECT idResourceType FROM resource_type WHERE code='AUDIO'),
+    (SELECT idCareer FROM academic.career WHERE careerCode='PSI-01'),
+    (SELECT idCourse  FROM academic.course  WHERE courseCode='PSI-101'),
+    (SELECT idLicense FROM license WHERE code='UNAH-INT'),
+    'UniversityOnly','ViewOnly','Submitted'
+  ),
+  (
+    'Ritmo del Corazón','Pieza musical educativa',
+    'Music', (SELECT idResourceType FROM resource_type WHERE code='AUDIO'),
+    (SELECT idCareer FROM academic.career WHERE careerCode='MED-01'),
+    (SELECT idCourse  FROM academic.course  WHERE courseCode='MED-101'),
+    (SELECT idLicense FROM license WHERE code='UNAH-INT'),
+    'UniversityOnly','ViewOnly','Submitted'
+  ),
+  (
+    'Sinfonía de la Arquitectura','Pieza musical educativa',
+    'Music', (SELECT idResourceType FROM resource_type WHERE code='AUDIO'),
+    (SELECT idCareer FROM academic.career WHERE careerCode='ARC-01'),
+    (SELECT idCourse  FROM academic.course  WHERE courseCode='ARC-101'),
+    (SELECT idLicense FROM license WHERE code='UNAH-INT'),
+    'UniversityOnly','ViewOnly','Submitted'
+  );
 
-INSERT INTO musicResourceTag (musicResourceId, tagId)
-SELECT mr.id, t.id
-FROM musicResource mr
-JOIN tags t
-WHERE (mr.title LIKE '%Programadores%' AND t.name='Programación') OR
-      (mr.title LIKE '%Sociología%'    AND t.name='Psicología') OR
-      (mr.title LIKE '%Mente%'         AND t.name='Psicología') OR
-      (mr.title LIKE '%Corazón%'       AND t.name='Redes') OR
-      (mr.title LIKE '%Arquitectura%'  AND t.name='Matemáticas')
-LIMIT 5;
+/* Archivos (MP3 – BLOB) */
+INSERT INTO resource_file (resourceId, fileKind, fileBlob, originalFilename, mimeType, sizeBytes, durationSeconds)
+SELECT r.idResource, 'Primary', 0x25,
+       CONCAT(REPLACE(r.title,' ','_'),'.mp3'),
+       'audio/mpeg', 512000, 180
+FROM resource r
+WHERE r.module='Music';
 
+/* Autores de música */
+INSERT INTO resource_author (resourceId, authorName, role)
+SELECT r.idResource, 'Autor Desconocido', 'Author'
+FROM resource r
+WHERE r.module='Music';
+
+/* Tags por título */
+INSERT INTO resource_tag (resourceId, tagId)
+SELECT r.idResource, t.idTag
+FROM resource r
+JOIN tag t
+  ON (r.title LIKE '%Programadores%' AND t.name='Programación')
+  OR (r.title LIKE '%Sociología%'    AND t.name='Psicología')
+  OR (r.title LIKE '%Mente%'         AND t.name='Psicología')
+  OR (r.title LIKE '%Corazón%'       AND t.name='Redes')
+  OR (r.title LIKE '%Arquitectura%'  AND t.name='Matemáticas')
+WHERE r.module='Music';
 
 
 /* ======================================================================

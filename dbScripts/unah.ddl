@@ -388,75 +388,153 @@ CREATE TABLE sectionRequest (
 /* =======================================================
    RESOURCES
 ======================================================= */
+
 USE resources;
 
-CREATE TABLE tags (
-  id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  name        VARCHAR(60) NOT NULL,
-  description VARCHAR(255) NULL,
-  UNIQUE KEY uq_tag_name (name)
+/* ---------------------------------------------
+   Catálogos
+--------------------------------------------- */
+CREATE TABLE resource_type (
+  idResourceType   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  code             VARCHAR(20)  NOT NULL UNIQUE,      -- Como ejemplo tenemos de PDF, AUDIO, SCORE, CODE, etc...
+  description      VARCHAR(120) NULL
 ) ENGINE=InnoDB;
 
-/* Biblioteca */
-CREATE TABLE libraryResource (
-  id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  courseId        INT UNSIGNED NULL, /* academic.course */
-  departmentId    INT UNSIGNED NULL, /* academic.program */
-  title           VARCHAR(100) NOT NULL,
-  author          VARCHAR(100) NOT NULL,
-  publicationYear YEAR NULL,
-  description     VARCHAR(255) NULL,
-  resourceType    VARCHAR(45) NOT NULL,  /* Libro, Artículo, etc. */
-  pdfFile         LONGBLOB NULL,
-  sizeBytes       INT UNSIGNED NULL,
-  uploadedAt      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  permissions     VARCHAR(45) NULL,
-  KEY fk_lr_course (courseId),
-  KEY fk_lr_dept   (departmentId),
-  CONSTRAINT fk_lr_course FOREIGN KEY (courseId)     REFERENCES academic.course(id),
-  CONSTRAINT fk_lr_dept   FOREIGN KEY (departmentId) REFERENCES academic.program(id)
+CREATE TABLE license (
+  idLicense   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  code        VARCHAR(30)  NOT NULL UNIQUE,
+  name        VARCHAR(120) NOT NULL,
+  url         VARCHAR(255) NULL
 ) ENGINE=InnoDB;
 
-CREATE TABLE libraryResourceTag (
+CREATE TABLE tag (
+  idTag        INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name         VARCHAR(60)  NOT NULL UNIQUE,
+  description  VARCHAR(255) NULL
+) ENGINE=InnoDB;
+
+/* ---------------------------------------------
+   Recurso tabla principal
+--------------------------------------------- */
+CREATE TABLE resource (
+  idResource        INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  title             VARCHAR(150) NOT NULL,
+  description       VARCHAR(255) NULL,
+  module            ENUM('Software','Music','Library') NOT NULL,  -- plataforma a la que pertenece
+  resourceTypeId    INT UNSIGNED NOT NULL,                        -- FK a tipo (PDF, AUDIO, etc.)
+  createdByPersonId INT UNSIGNED NULL,                            -- FK opcional a identity.person
+  careerId          INT UNSIGNED NULL,                            -- FK opcional a academic.career
+  courseId          INT UNSIGNED NULL,                            -- FK opcional a academic.course (asignatura)
+  sectionId         INT UNSIGNED NULL,                            -- FK opcional a enrollment.section
+  licenseId         INT UNSIGNED NULL,                            -- FK opcional
+  visibility        ENUM('UniversityOnly','Public') NOT NULL DEFAULT 'UniversityOnly',
+  downloadPolicy    ENUM('ViewOnly','DownloadAllowed') NOT NULL DEFAULT 'ViewOnly',
+  status            ENUM('Draft','Submitted','UnderReview','Approved','NeedsCorrection','Rejected','Archived')
+                    NOT NULL DEFAULT 'Submitted',
+  createdAt         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updatedAt         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  KEY idx_res_mod_status (module, status),
+  KEY idx_res_course (courseId),
+  KEY idx_res_career (careerId),
+
+  CONSTRAINT fk_res_type
+    FOREIGN KEY (resourceTypeId) REFERENCES resource_type(idResourceType),
+
+  CONSTRAINT fk_res_license
+    FOREIGN KEY (licenseId) REFERENCES license(idLicense),
+
+  
+  CONSTRAINT fk_res_person    FOREIGN KEY (createdByPersonId) REFERENCES identity.person(idPerson),
+  CONSTRAINT fk_res_career    FOREIGN KEY (careerId)          REFERENCES academic.career(idCareer),
+  CONSTRAINT fk_res_course    FOREIGN KEY (courseId)          REFERENCES academic.course(idCourse),
+  CONSTRAINT fk_res_section   FOREIGN KEY (sectionId)         REFERENCES enrollment.section(idSection)
+) ENGINE=InnoDB;
+
+/* ---------------------------------------------
+   Archivos del recurso (BLOBs)
+--------------------------------------------- */
+CREATE TABLE resource_file (
+  idResourceFile   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  resourceId       INT UNSIGNED NOT NULL,
+  fileKind         ENUM('Primary','Readme','Preview') NOT NULL DEFAULT 'Primary',
+  fileBlob         LONGBLOB NULL,                    -- contenido binario
+  originalFilename VARCHAR(150) NULL,
+  mimeType         VARCHAR(80)  NULL,
+  sizeBytes        INT UNSIGNED NULL,
+  pages            INT UNSIGNED NULL,                -- PDF
+  durationSeconds  INT UNSIGNED NULL,                -- audio/video
+  checksum         VARCHAR(64) NULL,                 -- opcional
+  createdAt        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  KEY idx_rf_res (resourceId),
+  CONSTRAINT fk_rf_res FOREIGN KEY (resourceId) REFERENCES resource(idResource) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+/* ---------------------------------------------
+   Autores/Editorial 
+--------------------------------------------- */
+CREATE TABLE resource_author (
+  idResourceAuthor INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  resourceId       INT UNSIGNED NOT NULL,
+  personId         INT UNSIGNED NULL,  -- si el autor existe en identity.person
+  authorName       VARCHAR(120) NULL,  -- si es autor externo (texto)
+  role             ENUM('Author','CoAuthor','Composer','Editor') NOT NULL DEFAULT 'Author',
+
+  KEY idx_ra_res (resourceId),
+  CONSTRAINT fk_ra_res    FOREIGN KEY (resourceId) REFERENCES resource(idResource) ON DELETE CASCADE,
+  CONSTRAINT fk_ra_person FOREIGN KEY (personId)   REFERENCES identity.person(idPerson)
+) ENGINE=InnoDB;
+
+/* ---------------------------------------------
+   Etiquetas (N:M)
+--------------------------------------------- */
+CREATE TABLE resource_tag (
   resourceId INT UNSIGNED NOT NULL,
   tagId      INT UNSIGNED NOT NULL,
-  PRIMARY KEY (resourceId,tagId),
-  KEY fk_lrt_tag (tagId),
-  CONSTRAINT fk_lrt_res FOREIGN KEY (resourceId) REFERENCES libraryResource(id),
-  CONSTRAINT fk_lrt_tag FOREIGN KEY (tagId)      REFERENCES tags(id)
+  PRIMARY KEY (resourceId, tagId),
+  KEY idx_rt_tag (tagId),
+  CONSTRAINT fk_rt_res FOREIGN KEY (resourceId) REFERENCES resource(idResource) ON DELETE CASCADE,
+  CONSTRAINT fk_rt_tag FOREIGN KEY (tagId)      REFERENCES tag(idTag)
 ) ENGINE=InnoDB;
 
-/* Música */
-CREATE TABLE musicResource (
-  id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  courseId        INT UNSIGNED NULL, /* academic.course */
-  departmentId    INT UNSIGNED NULL, /* academic.program */
-  title           VARCHAR(100) NOT NULL,
-  composer        VARCHAR(100) NULL,
-  author          VARCHAR(100) NOT NULL,
-  publicationYear YEAR NULL,
-  description     VARCHAR(255) NULL,
-  resourceType    VARCHAR(45) NOT NULL,   /* Partitura, Audio, etc. */
-  resourceFormat  VARCHAR(45) NOT NULL,   /* PDF, MP3, etc. */
-  sizeBytes       INT UNSIGNED NULL,
-  uploadedAt      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  durationSeconds INT UNSIGNED NULL,
-  pdfFile         LONGBLOB NULL,
-  audioFile       LONGBLOB NULL,
-  scoreFile       VARCHAR(100) NULL,
-  KEY fk_mr_course (courseId),
-  KEY fk_mr_dept   (departmentId),
-  CONSTRAINT fk_mr_course FOREIGN KEY (courseId)     REFERENCES academic.course(id),
-  CONSTRAINT fk_mr_dept   FOREIGN KEY (departmentId) REFERENCES academic.program(id)
+/* ---------------------------------------------
+   Alcance adicional (si un recurso aplica a varios ámbitos)
+--------------------------------------------- */
+CREATE TABLE resource_scope (
+  idResourceScope INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  resourceId      INT UNSIGNED NOT NULL,
+  scopeType       ENUM('Career','Course','Section','Campus') NOT NULL,
+  scopeId         INT UNSIGNED NOT NULL,
+  KEY idx_rs_res (resourceId),
+  CONSTRAINT fk_rs_res FOREIGN KEY (resourceId) REFERENCES resource(idResource) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-CREATE TABLE musicResourceTag (
-  resourceId INT UNSIGNED NOT NULL,
-  tagId      INT UNSIGNED NOT NULL,
-  PRIMARY KEY (resourceId,tagId),
-  KEY fk_mrt_tag (tagId),
-  CONSTRAINT fk_mrt_res FOREIGN KEY (resourceId) REFERENCES musicResource(id),
-  CONSTRAINT fk_mrt_tag FOREIGN KEY (tagId)      REFERENCES tags(id)
+/* ---------------------------------------------
+   Revisión 
+--------------------------------------------- */
+CREATE TABLE review_assignment (
+  idAssignment       INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  resourceId         INT UNSIGNED NOT NULL,
+  assignedToPersonId INT UNSIGNED NOT NULL,   -- Jefe o Coordinador
+  assignedRole       ENUM('DEPT_HEAD','COORDINATOR') NOT NULL,
+  assignedAt         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  active             TINYINT(1) NOT NULL DEFAULT 1,
+  KEY idx_ra2_res (resourceId),
+  CONSTRAINT fk_ras_res    FOREIGN KEY (resourceId)         REFERENCES resource(idResource) ON DELETE CASCADE,
+  CONSTRAINT fk_ras_person FOREIGN KEY (assignedToPersonId) REFERENCES identity.person(idPerson)
+) ENGINE=InnoDB;
+
+CREATE TABLE review (
+  idReview          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  resourceId        INT UNSIGNED NOT NULL,
+  reviewerPersonId  INT UNSIGNED NOT NULL,
+  decision          ENUM('Approved','NeedsCorrection','Rejected') NOT NULL,
+  comments          VARCHAR(255) NULL,
+  reviewedAt        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY idx_rev_res (resourceId),
+  CONSTRAINT fk_rev_res   FOREIGN KEY (resourceId)       REFERENCES resource(idResource) ON DELETE CASCADE,
+  CONSTRAINT fk_rev_user  FOREIGN KEY (reviewerPersonId) REFERENCES identity.person(idPerson)
 ) ENGINE=InnoDB;
 
 

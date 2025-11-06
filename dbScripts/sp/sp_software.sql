@@ -1,58 +1,82 @@
 DELIMITER $$
 
 /* ---------------------------------------------
-   resources.sp_sw_assign_reviewer_auto
-   - Asigna Jefe de Depto de la carrera del recurso,
-     si no hay, elige Coordinator(area='Software') con menos carga.
+   - Asigna automáticamente revisor para recursos del módulo Software.
 ---------------------------------------------- */
 DROP PROCEDURE IF EXISTS resources.sp_sw_assign_reviewer_auto $$
-CREATE PROCEDURE resources.sp_sw_assign_reviewer_auto(IN p_id_meta INT UNSIGNED)
+CREATE PROCEDURE resources.sp_sw_assign_reviewer_auto(IN p_resource_id INT UNSIGNED)
 BEGIN
-  DECLARE v_idProgram INT UNSIGNED;
-  DECLARE v_assigned  INT UNSIGNED;
-  DECLARE v_type      VARCHAR(20);
+  DECLARE v_exists   INT DEFAULT 0;
+  DECLARE v_module   VARCHAR(20);
+  DECLARE v_assigned INT UNSIGNED;
+  DECLARE v_role     VARCHAR(20);
 
-  /* Program del recurso (desde library_resource asociado a la meta) */
-  SELECT lr.idProgram
-    INTO v_idProgram
-  FROM resources.software_resource_meta m
-  JOIN resources.library_resource lr ON lr.idLibraryResource = m.idLibraryResource
-  WHERE m.idMeta = p_id_meta;
+  /* Validar recurso y bloquear fila para update */
+  SELECT COUNT(*), r.module
+    INTO v_exists, v_module
+  FROM resources.resource r
+  WHERE r.idResource = p_resource_id
+  FOR UPDATE;
 
-  /* Intentar con DepartmentHead activo de ese Program */
+  IF v_exists = 0 THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Resource not found';
+  END IF;
+
+  /* Exigiendo que sea del modulo de software */
+   IF v_module <> 'Software' THEN
+     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Resource is not from Software module';
+   END IF;
+
+  /* DepartmentHead activo con MENOR carga de asignaciones activas */
   SELECT dh.idPerson
     INTO v_assigned
   FROM identity.departmentHead dh
-  WHERE dh.idAcademicDepartment = v_idProgram
-    AND dh.endDate IS NULL
-  ORDER BY dh.startDate DESC
+  WHERE dh.endDate IS NULL
+  ORDER BY (
+      SELECT COUNT(*)
+      FROM resources.review_assignment ra
+      WHERE ra.assignedToPersonId = dh.idPerson
+        AND ra.active = 1
+    ) ASC,
+    dh.startDate DESC
   LIMIT 1;
 
   IF v_assigned IS NOT NULL THEN
-    SET v_type := 'DEPT_HEAD';
+    SET v_role := 'DEPT_HEAD';
   ELSE
-    /* Coordinator de área Software con menos revisiones */
+    /* Coordinator de área 'Software' activo con MENOR carga */
     SELECT c.idPerson
       INTO v_assigned
     FROM identity.coordinator c
-    WHERE c.area='Software' AND c.active=1
+    WHERE c.area = 'Software' AND c.active = 1
     ORDER BY (
-       SELECT COUNT(*)
-       FROM resources.software_resource_review r
-       WHERE r.idMeta = p_id_meta AND r.assignedTo = c.idPerson
-    ) ASC, c.idPerson ASC
+        SELECT COUNT(*)
+        FROM resources.review_assignment ra
+        WHERE ra.assignedToPersonId = c.idPerson
+          AND ra.active = 1
+      ) ASC,
+      c.idPerson ASC
     LIMIT 1;
 
-    SET v_type := 'COORDINATOR';
+    SET v_role := 'COORDINATOR';
   END IF;
 
-  /* Registrar asignación y marcar meta como Pending */
-  INSERT INTO resources.software_resource_review (idMeta, assignedTo, reviewerType, comment, status)
-  VALUES (p_id_meta, v_assigned, v_type, 'Asignación automática', 'Pending');
+  IF v_assigned IS NULL THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No reviewer available';
+  END IF;
 
-  UPDATE resources.software_resource_meta
-     SET status='Pending'
-   WHERE idMeta = p_id_meta;
+  /* Registrar asignación y actualizar estado del recurso */
+  INSERT INTO resources.review_assignment
+    (resourceId, assignedToPersonId, assignedRole, active)
+  VALUES
+    (p_resource_id, v_assigned, v_role, 1);
+
+  UPDATE resources.resource
+     SET status = 'UnderReview'
+   WHERE idResource = p_resource_id;
+
+  /* Devolver un pequeño resumen para el front */
+  SELECT p_resource_id AS resourceId, v_assigned AS reviewerPersonId, v_role AS reviewerRole, v_module AS module;
 END $$
 
 DELIMITER ;
