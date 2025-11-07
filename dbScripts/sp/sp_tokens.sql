@@ -3,8 +3,8 @@ DELIMITER $$
 /* =======================================================
    identity.sp_revoke_token 
 ======================================================= */
-DROP PROCEDURE IF EXISTS identity.sp_revoke_token $$
-CREATE PROCEDURE identity.sp_revoke_token(
+DROP PROCEDURE IF EXISTS identity.spRevokeToken $$
+CREATE PROCEDURE identity.spRevokeToken(
   IN  pJti            VARCHAR(64),
   IN  pCredentialsId  INT,
   OUT pCode           INT,
@@ -26,8 +26,8 @@ END $$
 /* =======================================================
    identity.sp_is_token_revoked
 ======================================================= */
-DROP PROCEDURE IF EXISTS identity.sp_is_token_revoked $$
-CREATE PROCEDURE identity.sp_is_token_revoked(IN pJti VARCHAR(64))
+DROP PROCEDURE IF EXISTS identity.spIsTokenRevoked $$
+CREATE PROCEDURE identity.spIsTokenRevoked(IN pJti VARCHAR(64))
 BEGIN
   SELECT EXISTS(SELECT 1 FROM identity.revokedTokens WHERE jti=pJti) AS isRevoked;
 END $$

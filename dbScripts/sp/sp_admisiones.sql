@@ -4,12 +4,12 @@ DELIMITER $$
 /* ---------------------------------------------------------------------
    1) Listas para el formulario (carreras, campus, períodos activos)
    --------------------------------------------------------------------- */
-DROP PROCEDURE IF EXISTS admissions.sp_form_enrollment_lists $$
-CREATE PROCEDURE admissions.sp_form_enrollment_lists()
+DROP PROCEDURE IF EXISTS admissions.spFormEnrollmentLists $$
+CREATE PROCEDURE admissions.spFormEnrollmentLists()
 BEGIN
   /* Programs activos */
   SELECT
-      p.idProgram,
+      p.id,
       p.programCode,
       p.name              AS program,
       f.name              AS faculty,
@@ -17,14 +17,14 @@ BEGIN
       p.modality,
       p.status
   FROM academic.program p
-  JOIN academic.faculty f ON f.idFaculty = p.idFaculty
-  JOIN academic.campus  c ON c.idCampus  = p.idCampus
+  JOIN academic.faculty f ON f.id = p.facultyId
+  JOIN academic.campus  c ON c.id = p.campusId
   WHERE p.status = 'Active'
   ORDER BY f.name, p.name;
 
   /* Campus activos */
   SELECT
-      c.idCampus,
+      c.id,
       c.campusCode,
       c.name,
       c.address,
@@ -36,15 +36,15 @@ BEGIN
 
   /* Términos con estado Enrollment o InProgress */
   SELECT
-      t.idTerm,
-      CONCAT(t.year, '-', LPAD(t.number,2,'0')) AS termLabel,
+      t.id,
+      CONCAT(t.year, '-', LPAD(t.termNumber,2,'0')) AS termLabel,
       t.name,
       t.enrollmentStartDate,
       t.enrollmentEndDate,
       t.status
-  FROM academic.academic_term t
+  FROM academic.academicTerm t
   WHERE t.status IN ('Enrollment','InProgress')
-  ORDER BY t.year DESC, t.number DESC;
+  ORDER BY t.year DESC, t.termNumber DESC;
 END $$
 
 
@@ -55,70 +55,70 @@ END $$
      1) Resumen persona/aspirante/última solicitud
      2) Programas aplicados (principal/secundario)
      3) Mejor nota por tipo de examen
-     4) Programas elegibles SEGÚN NOTAS (todos los activos)
+     4) Programas elegibles SEGÚN NOTAS
      5) Programas elegibles DENTRO de los aplicados
    --------------------------------------------------------------------- */
-DROP PROCEDURE IF EXISTS admissions.sp_admission_result_by_identity $$
-CREATE PROCEDURE admissions.sp_admission_result_by_identity(IN p_identityNumber VARCHAR(20))
+DROP PROCEDURE IF EXISTS admissions.spAdmissionResultByIdentity $$
+CREATE PROCEDURE admissions.spAdmissionResultByIdentity(IN pIdentityNumber VARCHAR(20))
 proc_end: BEGIN
   /* Normalizar identidad: quitar guiones y espacios */
-  SET @id_norm := REPLACE(REPLACE(p_identityNumber, '-', ''), ' ', '');
+  SET @id_norm := REPLACE(REPLACE(pIdentityNumber, '-', ''), ' ', '');
 
   /* Variables locales */
-  DECLARE v_idPerson   INT UNSIGNED;
-  DECLARE v_idApplicant INT UNSIGNED;
-  DECLARE v_idApplication INT UNSIGNED;
+  DECLARE vIdUser        INT UNSIGNED;
+  DECLARE vIdApplicant   INT UNSIGNED;
+  DECLARE vIdApplication INT UNSIGNED;
 
   /* Persona por identidad */
-  SELECT per.idPerson
-    INTO v_idPerson
-  FROM identity.person per
-  WHERE REPLACE(REPLACE(per.identityNumber,'-',''),' ','') = @id_norm
+  SELECT u.id
+    INTO vIdUser
+  FROM identity.users u
+  WHERE REPLACE(REPLACE(u.nationalId,'-',''),' ','') = @id_norm
   LIMIT 1;
 
   /* Si no existe persona, regresar mensaje y terminar */
-  IF v_idPerson IS NULL THEN
+  IF vIdUser IS NULL THEN
     SELECT 'NOT_FOUND' AS status, 'Identidad no registrada' AS message, @id_norm AS identityNumber;
     LEAVE proc_end;
   END IF;
 
   /* Applicant por persona */
-  SELECT a.idApplicant
-    INTO v_idApplicant
+  SELECT a.id
+    INTO vIdApplicant
   FROM admissions.applicant a
-  WHERE a.idPerson = v_idPerson
+  WHERE a.userId = vIdUser
   LIMIT 1;
 
   /* Última solicitud por applicant (más reciente) */
-  SELECT ap.idApplication
-    INTO v_idApplication
+  SELECT ap.id
+    INTO vIdApplication
   FROM admissions.admissionApplication ap
-  WHERE ap.idApplicant = v_idApplicant
-  ORDER BY ap.createdAt DESC, ap.idApplication DESC
+  WHERE ap.applicantId = vIdApplicant
+  ORDER BY ap.createdAt DESC, ap.id DESC
   LIMIT 1;
 
   /* Resumen */
   SELECT
-      per.idPerson,
-      a.idApplicant,
-      ap.idApplication,
-      per.identityNumber,
-      per.firstName,
-      per.lastName,
-      per.personalEmail,
+      u.id           AS idUser,
+      a.id           AS idApplicant,
+      ap.id          AS idApplication,
+      u.nationalId   AS identityNumber,
+      u.firstName,
+      u.lastName,
+      u.personalEmail,
       cam.name  AS campusApplication,
-      CONCAT(te.year, '-', LPAD(te.number,2,'0')) AS termLabel,
+      CONCAT(te.year, '-', LPAD(te.termNumber,2,'0')) AS termLabel,
       ap.status AS applicationStatus,
       ap.createdAt
-  FROM identity.person per
-  LEFT JOIN admissions.applicant a          ON a.idPerson = per.idPerson
-  LEFT JOIN admissions.admissionApplication ap ON ap.idApplication = v_idApplication
-  LEFT JOIN academic.campus cam             ON cam.idCampus = ap.idCampus
-  LEFT JOIN academic.academic_term te       ON te.idTerm   = ap.idTerm
-  WHERE per.idPerson = v_idPerson;
+  FROM identity.users u
+  LEFT JOIN admissions.applicant a           ON a.userId = u.id
+  LEFT JOIN admissions.admissionApplication ap ON ap.id   = vIdApplication
+  LEFT JOIN academic.campus cam              ON cam.id    = ap.campusId
+  LEFT JOIN academic.academicTerm te         ON te.id     = ap.termId
+  WHERE u.id = vIdUser;
 
   /* Si no hay solicitud, devolver conjuntos vacíos y terminar */
-  IF v_idApplication IS NULL THEN
+  IF vIdApplication IS NULL THEN
     SELECT NULL WHERE FALSE;  /* Programas aplicados */
     SELECT NULL WHERE FALSE;  /* Notas por tipo */
     SELECT NULL WHERE FALSE;  /* Elegibles (todos) */
@@ -128,84 +128,84 @@ proc_end: BEGIN
 
   /* Programas aplicados */
   SELECT 'Primary' AS kind,
-         p1.idProgram, p1.programCode, p1.name AS program, f1.name AS faculty
+         p1.id, p1.programCode, p1.name AS program, f1.name AS faculty
   FROM admissions.admissionApplication ap
-  JOIN academic.program  p1 ON p1.idProgram  = ap.idPrimaryProgram
-  JOIN academic.faculty  f1 ON f1.idFaculty  = p1.idFaculty
-  WHERE ap.idApplication = v_idApplication
+  JOIN academic.program  p1 ON p1.id  = ap.primaryProgramId
+  JOIN academic.faculty  f1 ON f1.id  = p1.facultyId
+  WHERE ap.id = vIdApplication
   UNION ALL
   SELECT 'Secondary' AS kind,
-         p2.idProgram, p2.programCode, p2.name AS program, f2.name AS faculty
+         p2.id, p2.programCode, p2.name AS program, f2.name AS faculty
   FROM admissions.admissionApplication ap
-  JOIN academic.program  p2 ON p2.idProgram  = ap.idSecondaryProgram
-  JOIN academic.faculty  f2 ON f2.idFaculty  = p2.idFaculty
-  WHERE ap.idApplication = v_idApplication
-    AND ap.idSecondaryProgram IS NOT NULL;
+  JOIN academic.program  p2 ON p2.id  = ap.secondaryProgramId
+  JOIN academic.faculty  f2 ON f2.id  = p2.facultyId
+  WHERE ap.id = vIdApplication
+    AND ap.secondaryProgramId IS NOT NULL;
 
   /* Mejor nota por tipo de examen (para la solicitud) */
   SELECT
-      et.idExamType,
+      et.id,
       et.name       AS examType,
       MAX(ex.score) AS bestScore,
       MAX(ex.status) AS lastStatus,
       MAX(ex.date)   AS lastDate
   FROM admissions.exam ex
-  JOIN admissions.examType et ON et.idExamType = ex.idExamType
-  WHERE ex.idApplication = v_idApplication
-  GROUP BY et.idExamType, et.name
-  ORDER BY et.idExamType;
+  JOIN admissions.examType et ON et.id = ex.examTypeId
+  WHERE ex.applicationId = vIdApplication
+  GROUP BY et.id, et.name
+  ORDER BY et.id;
 
   /* Elegibles según notas (todos los programas activos) */
   WITH best_scores AS (
-    SELECT ex.idExamType, MAX(ex.score) AS score
+    SELECT ex.examTypeId, MAX(ex.score) AS score
     FROM admissions.exam ex
-    WHERE ex.idApplication = v_idApplication
-    GROUP BY ex.idExamType
+    WHERE ex.applicationId = vIdApplication
+    GROUP BY ex.examTypeId
   )
   SELECT
-      p.idProgram, p.programCode, p.name AS program,
+      p.id, p.programCode, p.name AS program,
       f.name AS faculty, c.name AS campus
   FROM academic.program p
-  JOIN academic.faculty f ON f.idFaculty = p.idFaculty
-  JOIN academic.campus  c ON c.idCampus  = p.idCampus
+  JOIN academic.faculty f ON f.id = p.facultyId
+  JOIN academic.campus  c ON c.id = p.campusId
   WHERE p.status = 'Active'
     AND NOT EXISTS (
           SELECT 1
-          FROM admissions.programs_exams x
-          LEFT JOIN best_scores bs ON bs.idExamType = x.idExamType
-          WHERE x.idProgram = p.idProgram
+          FROM admissions.programExamRequirement x
+          LEFT JOIN best_scores bs ON bs.examTypeId = x.examTypeId
+          WHERE x.programId = p.id
             AND x.required = 1
-            AND (bs.score IS NULL OR bs.score < x.minScore)
+            AND (bs.score IS NULL OR bs.score < x.minimumScore)
         )
   ORDER BY f.name, p.name;
 
   /* Elegibles dentro de los aplicados */
   WITH best_scores AS (
-    SELECT ex.idExamType, MAX(ex.score) AS score
+    SELECT ex.examTypeId, MAX(ex.score) AS score
     FROM admissions.exam ex
-    WHERE ex.idApplication = v_idApplication
-    GROUP BY ex.idExamType
+    WHERE ex.applicationId = vIdApplication
+    GROUP BY ex.examTypeId
   ),
   applied AS (
-    SELECT ap.idPrimaryProgram   AS idProgram FROM admissions.admissionApplication ap WHERE ap.idApplication=v_idApplication
+    SELECT ap.primaryProgramId   AS programId FROM admissions.admissionApplication ap WHERE ap.id = vIdApplication
     UNION
-    SELECT ap.idSecondaryProgram AS idProgram FROM admissions.admissionApplication ap WHERE ap.idApplication=v_idApplication AND ap.idSecondaryProgram IS NOT NULL
+    SELECT ap.secondaryProgramId AS programId FROM admissions.admissionApplication ap WHERE ap.id = vIdApplication AND ap.secondaryProgramId IS NOT NULL
   )
   SELECT
-      p.idProgram, p.programCode, p.name AS program,
+      p.id, p.programCode, p.name AS program,
       f.name AS faculty, c.name AS campus
   FROM applied a
-  JOIN academic.program p ON p.idProgram = a.idProgram
-  JOIN academic.faculty f ON f.idFaculty = p.idFaculty
-  JOIN academic.campus  c ON c.idCampus  = p.idCampus
+  JOIN academic.program p ON p.id = a.programId
+  JOIN academic.faculty f ON f.id = p.facultyId
+  JOIN academic.campus  c ON c.id = p.campusId
   WHERE p.status = 'Active'
     AND NOT EXISTS (
           SELECT 1
-          FROM admissions.programs_exams x
-          LEFT JOIN best_scores bs ON bs.idExamType = x.idExamType
-          WHERE x.idProgram = p.idProgram
+          FROM admissions.programExamRequirement x
+          LEFT JOIN best_scores bs ON bs.examTypeId = x.examTypeId
+          WHERE x.programId = p.id
             AND x.required = 1
-            AND (bs.score IS NULL OR bs.score < x.minScore)
+            AND (bs.score IS NULL OR bs.score < x.minimumScore)
         )
   ORDER BY f.name, p.name;
 

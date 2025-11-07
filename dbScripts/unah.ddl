@@ -33,7 +33,7 @@ CREATE TABLE users (
   profilePhoto       LONGBLOB     NULL,
   createdAt          DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   accountStatus      ENUM('Active','Inactive','Suspended','Deleted') NOT NULL DEFAULT 'Active',
-  UNIQUE KEY uq_users_nationalId (nationalId)
+  UNIQUE KEY uqUsersNationalId (nationalId)
 ) ENGINE=InnoDB;
 
 CREATE TABLE credentials (
@@ -48,11 +48,11 @@ CREATE TABLE credentials (
   recoveryToken   VARCHAR(100) NULL,
   createdAt       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-  UNIQUE KEY uq_credentials_username (username),
-  UNIQUE KEY uq_credentials_user (userId),
-  KEY fk_credentials_user (userId),
+  UNIQUE KEY uqCredentialsUsername (username),
+  UNIQUE KEY uqCredentialsUser (userId),
+  KEY fkCredentialsUser (userId),
 
-  CONSTRAINT fk_credentials_user
+  CONSTRAINT fkCredentialsUser
     FOREIGN KEY (userId) REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -60,7 +60,7 @@ CREATE TABLE roles (
   id         TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   roleName   VARCHAR(45)  NOT NULL,
   description VARCHAR(255) NULL,
-  UNIQUE KEY uq_roles_roleName (roleName)
+  UNIQUE KEY uqRolesRoleName (roleName)
 ) ENGINE=InnoDB;
 
 CREATE TABLE credentialRoles (
@@ -68,9 +68,9 @@ CREATE TABLE credentialRoles (
   roleId       TINYINT UNSIGNED NOT NULL,
   assignedAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (credentialId,roleId),
-  KEY fk_cr_role (roleId),
-  CONSTRAINT fk_cr_credential FOREIGN KEY (credentialId) REFERENCES credentials(id),
-  CONSTRAINT fk_cr_role       FOREIGN KEY (roleId)       REFERENCES roles(id)
+  KEY fkCrRole (roleId),
+  CONSTRAINT fkCrCredential FOREIGN KEY (credentialId) REFERENCES credentials(id),
+  CONSTRAINT fkCrRole       FOREIGN KEY (roleId)       REFERENCES roles(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE students (
@@ -81,9 +81,9 @@ CREATE TABLE students (
   secondaryProgramId INT UNSIGNED NULL,       /* FK academic.program */
   gpa               DECIMAL(4,2)  NULL,
   entryDate         DATE          NULL,
-  KEY fk_student_program1 (programId),
-  KEY fk_student_program2 (secondaryProgramId),
-  CONSTRAINT fk_student_user FOREIGN KEY (userId) REFERENCES users(id)
+  KEY fkStudentProgram1 (programId),
+  KEY fkStudentProgram2 (secondaryProgramId),
+  CONSTRAINT fkStudentUser FOREIGN KEY (userId) REFERENCES users(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE teachers (
@@ -93,7 +93,7 @@ CREATE TABLE teachers (
   hireDate                DATE NULL,
   shift                   ENUM('FullTime','PartTime') NULL,
   office                  VARCHAR(45) NULL,
-  CONSTRAINT fk_teacher_user FOREIGN KEY (userId) REFERENCES users(id)
+  CONSTRAINT fkTeacherUser FOREIGN KEY (userId) REFERENCES users(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE departmentHead (
@@ -102,14 +102,14 @@ CREATE TABLE departmentHead (
   termStartDate        DATE NOT NULL,
   termEndDate          DATE NULL,
   endReason            VARCHAR(255) NULL,
-  CONSTRAINT fk_head_user FOREIGN KEY (userId) REFERENCES users(id)
+  CONSTRAINT fkHeadUser FOREIGN KEY (userId) REFERENCES users(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE coordinators (
   userId INT UNSIGNED PRIMARY KEY,
   area   ENUM('Software','Music','VirtualLibrary','Admissions','Enrollment') NOT NULL,
   isActive TINYINT(1) NOT NULL DEFAULT 1,
-  CONSTRAINT fk_coord_user FOREIGN KEY (userId) REFERENCES users(id)
+  CONSTRAINT fkCoordUser FOREIGN KEY (userId) REFERENCES users(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS permissions (
@@ -149,7 +149,7 @@ CREATE TABLE faculty (
   facultyCode   VARCHAR(10) NOT NULL,
   name          VARCHAR(80) NOT NULL,
   status        VARCHAR(45) NOT NULL DEFAULT 'Active',
-  UNIQUE KEY uq_faculty_code (facultyCode)
+  UNIQUE KEY uqFacultyCode (facultyCode)
 ) ENGINE=InnoDB;
 
 CREATE TABLE campus (
@@ -159,7 +159,7 @@ CREATE TABLE campus (
   address     VARCHAR(255) NULL,
   phone       VARCHAR(20)  NULL,
   status      VARCHAR(45)  NOT NULL DEFAULT 'Active',
-  UNIQUE KEY uq_campus_code (campusCode)
+  UNIQUE KEY uqCampusCode (campusCode)
 ) ENGINE=InnoDB;
 
 CREATE TABLE building (
@@ -167,8 +167,8 @@ CREATE TABLE building (
   campusId  INT UNSIGNED NOT NULL,
   name      VARCHAR(80) NOT NULL,
   status    VARCHAR(45) NOT NULL DEFAULT 'Active',
-  KEY fk_building_campus (campusId),
-  CONSTRAINT fk_building_campus FOREIGN KEY (campusId) REFERENCES campus(id)
+  KEY fkBuildingCampus (campusId),
+  CONSTRAINT fkBuildingCampus FOREIGN KEY (campusId) REFERENCES campus(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE classroom (
@@ -178,8 +178,8 @@ CREATE TABLE classroom (
   capacity    INT UNSIGNED NOT NULL,
   roomType    ENUM('Classroom','Laboratory') NOT NULL,
   status      VARCHAR(45) NOT NULL DEFAULT 'Active',
-  KEY fk_classroom_building (buildingId),
-  CONSTRAINT fk_classroom_building FOREIGN KEY (buildingId) REFERENCES building(id)
+  KEY fkClassroomBuilding (buildingId),
+  CONSTRAINT fkClassroomBuilding FOREIGN KEY (buildingId) REFERENCES building(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE program (
@@ -192,11 +192,11 @@ CREATE TABLE program (
   status          VARCHAR(45) NOT NULL DEFAULT 'Active',
   campusId        INT UNSIGNED NOT NULL,
   modality        ENUM('Onsite','Online') NOT NULL,
-  UNIQUE KEY uq_program_code (programCode),
-  KEY fk_program_faculty (facultyId),
-  KEY fk_program_campus (campusId),
-  CONSTRAINT fk_program_faculty FOREIGN KEY (facultyId) REFERENCES faculty(id),
-  CONSTRAINT fk_program_campus  FOREIGN KEY (campusId)  REFERENCES campus(id)
+  UNIQUE KEY uqProgramCode (programCode),
+  KEY fkProgramFaculty (facultyId),
+  KEY fkProgramCampus (campusId),
+  CONSTRAINT fkProgramFaculty FOREIGN KEY (facultyId) REFERENCES faculty(id),
+  CONSTRAINT fkProgramCampus  FOREIGN KEY (campusId)  REFERENCES campus(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE course (
@@ -206,16 +206,16 @@ CREATE TABLE course (
   credits        TINYINT UNSIGNED NOT NULL,
   category       ENUM('Required','Elective','Selective') NOT NULL,
   status         VARCHAR(45) NOT NULL DEFAULT 'Active',
-  UNIQUE KEY uq_course_code (courseCode)
+  UNIQUE KEY uqCourseCode (courseCode)
 ) ENGINE=InnoDB;
 
 CREATE TABLE prerequisite (
   courseId        INT UNSIGNED NOT NULL,
   prerequisiteId  INT UNSIGNED NOT NULL,
   PRIMARY KEY (courseId,prerequisiteId),
-  KEY fk_pre_req (prerequisiteId),
-  CONSTRAINT fk_pre_course   FOREIGN KEY (courseId)       REFERENCES course(id),
-  CONSTRAINT fk_pre_course_2 FOREIGN KEY (prerequisiteId) REFERENCES course(id)
+  KEY fkPreReq (prerequisiteId),
+  CONSTRAINT fkPreCourse   FOREIGN KEY (courseId)       REFERENCES course(id),
+  CONSTRAINT fkPreCourse2  FOREIGN KEY (prerequisiteId) REFERENCES course(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE curriculumPlan (
@@ -224,9 +224,9 @@ CREATE TABLE curriculumPlan (
   semester    TINYINT UNSIGNED NOT NULL,
   planType    ENUM('Required','Elective') NOT NULL,
   PRIMARY KEY (programId,courseId),
-  KEY fk_plan_course (courseId),
-  CONSTRAINT fk_plan_program FOREIGN KEY (programId) REFERENCES program(id),
-  CONSTRAINT fk_plan_course  FOREIGN KEY (courseId)  REFERENCES course(id)
+  KEY fkPlanCourse (courseId),
+  CONSTRAINT fkPlanProgram FOREIGN KEY (programId) REFERENCES program(id),
+  CONSTRAINT fkPlanCourse  FOREIGN KEY (courseId)  REFERENCES course(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE academicTerm (
@@ -246,14 +246,14 @@ CREATE TABLE academicTerm (
 
 USE identity;
 ALTER TABLE students
-  ADD CONSTRAINT fk_student_program1 FOREIGN KEY (programId)           REFERENCES academic.program(id),
-  ADD CONSTRAINT fk_student_program2 FOREIGN KEY (secondaryProgramId)  REFERENCES academic.program(id);
+  ADD CONSTRAINT fkStudentProgram1 FOREIGN KEY (programId)           REFERENCES academic.program(id),
+  ADD CONSTRAINT fkStudentProgram2 FOREIGN KEY (secondaryProgramId)  REFERENCES academic.program(id);
 
 ALTER TABLE teachers
-  ADD CONSTRAINT fk_teacher_dept FOREIGN KEY (academicDepartmentId) REFERENCES academic.program(id);
+  ADD CONSTRAINT fkTeacherDept FOREIGN KEY (academicDepartmentId) REFERENCES academic.program(id);
 
 ALTER TABLE departmentHead
-  ADD CONSTRAINT fk_head_dept FOREIGN KEY (academicDepartmentId) REFERENCES academic.program(id);
+  ADD CONSTRAINT fkHeadDept FOREIGN KEY (academicDepartmentId) REFERENCES academic.program(id);
 
 
 /* =======================================================
@@ -272,27 +272,27 @@ CREATE TABLE section (
   modality      ENUM('Onsite','Online') NOT NULL,
   status        ENUM('Active','Closed','Cancelled') NOT NULL,
   createdAt     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  KEY fk_sec_course   (courseId),
-  KEY fk_sec_term     (termId),
-  KEY fk_sec_teacher  (teacherId),
-  KEY fk_sec_classroom(classroomId),
-  CONSTRAINT fk_sec_course    FOREIGN KEY (courseId)    REFERENCES academic.course(id),
-  CONSTRAINT fk_sec_term      FOREIGN KEY (termId)      REFERENCES academic.academicTerm(id),
-  CONSTRAINT fk_sec_teacher   FOREIGN KEY (teacherId)   REFERENCES identity.teachers(userId),
-  CONSTRAINT fk_sec_classroom FOREIGN KEY (classroomId) REFERENCES academic.classroom(id)
+  KEY fkSecCourse    (courseId),
+  KEY fkSecTerm      (termId),
+  KEY fkSecTeacher   (teacherId),
+  KEY fkSecClassroom (classroomId),
+  CONSTRAINT fkSecCourse    FOREIGN KEY (courseId)    REFERENCES academic.course(id),
+  CONSTRAINT fkSecTerm      FOREIGN KEY (termId)      REFERENCES academic.academicTerm(id),
+  CONSTRAINT fkSecTeacher   FOREIGN KEY (teacherId)   REFERENCES identity.teachers(userId),
+  CONSTRAINT fkSecClassroom FOREIGN KEY (classroomId) REFERENCES academic.classroom(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE sectionSchedule (
-  id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  sectionId  INT UNSIGNED NOT NULL,
-  days       VARCHAR(45)  NOT NULL,     
-  startTime  TIME NOT NULL,
-  endTime    TIME NOT NULL,
+  id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  sectionId   INT UNSIGNED NOT NULL,
+  days        VARCHAR(45)  NOT NULL,     
+  startTime   TIME NOT NULL,
+  endTime     TIME NOT NULL,
   classroomId INT UNSIGNED NOT NULL,
-  KEY fk_ss_sect  (sectionId),
-  KEY fk_ss_class (classroomId),
-  CONSTRAINT fk_ss_sect  FOREIGN KEY (sectionId)  REFERENCES section(id),
-  CONSTRAINT fk_ss_class FOREIGN KEY (classroomId) REFERENCES academic.classroom(id)
+  KEY fkSsSect  (sectionId),
+  KEY fkSsClass (classroomId),
+  CONSTRAINT fkSsSect  FOREIGN KEY (sectionId)  REFERENCES section(id),
+  CONSTRAINT fkSsClass FOREIGN KEY (classroomId) REFERENCES academic.classroom(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE waitlist (
@@ -303,25 +303,25 @@ CREATE TABLE waitlist (
   position     INT UNSIGNED NOT NULL,
   priority     TINYINT UNSIGNED NULL,
   served       TINYINT(1) NOT NULL DEFAULT 0,
-  KEY fk_wl_student (studentId),
-  KEY fk_wl_section (sectionId),
-  CONSTRAINT fk_wl_student FOREIGN KEY (studentId) REFERENCES identity.students(userId),
-  CONSTRAINT fk_wl_section FOREIGN KEY (sectionId)  REFERENCES section(id)
+  KEY fkWlStudent (studentId),
+  KEY fkWlSection (sectionId),
+  CONSTRAINT fkWlStudent FOREIGN KEY (studentId) REFERENCES identity.students(userId),
+  CONSTRAINT fkWlSection FOREIGN KEY (sectionId)  REFERENCES section(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE payment (
-  id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  studentId   INT UNSIGNED NOT NULL,  /* FK identity.students */
-  termId      INT UNSIGNED NOT NULL,  /* FK academic.academicTerm */
-  concept     ENUM('EnrollmentFee','Makeup','Other') NOT NULL,
-  amount      DECIMAL(10,2) NOT NULL,
-  method      ENUM('Cash','Card') NOT NULL,
-  status      ENUM('Recorded','Confirmed','Rejected','Voided') NOT NULL,
-  paidAt      DATETIME NOT NULL,
-  KEY fk_pay_student (studentId),
-  KEY fk_pay_term    (termId),
-  CONSTRAINT fk_pay_student FOREIGN KEY (studentId) REFERENCES identity.students(userId),
-  CONSTRAINT fk_pay_term    FOREIGN KEY (termId)    REFERENCES academic.academicTerm(id)
+  id        INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  studentId INT UNSIGNED NOT NULL,  /* FK identity.students */
+  termId    INT UNSIGNED NOT NULL,  /* FK academic.academicTerm */
+  concept   ENUM('EnrollmentFee','Makeup','Other') NOT NULL,
+  amount    DECIMAL(10,2) NOT NULL,
+  method    ENUM('Cash','Card') NOT NULL,
+  status    ENUM('Recorded','Confirmed','Rejected','Voided') NOT NULL,
+  paidAt    DATETIME NOT NULL,
+  KEY fkPayStudent (studentId),
+  KEY fkPayTerm    (termId),
+  CONSTRAINT fkPayStudent FOREIGN KEY (studentId) REFERENCES identity.students(userId),
+  CONSTRAINT fkPayTerm    FOREIGN KEY (termId)    REFERENCES academic.academicTerm(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE studentEnrollment (
@@ -332,12 +332,12 @@ CREATE TABLE studentEnrollment (
   status        ENUM('Active','Withdrawn','Cancelled') NOT NULL,
   finalGrade    DECIMAL(5,2) NULL,
   paymentId     INT UNSIGNED NOT NULL,
-  KEY fk_enr_student (studentId),
-  KEY fk_enr_section (sectionId),
-  KEY fk_enr_payment (paymentId),
-  CONSTRAINT fk_enr_student FOREIGN KEY (studentId) REFERENCES identity.students(userId),
-  CONSTRAINT fk_enr_section FOREIGN KEY (sectionId)  REFERENCES section(id),
-  CONSTRAINT fk_enr_payment FOREIGN KEY (paymentId)  REFERENCES payment(id)
+  KEY fkEnrStudent (studentId),
+  KEY fkEnrSection (sectionId),
+  KEY fkEnrPayment (paymentId),
+  CONSTRAINT fkEnrStudent FOREIGN KEY (studentId) REFERENCES identity.students(userId),
+  CONSTRAINT fkEnrSection FOREIGN KEY (sectionId)  REFERENCES section(id),
+  CONSTRAINT fkEnrPayment FOREIGN KEY (paymentId)  REFERENCES payment(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE studentRequest (
@@ -356,16 +356,16 @@ CREATE TABLE studentRequest (
   approvedById       INT UNSIGNED NULL,      /* identity.departmentHead(userId) */
   requestedAt        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   approvedAt         DATETIME NULL,
-  KEY fk_sr_student (studentId),
-  KEY fk_sr_term    (termId),
-  CONSTRAINT fk_sr_student FOREIGN KEY (studentId) REFERENCES identity.students(userId),
-  CONSTRAINT fk_sr_term    FOREIGN KEY (termId)    REFERENCES academic.academicTerm(id),
-  CONSTRAINT fk_sr_prog1   FOREIGN KEY (currentProgramId)   REFERENCES academic.program(id),
-  CONSTRAINT fk_sr_prog2   FOREIGN KEY (requestedProgramId) REFERENCES academic.program(id),
-  CONSTRAINT fk_sr_camp1   FOREIGN KEY (currentCampusId)    REFERENCES academic.campus(id),
-  CONSTRAINT fk_sr_camp2   FOREIGN KEY (requestedCampusId)  REFERENCES academic.campus(id),
-  CONSTRAINT fk_sr_coord   FOREIGN KEY (assignedCoordinatorId) REFERENCES identity.coordinators(userId),
-  CONSTRAINT fk_sr_approved FOREIGN KEY (approvedById)         REFERENCES identity.departmentHead(userId)
+  KEY fkSrStudent (studentId),
+  KEY fkSrTerm    (termId),
+  CONSTRAINT fkSrStudent FOREIGN KEY (studentId) REFERENCES identity.students(userId),
+  CONSTRAINT fkSrTerm    FOREIGN KEY (termId)    REFERENCES academic.academicTerm(id),
+  CONSTRAINT fkSrProg1   FOREIGN KEY (currentProgramId)   REFERENCES academic.program(id),
+  CONSTRAINT fkSrProg2   FOREIGN KEY (requestedProgramId) REFERENCES academic.program(id),
+  CONSTRAINT fkSrCamp1   FOREIGN KEY (currentCampusId)    REFERENCES academic.campus(id),
+  CONSTRAINT fkSrCamp2   FOREIGN KEY (requestedCampusId)  REFERENCES academic.campus(id),
+  CONSTRAINT fkSrCoord   FOREIGN KEY (assignedCoordinatorId) REFERENCES identity.coordinators(userId),
+  CONSTRAINT fkSrApproved FOREIGN KEY (approvedById)         REFERENCES identity.departmentHead(userId)
 ) ENGINE=InnoDB;
 
 CREATE TABLE sectionRequest (
@@ -377,11 +377,11 @@ CREATE TABLE sectionRequest (
   comment      VARCHAR(255) NULL,
   approvedById INT UNSIGNED NULL,     /* identity.departmentHead */
   reviewedAt   DATETIME NULL,
-  KEY fk_sreq_req (requestId),
-  KEY fk_sreq_sec (sectionId),
-  CONSTRAINT fk_sreq_req FOREIGN KEY (requestId) REFERENCES studentRequest(id),
-  CONSTRAINT fk_sreq_sec FOREIGN KEY (sectionId)  REFERENCES section(id),
-  CONSTRAINT fk_sreq_apr FOREIGN KEY (approvedById) REFERENCES identity.departmentHead(userId)
+  KEY fkSreqReq (requestId),
+  KEY fkSreqSec (sectionId),
+  CONSTRAINT fkSreqReq FOREIGN KEY (requestId) REFERENCES studentRequest(id),
+  CONSTRAINT fkSreqSec FOREIGN KEY (sectionId)  REFERENCES section(id),
+  CONSTRAINT fkSreqApr FOREIGN KEY (approvedById) REFERENCES identity.departmentHead(userId)
 ) ENGINE=InnoDB;
 
 
@@ -532,7 +532,7 @@ CREATE TABLE review (
   comments          VARCHAR(255) NULL,
   reviewedAt        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY idxRevRes (resourceId),
-  CONSTRAINT fkRevRes   FOREIGN KEY (resourceId)       REFERENCES resource(idResource) ON DELETE CASCADE,
+  CONSTRAINT fkRevRes    FOREIGN KEY (resourceId)       REFERENCES resource(idResource) ON DELETE CASCADE,
   CONSTRAINT fkRevPerson FOREIGN KEY (reviewerPersonId) REFERENCES identity.person(idPerson)
 ) ENGINE=InnoDB;
 
@@ -543,14 +543,14 @@ CREATE TABLE review (
 USE admissions;
 
 CREATE TABLE applicant (
-  id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  userId       INT UNSIGNED NOT NULL, /* identity.users (antes de ser alumno) */
+  id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  userId        INT UNSIGNED NOT NULL, /* identity.users (antes de ser alumno) */
   personalEmail VARCHAR(120) NULL,
   phone         VARCHAR(45)  NULL,
   createdAt     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   status        ENUM('Active','Inactive','Blocked') NOT NULL DEFAULT 'Active',
-  KEY fk_app_user (userId),
-  CONSTRAINT fk_app_user FOREIGN KEY (userId) REFERENCES identity.users(id)
+  KEY fkAppUser (userId),
+  CONSTRAINT fkAppUser FOREIGN KEY (userId) REFERENCES identity.users(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE admissionApplication (
@@ -564,45 +564,45 @@ CREATE TABLE admissionApplication (
   rejectionReason    VARCHAR(255) NULL,
   createdAt          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   decidedAt          DATETIME NULL,
-  KEY fk_aa_app (applicantId),
-  KEY fk_aa_term (termId),
-  KEY fk_aa_prog1 (primaryProgramId),
-  KEY fk_aa_prog2 (secondaryProgramId),
-  KEY fk_aa_campus (campusId),
-  CONSTRAINT fk_aa_app    FOREIGN KEY (applicantId)        REFERENCES applicant(id),
-  CONSTRAINT fk_aa_term   FOREIGN KEY (termId)             REFERENCES academic.academicTerm(id),
-  CONSTRAINT fk_aa_prog1  FOREIGN KEY (primaryProgramId)   REFERENCES academic.program(id),
-  CONSTRAINT fk_aa_prog2  FOREIGN KEY (secondaryProgramId) REFERENCES academic.program(id),
-  CONSTRAINT fk_aa_campus FOREIGN KEY (campusId)           REFERENCES academic.campus(id)
+  KEY fkAaApp    (applicantId),
+  KEY fkAaTerm   (termId),
+  KEY fkAaProg1  (primaryProgramId),
+  KEY fkAaProg2  (secondaryProgramId),
+  KEY fkAaCampus (campusId),
+  CONSTRAINT fkAaApp    FOREIGN KEY (applicantId)        REFERENCES applicant(id),
+  CONSTRAINT fkAaTerm   FOREIGN KEY (termId)             REFERENCES academic.academicTerm(id),
+  CONSTRAINT fkAaProg1  FOREIGN KEY (primaryProgramId)   REFERENCES academic.program(id),
+  CONSTRAINT fkAaProg2  FOREIGN KEY (secondaryProgramId) REFERENCES academic.program(id),
+  CONSTRAINT fkAaCampus FOREIGN KEY (campusId)           REFERENCES academic.campus(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE applicationDocument (
-  id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   applicationId INT UNSIGNED NOT NULL,
-  documentType ENUM('HighSchoolCertificate') NOT NULL,
-  pdfFile     LONGBLOB NOT NULL,
-  sizeBytes   INT UNSIGNED NOT NULL,
-  uploadedAt  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  KEY fk_doc_app (applicationId),
-  CONSTRAINT fk_doc_app FOREIGN KEY (applicationId) REFERENCES admissionApplication(id)
+  documentType  ENUM('HighSchoolCertificate') NOT NULL,
+  pdfFile       LONGBLOB NOT NULL,
+  sizeBytes     INT UNSIGNED NOT NULL,
+  uploadedAt    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY fkDocApp (applicationId),
+  CONSTRAINT fkDocApp FOREIGN KEY (applicationId) REFERENCES admissionApplication(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE examType (
-  id         TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  name       ENUM('PAA','PAM','PCCNS') NOT NULL,
-  maxScore   INT UNSIGNED NOT NULL,
+  id          TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name        ENUM('PAA','PAM','PCCNS') NOT NULL,
+  maxScore    INT UNSIGNED NOT NULL,
   description VARCHAR(200) NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE programExamRequirement (
-  programId     INT UNSIGNED NOT NULL, /* academic.program */
-  examTypeId    TINYINT UNSIGNED NOT NULL, /* admissions.examType */
-  minimumScore  INT UNSIGNED NOT NULL,
-  required      TINYINT(1) NOT NULL DEFAULT 1,
+  programId    INT UNSIGNED NOT NULL,      /* academic.program */
+  examTypeId   TINYINT UNSIGNED NOT NULL,  /* admissions.examType */
+  minimumScore INT UNSIGNED NOT NULL,
+  required     TINYINT(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (programId,examTypeId),
-  KEY fk_per_type (examTypeId),
-  CONSTRAINT fk_per_prog FOREIGN KEY (programId)  REFERENCES academic.program(id),
-  CONSTRAINT fk_per_type FOREIGN KEY (examTypeId) REFERENCES examType(id)
+  KEY fkPerType (examTypeId),
+  CONSTRAINT fkPerProg FOREIGN KEY (programId)  REFERENCES academic.program(id),
+  CONSTRAINT fkPerType FOREIGN KEY (examTypeId) REFERENCES examType(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE exam (
@@ -618,35 +618,35 @@ CREATE TABLE exam (
   score         INT UNSIGNED NULL,
   gradedById    INT UNSIGNED NULL,         /* identity.departmentHead (revisor) */
   status        ENUM('Scheduled','Taken','Graded','Voided') NOT NULL DEFAULT 'Scheduled',
-  KEY fk_ex_app   (applicationId),
-  KEY fk_ex_type  (examTypeId),
-  KEY fk_ex_term  (termId),
-  KEY fk_ex_campus(campusId),
-  KEY fk_ex_class (classroomId),
-  KEY fk_ex_grad  (gradedById),
-  CONSTRAINT fk_ex_app   FOREIGN KEY (applicationId) REFERENCES admissionApplication(id),
-  CONSTRAINT fk_ex_type  FOREIGN KEY (examTypeId)    REFERENCES examType(id),
-  CONSTRAINT fk_ex_term  FOREIGN KEY (termId)        REFERENCES academic.academicTerm(id),
-  CONSTRAINT fk_ex_campus FOREIGN KEY (campusId)     REFERENCES academic.campus(id),
-  CONSTRAINT fk_ex_class  FOREIGN KEY (classroomId)  REFERENCES academic.classroom(id),
-  CONSTRAINT fk_ex_grad   FOREIGN KEY (gradedById)   REFERENCES identity.departmentHead(userId)
+  KEY fkExApp    (applicationId),
+  KEY fkExType   (examTypeId),
+  KEY fkExTerm   (termId),
+  KEY fkExCampus (campusId),
+  KEY fkExClass  (classroomId),
+  KEY fkExGrad   (gradedById),
+  CONSTRAINT fkExApp    FOREIGN KEY (applicationId) REFERENCES admissionApplication(id),
+  CONSTRAINT fkExType   FOREIGN KEY (examTypeId)    REFERENCES examType(id),
+  CONSTRAINT fkExTerm   FOREIGN KEY (termId)        REFERENCES academic.academicTerm(id),
+  CONSTRAINT fkExCampus FOREIGN KEY (campusId)      REFERENCES academic.campus(id),
+  CONSTRAINT fkExClass  FOREIGN KEY (classroomId)   REFERENCES academic.classroom(id),
+  CONSTRAINT fkExGrad   FOREIGN KEY (gradedById)    REFERENCES identity.departmentHead(userId)
 ) ENGINE=InnoDB;
 
 CREATE TABLE programCampusTermCapacity (
-  id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  programId       INT UNSIGNED NOT NULL, /* academic.program */
-  campusId        INT UNSIGNED NOT NULL, /* academic.campus */
-  termId          INT UNSIGNED NOT NULL, /* academic.academicTerm */
-  availableSeats  INT UNSIGNED NOT NULL,
-  assignedSeats   INT UNSIGNED NOT NULL DEFAULT 0,
-  openingDate     DATE NOT NULL,
-  closingDate     DATE NOT NULL,
-  KEY fk_pct_prog (programId),
-  KEY fk_pct_camp (campusId),
-  KEY fk_pct_term (termId),
-  CONSTRAINT fk_pct_prog FOREIGN KEY (programId) REFERENCES academic.program(id),
-  CONSTRAINT fk_pct_camp FOREIGN KEY (campusId)  REFERENCES academic.campus(id),
-  CONSTRAINT fk_pct_term FOREIGN KEY (termId)    REFERENCES academic.academicTerm(id)
+  id             INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  programId      INT UNSIGNED NOT NULL, /* academic.program */
+  campusId       INT UNSIGNED NOT NULL, /* academic.campus */
+  termId         INT UNSIGNED NOT NULL, /* academic.academicTerm */
+  availableSeats INT UNSIGNED NOT NULL,
+  assignedSeats  INT UNSIGNED NOT NULL DEFAULT 0,
+  openingDate    DATE NOT NULL,
+  closingDate    DATE NOT NULL,
+  KEY fkPctProg (programId),
+  KEY fkPctCamp (campusId),
+  KEY fkPctTerm (termId),
+  CONSTRAINT fkPctProg FOREIGN KEY (programId) REFERENCES academic.program(id),
+  CONSTRAINT fkPctCamp FOREIGN KEY (campusId)  REFERENCES academic.campus(id),
+  CONSTRAINT fkPctTerm FOREIGN KEY (termId)    REFERENCES academic.academicTerm(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE admissionWaitlist (
@@ -657,14 +657,14 @@ CREATE TABLE admissionWaitlist (
   applicationId INT UNSIGNED NOT NULL, /* admissions.admissionApplication */
   position      INT UNSIGNED NOT NULL,
   status        ENUM('Waiting','Promoted','Removed') NOT NULL DEFAULT 'Waiting',
-  KEY fk_aw_prog (programId),
-  KEY fk_aw_camp (campusId),
-  KEY fk_aw_term (termId),
-  KEY fk_aw_app  (applicationId),
-  CONSTRAINT fk_aw_prog FOREIGN KEY (programId)  REFERENCES academic.program(id),
-  CONSTRAINT fk_aw_camp FOREIGN KEY (campusId)   REFERENCES academic.campus(id),
-  CONSTRAINT fk_aw_term FOREIGN KEY (termId)     REFERENCES academic.academicTerm(id),
-  CONSTRAINT fk_aw_app  FOREIGN KEY (applicationId) REFERENCES admissionApplication(id)
+  KEY fkAwProg (programId),
+  KEY fkAwCamp (campusId),
+  KEY fkAwTerm (termId),
+  KEY fkAwApp  (applicationId),
+  CONSTRAINT fkAwProg FOREIGN KEY (programId)  REFERENCES academic.program(id),
+  CONSTRAINT fkAwCamp FOREIGN KEY (campusId)   REFERENCES academic.campus(id),
+  CONSTRAINT fkAwTerm FOREIGN KEY (termId)     REFERENCES academic.academicTerm(id),
+  CONSTRAINT fkAwApp  FOREIGN KEY (applicationId) REFERENCES admissionApplication(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE admissionResult (
@@ -679,14 +679,14 @@ CREATE TABLE admissionResult (
   termId              INT UNSIGNED NOT NULL, /* academic.academicTerm */
   resultDate          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   remarks             VARCHAR(255) NULL,
-  KEY fk_ar_app (applicationId),
-  KEY fk_ar_prog (assignedProgramId),
-  KEY fk_ar_camp (assignedCampusId),
-  KEY fk_ar_term (termId),
-  CONSTRAINT fk_ar_app  FOREIGN KEY (applicationId)     REFERENCES admissionApplication(id),
-  CONSTRAINT fk_ar_prog FOREIGN KEY (assignedProgramId) REFERENCES academic.program(id),
-  CONSTRAINT fk_ar_camp FOREIGN KEY (assignedCampusId)  REFERENCES academic.campus(id),
-  CONSTRAINT fk_ar_term FOREIGN KEY (termId)            REFERENCES academic.academicTerm(id)
+  KEY fkArApp  (applicationId),
+  KEY fkArProg (assignedProgramId),
+  KEY fkArCamp (assignedCampusId),
+  KEY fkArTerm (termId),
+  CONSTRAINT fkArApp  FOREIGN KEY (applicationId)     REFERENCES admissionApplication(id),
+  CONSTRAINT fkArProg FOREIGN KEY (assignedProgramId) REFERENCES academic.program(id),
+  CONSTRAINT fkArCamp FOREIGN KEY (assignedCampusId)  REFERENCES academic.campus(id),
+  CONSTRAINT fkArTerm FOREIGN KEY (termId)            REFERENCES academic.academicTerm(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE seatAcceptance (
@@ -697,8 +697,8 @@ CREATE TABLE seatAcceptance (
   tokenExpiresAt    DATETIME NOT NULL,
   status            ENUM('Pending','Accepted','Rejected','Expired') NOT NULL DEFAULT 'Pending',
   respondedAt       DATETIME NULL,
-  KEY fk_sa_res (resultId),
-  CONSTRAINT fk_sa_res FOREIGN KEY (resultId) REFERENCES admissionResult(id)
+  KEY fkSaRes (resultId),
+  CONSTRAINT fkSaRes FOREIGN KEY (resultId) REFERENCES admissionResult(id)
 ) ENGINE=InnoDB;
 
 
@@ -716,7 +716,7 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 ======================================================= */
 USE identity;
 
-CREATE OR REPLACE VIEW view_user_profiles AS
+CREATE OR REPLACE VIEW viewUserProfiles AS
 SELECT
   c.id            AS credentialId,
   u.id            AS userId,

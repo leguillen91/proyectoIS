@@ -1,3 +1,5 @@
+DELIMITER $$
+
 /* =======================================================
    spGetUserContext
    Envío al backend: email (usuario)
@@ -21,7 +23,7 @@ BEGIN
     c.fechaCreacion AS createdAt
   FROM credenciales c
   JOIN persona per ON per.idPersona=c.idPersona
-  LEFT JOIN credencialesXperfil cxp ON cxp.idCredenciales=c.idCredenciales
+  LEFT JOIN credencialesXPerfil cxp ON cxp.idCredenciales=c.idCredenciales
   LEFT JOIN perfil pr ON pr.idPerfil=cxp.idPerfil
   WHERE c.usuario = pEmail
   LIMIT 1;
@@ -29,7 +31,7 @@ BEGIN
   /* permisos (permissionCode) */
   SELECT DISTINCT pm.permissionCode
   FROM credenciales c
-  JOIN credencialesXperfil cxp ON cxp.idCredenciales=c.idCredenciales
+  JOIN credencialesXPerfil cxp ON cxp.idCredenciales=c.idCredenciales
   JOIN rolePermissions rp ON rp.idPerfil=cxp.idPerfil
   JOIN permissions pm ON pm.idPermission=rp.idPermission
   WHERE c.usuario = pEmail

@@ -3,8 +3,8 @@
    ----------------------------------------------------------------------*/
 USE identity;
 
-INSERT INTO person
-  (nationalId, firstName, lastName, institutionalEmail, personalEmail, contactPhone, address)
+INSERT INTO users
+  (nationalId, firstName, lastName, institutionalEmail, personalEmail, phone, address)
 VALUES
   -- ADMIN (sin institucional; login con correo personal)
   ('0801-2000-02941', 'admin',  'admin',     NULL,                'admina@gmail.com',  '11111111', 'unah'),
@@ -40,7 +40,7 @@ VALUES
   ('0801-2000-02965','Ana','Lopez',NULL,'analopez@gmail.com','55552222','Ciudad Universitaria'),
   ('0801-2000-02966','Roberto','Ruiz',NULL,'robertoruiz@gmail.com','55553333','Ciudad Universitaria'),
   ('0801-2000-02967','Patricia','Flores',NULL,'patriciaflores@gmail.com','55554444','Ciudad Universitaria')
-ON DUPLICATE KEY UPDATE contactPhone=VALUES(contactPhone);
+ON DUPLICATE KEY UPDATE phone=VALUES(phone);
 
 
 
@@ -51,39 +51,39 @@ ON DUPLICATE KEY UPDATE contactPhone=VALUES(contactPhone);
 SET @DUMMY_HASH := '$argon2id$v=19$m=65536,t=3,p=1$ZHVtbXlTYWx0$ZHVtbXlIYXNoRm9yVGVzdA';
 
 -- ADMIN
-INSERT IGNORE INTO credentials (personId, username, role, passwordHash, lastLogin, loginAttempts, blocked, recoveryToken)
-SELECT p.id, p.personalEmail, 'ADMIN', @DUMMY_HASH, NULL, 0, 0, NULL
-FROM person p WHERE p.nationalId = '0801-2000-02941';
+INSERT IGNORE INTO credentials (userId, username, role, passwordHash, lastLogin, loginAttempts, isBlocked, recoveryToken)
+SELECT u.id, u.personalEmail, 'ADMIN', @DUMMY_HASH, NULL, 0, 0, NULL
+FROM users u WHERE u.nationalId = '0801-2000-02941';
 
 -- Students 
-INSERT IGNORE INTO credentials (personId, username, role, passwordHash)
-SELECT p.id, p.institutionalEmail, 'STUDENT', @DUMMY_HASH
-FROM person p
-WHERE p.nationalId IN ('0801-2000-02942','0801-2000-02947','0801-2000-02948','0801-2000-02949','0801-2000-02950');
+INSERT IGNORE INTO credentials (userId, username, role, passwordHash)
+SELECT u.id, u.institutionalEmail, 'STUDENT', @DUMMY_HASH
+FROM users u
+WHERE u.nationalId IN ('0801-2000-02942','0801-2000-02947','0801-2000-02948','0801-2000-02949','0801-2000-02950');
 
 -- Teachers
-INSERT IGNORE INTO credentials (personId, username, role, passwordHash)
-SELECT p.id, p.institutionalEmail, 'TEACHER', @DUMMY_HASH
-FROM person p
-WHERE p.nationalId IN ('0801-2000-02951','0801-2000-02952','0801-2000-02953','0801-2000-02954','0801-2000-02955');
+INSERT IGNORE INTO credentials (userId, username, role, passwordHash)
+SELECT u.id, u.institutionalEmail, 'TEACHER', @DUMMY_HASH
+FROM users u
+WHERE u.nationalId IN ('0801-2000-02951','0801-2000-02952','0801-2000-02953','0801-2000-02954','0801-2000-02955');
 
 -- Coordinators (cuentas por correo personal)
-INSERT IGNORE INTO credentials (personId, username, role, passwordHash)
-SELECT p.id, p.personalEmail, 'COORDINATOR', @DUMMY_HASH
-FROM person p
-WHERE p.nationalId IN ('0801-2000-02956','0801-2000-02957','0801-2000-02958','0801-2000-02959');
+INSERT IGNORE INTO credentials (userId, username, role, passwordHash)
+SELECT u.id, u.personalEmail, 'COORDINATOR', @DUMMY_HASH
+FROM users u
+WHERE u.nationalId IN ('0801-2000-02956','0801-2000-02957','0801-2000-02958','0801-2000-02959');
 
 -- Department heads (cuentas por correo personal)
-INSERT IGNORE INTO credentials (personId, username, role, passwordHash)
-SELECT p.id, p.personalEmail, 'DEPT_HEAD', @DUMMY_HASH
-FROM person p
-WHERE p.nationalId IN ('0801-2000-02960','0801-2000-02961','0801-2000-02962','0801-2000-02963');
+INSERT IGNORE INTO credentials (userId, username, role, passwordHash)
+SELECT u.id, u.personalEmail, 'DEPT_HEAD', @DUMMY_HASH
+FROM users u
+WHERE u.nationalId IN ('0801-2000-02960','0801-2000-02961','0801-2000-02962','0801-2000-02963');
 
 -- Applicants
-INSERT IGNORE INTO credentials (personId, username, role, passwordHash)
-SELECT p.id, p.personalEmail, 'APPLICANT', @DUMMY_HASH
-FROM person p
-WHERE p.nationalId IN ('0801-2000-02964','0801-2000-02965','0801-2000-02966','0801-2000-02967');
+INSERT IGNORE INTO credentials (userId, username, role, passwordHash)
+SELECT u.id, u.personalEmail, 'APPLICANT', @DUMMY_HASH
+FROM users u
+WHERE u.nationalId IN ('0801-2000-02964','0801-2000-02965','0801-2000-02966','0801-2000-02967');
 
 
 /* =======================================================
@@ -91,7 +91,7 @@ WHERE p.nationalId IN ('0801-2000-02964','0801-2000-02965','0801-2000-02966','08
 ======================================================= */
 USE identity;
 
-INSERT IGNORE INTO roles (id, roleKey, description) VALUES
+INSERT IGNORE INTO roles (id, roleName, description) VALUES
   (1,'ADMIN','Administrador del sistema'),
   (2,'STUDENT','Estudiante UNAH'),
   (3,'TEACHER','Docente UNAH'),
@@ -108,33 +108,33 @@ INSERT IGNORE INTO permissions (permissionCode, description) VALUES
  ('users.manage',      'Gestión de usuarios');
 
 -- STUDENT: view + download
-INSERT IGNORE INTO rolePermissions (roleId, idPermission)
-SELECT r.id, perm.idPermission
+INSERT IGNORE INTO rolePermissions (roleId, permissionId)
+SELECT r.id, perm.id
 FROM roles r
 JOIN permissions perm ON perm.permissionCode IN ('library.view','library.download')
-WHERE r.roleKey='STUDENT';
+WHERE r.roleName='STUDENT';
 
 -- TEACHER / COORDINATOR / DEPT_HEAD: biblioteca completa
-INSERT IGNORE INTO rolePermissions (roleId, idPermission)
-SELECT r.id, perm.idPermission
+INSERT IGNORE INTO rolePermissions (roleId, permissionId)
+SELECT r.id, perm.id
 FROM roles r
 JOIN permissions perm ON perm.permissionCode IN ('library.view','library.download','library.upload','library.edit','library.approve')
-WHERE r.roleKey IN ('TEACHER','COORDINATOR','DEPT_HEAD');
+WHERE r.roleName IN ('TEACHER','COORDINATOR','DEPT_HEAD');
 
 -- ADMIN: todos los permisos
-INSERT IGNORE INTO rolePermissions (roleId, idPermission)
-SELECT r.id, perm.idPermission
+INSERT IGNORE INTO rolePermissions (roleId, permissionId)
+SELECT r.id, perm.id
 FROM roles r
 CROSS JOIN permissions perm
-WHERE r.roleKey='ADMIN';
+WHERE r.roleName='ADMIN';
 
 -- Vincular automáticamente el rol a cada credencial 
-INSERT IGNORE INTO credentialsXrole (credentialId, roleId)
+INSERT IGNORE INTO credentialRoles (credentialId, roleId)
 SELECT c.id, r.id
 FROM credentials c
-JOIN roles r ON r.roleKey = c.role
+JOIN roles r ON r.roleName = c.role
 WHERE NOT EXISTS (
-  SELECT 1 FROM credentialsXrole x
+  SELECT 1 FROM credentialRoles x
   WHERE x.credentialId = c.id AND x.roleId = r.id
 );
 
@@ -144,9 +144,9 @@ WHERE NOT EXISTS (
    3. SPECIFIC ROLES (STUDENTS, TEACHERS, COORDINATORS, DEPT HEADS)
    ----------------------------------------------------------------------*/
 -- STUDENT:
-INSERT IGNORE INTO student (personId, accountNumber, academicLevel, programId, secondaryProgramId, gpa, admissionDate)
-SELECT p.id,
-       CASE p.nationalId
+INSERT IGNORE INTO students (userId, studentNumber, programLevel, programId, secondaryProgramId, gpa, entryDate)
+SELECT u.id,
+       CASE u.nationalId
          WHEN '0801-2000-02942' THEN '20202002001'  -- Milton
          WHEN '0801-2000-02947' THEN '20202002002'
          WHEN '0801-2000-02948' THEN '20202002003'
@@ -154,13 +154,13 @@ SELECT p.id,
          WHEN '0801-2000-02950' THEN '20202002005'
        END,
        'Undergraduate', NULL, NULL, NULL, NULL
-FROM person p
-WHERE p.nationalId IN ('0801-2000-02942','0801-2000-02947','0801-2000-02948','0801-2000-02949','0801-2000-02950');
+FROM users u
+WHERE u.nationalId IN ('0801-2000-02942','0801-2000-02947','0801-2000-02948','0801-2000-02949','0801-2000-02950');
 
 -- TEACHERS
-INSERT IGNORE INTO teacher (personId, employeeNumber, departmentProgramId, contractDate, shift, office)
-SELECT p.id,
-       CASE p.nationalId
+INSERT IGNORE INTO teachers (userId, employeeNumber, academicDepartmentId, hireDate, shift, office)
+SELECT u.id,
+       CASE u.nationalId
          WHEN '0801-2000-02951' THEN '20102002002'
          WHEN '0801-2000-02952' THEN '20102002003'
          WHEN '0801-2000-02953' THEN '20102002004'
@@ -168,27 +168,27 @@ SELECT p.id,
          WHEN '0801-2000-02955' THEN '20102002006'
        END,
        NULL, NULL, 'FullTime', NULL
-FROM person p
-WHERE p.nationalId IN ('0801-2000-02951','0801-2000-02952','0801-2000-02953','0801-2000-02954','0801-2000-02955');
+FROM users u
+WHERE u.nationalId IN ('0801-2000-02951','0801-2000-02952','0801-2000-02953','0801-2000-02954','0801-2000-02955');
 
 -- COORDINATORS (4, según áreas)
-INSERT IGNORE INTO coordinator (personId, area, active)
-SELECT p.id,
-       CASE p.nationalId
-         WHEN '0801-2000-02956' THEN 'BibliotecaVirtual'
-         WHEN '0801-2000-02957' THEN 'Musica'
-         WHEN '0801-2000-02958' THEN 'Admisiones'
-         WHEN '0801-2000-02959' THEN 'Matricula'
+INSERT IGNORE INTO coordinators (userId, area, isActive)
+SELECT u.id,
+       CASE u.nationalId
+         WHEN '0801-2000-02956' THEN 'VirtualLibrary'
+         WHEN '0801-2000-02957' THEN 'Music'
+         WHEN '0801-2000-02958' THEN 'Admissions'
+         WHEN '0801-2000-02959' THEN 'Enrollment'
        END,
        1
-FROM person p
-WHERE p.nationalId IN ('0801-2000-02956','0801-2000-02957','0801-2000-02958','0801-2000-02959');
+FROM users u
+WHERE u.nationalId IN ('0801-2000-02956','0801-2000-02957','0801-2000-02958','0801-2000-02959');
 
 -- DEPARTMENT HEADS
-INSERT IGNORE INTO departmentHead (personId, departmentProgramId, startDate, endDate, endReason)
-SELECT p.id, NULL, DATE('2025-03-01'), NULL, NULL
-FROM person p
-WHERE p.nationalId IN ('0801-2000-02960','0801-2000-02961','0801-2000-02962','0801-2000-02963');
+INSERT IGNORE INTO departmentHead (userId, academicDepartmentId, termStartDate, termEndDate, endReason)
+SELECT u.id, NULL, DATE('2025-03-01'), NULL, NULL
+FROM users u
+WHERE u.nationalId IN ('0801-2000-02960','0801-2000-02961','0801-2000-02962','0801-2000-02963');
 
 
 
@@ -261,34 +261,34 @@ ON DUPLICATE KEY UPDATE status='Active';
    5. PROGRAMS AND COURSES
    ----------------------------------------------------------------------*/
 -- Programs
-INSERT INTO program (programCode, name, facultyId, totalCredits, semesterDuration, status, campusId, modality)
-SELECT 'IS-01','Ingeniería en Sistemas',  f1.id, 165,10,'Active', ca1.id,'OnSite'  FROM faculty f1 JOIN campus ca1 WHERE f1.facultyCode='FI'  AND ca1.campusCode='CU'
+INSERT INTO program (programCode, name, facultyId, totalCredits, totalSemesters, status, campusId, modality)
+SELECT 'IS-01','Ingeniería en Sistemas',  f1.id, 165,10,'Active', ca1.id,'Onsite'  FROM faculty f1 JOIN campus ca1 WHERE f1.facultyCode='FI'  AND ca1.campusCode='CU'
 UNION ALL
-SELECT 'DERE-01','Licenciatura en Derecho',   f2.id,150,10,'Active', ca1.id,'OnSite'  FROM faculty f2 JOIN campus ca1 WHERE f2.facultyCode='FCJ' AND ca1.campusCode='CU'
+SELECT 'DERE-01','Licenciatura en Derecho',   f2.id,150,10,'Active', ca1.id,'Onsite'  FROM faculty f2 JOIN campus ca1 WHERE f2.facultyCode='FCJ' AND ca1.campusCode='CU'
 UNION ALL
-SELECT 'PSI-01','Licenciatura en Psicología', f3.id,160,9,'Active',  ca1.id,'OnSite'  FROM faculty f3 JOIN campus ca1 WHERE f3.facultyCode='FCS' AND ca1.campusCode='CU'
+SELECT 'PSI-01','Licenciatura en Psicología', f3.id,160,9,'Active',  ca1.id,'Onsite'  FROM faculty f3 JOIN campus ca1 WHERE f3.facultyCode='FCS' AND ca1.campusCode='CU'
 UNION ALL
-SELECT 'MED-01','Medicina y Cirugía',         f4.id,200,12,'Active', ca1.id,'OnSite'  FROM faculty f4 JOIN campus ca1 WHERE f4.facultyCode='FCM' AND ca1.campusCode='CU'
+SELECT 'MED-01','Medicina y Cirugía',         f4.id,200,12,'Active', ca1.id,'Onsite'  FROM faculty f4 JOIN campus ca1 WHERE f4.facultyCode='FCM' AND ca1.campusCode='CU'
 UNION ALL
-SELECT 'ARC-01','Arquitectura',               f5.id,180,10,'Active', ca1.id,'OnSite'  FROM faculty f5 JOIN campus ca1 WHERE f5.facultyCode='FHA' AND ca1.campusCode='CU'
+SELECT 'ARC-01','Arquitectura',               f5.id,180,10,'Active', ca1.id,'Onsite'  FROM faculty f5 JOIN campus ca1 WHERE f5.facultyCode='FHA' AND ca1.campusCode='CU'
 ON DUPLICATE KEY UPDATE status='Active';
 
 -- Courses 
 INSERT IGNORE INTO course (courseCode, name, credits, category, status)
 VALUES
-  ('IS-110','Introducción a la Ingeniería en Sistemas',3,'Mandatory','Active'),
-  ('MM-110','Matemática I',5,'Mandatory','Active'),
-  ('SC-101','Sociología',4,'Mandatory','Active'),
-  ('IS-210','Programación II',4,'Mandatory','Active'),
-  ('IS-410','Sistemas Operativos I',4,'Mandatory','Active'),
-  ('DER-101','Introducción al Derecho',4,'Mandatory','Active'),
-  ('DER-201','Derecho Civil I',4,'Mandatory','Active'),
-  ('PSI-101','Introducción a la Psicología',4,'Mandatory','Active'),
-  ('MED-101','Anatomía Humana',5,'Mandatory','Active'),
-  ('ARC-101','Introducción a la Arquitectura',4,'Mandatory','Active');
+  ('IS-110','Introducción a la Ingeniería en Sistemas',3,'Required','Active'),
+  ('MM-110','Matemática I',5,'Required','Active'),
+  ('SC-101','Sociología',4,'Required','Active'),
+  ('IS-210','Programación II',4,'Required','Active'),
+  ('IS-410','Sistemas Operativos I',4,'Required','Active'),
+  ('DER-101','Introducción al Derecho',4,'Required','Active'),
+  ('DER-201','Derecho Civil I',4,'Required','Active'),
+  ('PSI-101','Introducción a la Psicología',4,'Required','Active'),
+  ('MED-101','Anatomía Humana',5,'Required','Active'),
+  ('ARC-101','Introducción a la Arquitectura',4,'Required','Active');
 
 -- Prerequisites
-INSERT IGNORE INTO prerequisite (courseId, prerequisiteCourseId)
+INSERT IGNORE INTO prerequisite (courseId, prerequisiteId)
 SELECT c2.id, c1.id
 FROM course c1, course c2
 WHERE (c2.courseCode, c1.courseCode) IN
@@ -299,24 +299,24 @@ WHERE (c2.courseCode, c1.courseCode) IN
    ('ARC-101','MM-110'));
 
 -- Curriculum plan for some programs
-INSERT IGNORE INTO curriculumPlan (programId, courseId, semester, type)
-SELECT p.id, c.id, 1, 'Mandatory'
+INSERT IGNORE INTO curriculumPlan (programId, courseId, semester, planType)
+SELECT p.id, c.id, 1, 'Required'
 FROM program p JOIN course c
 WHERE p.programCode='IS-01' AND c.courseCode IN ('IS-110','MM-110','SC-101')
 UNION ALL
-SELECT p.id, c.id, 2, 'Mandatory'
+SELECT p.id, c.id, 2, 'Required'
 FROM program p JOIN course c
 WHERE p.programCode='IS-01' AND c.courseCode='IS-210'
 UNION ALL
-SELECT p.id, c.id, 4, 'Mandatory'
+SELECT p.id, c.id, 4, 'Required'
 FROM program p JOIN course c
 WHERE p.programCode='IS-01' AND c.courseCode='IS-410'
 UNION ALL
-SELECT p.id, c.id, 1, 'Mandatory'
+SELECT p.id, c.id, 1, 'Required'
 FROM program p JOIN course c
 WHERE p.programCode='DERE-01' AND c.courseCode='DER-101'
 UNION ALL
-SELECT p.id, c.id, 3, 'Mandatory'
+SELECT p.id, c.id, 3, 'Required'
 FROM program p JOIN course c
 WHERE p.programCode='DERE-01' AND c.courseCode='DER-201';
 
@@ -325,13 +325,13 @@ WHERE p.programCode='DERE-01' AND c.courseCode='DER-201';
 /* ======================================================================
    6. ACADEMIC TERMS
    ----------------------------------------------------------------------*/
-INSERT IGNORE INTO academicTerm (year, number, name, startDate, endDate, enrollStart, enrollEnd, classesStart, classesEnd, status)
+INSERT IGNORE INTO academicTerm (year, termNumber, name, startDate, endDate, enrollmentStartDate, enrollmentEndDate, classesStartDate, classesEndDate, status)
 VALUES
   (2024,1,'2024-1','2024-01-15','2024-05-15','2023-12-01','2023-12-20','2024-01-15','2024-05-01','Finished'),
   (2024,2,'2024-2','2024-05-16','2024-09-15','2024-04-01','2024-04-20','2024-05-16','2024-09-01','Finished'),
   (2024,3,'2024-3','2024-09-16','2024-12-31','2024-08-01','2024-08-20','2024-09-16','2024-12-20','Finished'),
   (2025,1,'2025-1','2025-01-15','2025-05-15','2024-12-01','2024-12-20','2025-01-15','2025-05-01','InProgress'),
-  (2025,2,'2025-2','2025-05-16','2025-09-15','2025-04-01','2025-04-20','2025-05-16','2025-09-01','Registration');
+  (2025,2,'2025-2','2025-05-16','2025-09-15','2025-04-01','2025-04-20','2025-05-16','2025-09-01','Enrollment');
 
 
 
@@ -339,13 +339,13 @@ VALUES
    7. SECTIONS AND SCHEDULES
    ----------------------------------------------------------------------*/
 -- Sections (con esquemas calificados y docentes existentes 02..06)
-INSERT INTO enrollment.section (courseId, termId, teacherId, classroomId, sectionCode, maxSeats, modality, status)
-SELECT c.id, t.id, tch.id, cr.id,
-       CONCAT(c.courseCode,'-',t.year,'-',LPAD(t.number,2,'0')),
-       30, 'OnSite', 'Active'
+INSERT INTO enrollment.section (courseId, termId, teacherId, classroomId, sectionCode, maxCapacity, modality, status)
+SELECT c.id, t.id, tch.userId, cr.id,
+       CONCAT(c.courseCode,'-',t.year,'-',LPAD(t.termNumber,2,'0')),
+       30, 'Onsite', 'Active'
 FROM academic.course c
-JOIN academic.academicTerm t ON t.year=2025 AND t.number=1
-JOIN identity.teacher tch ON tch.employeeNumber IN ('20102002002','20102002003','20102002004','20102002005','20102002006')
+JOIN academic.academicTerm t ON t.year=2025 AND t.termNumber=1
+JOIN identity.teachers tch ON tch.employeeNumber IN ('20102002002','20102002003','20102002004','20102002005','20102002006')
 JOIN academic.classroom cr ON cr.roomNumber IN ('101','201','301','401','501')
 WHERE c.courseCode IN ('IS-110','MM-110','DER-101','PSI-101','MED-101')
 LIMIT 5;
@@ -384,27 +384,27 @@ FROM enrollment.section s;
    ----------------------------------------------------------------------*/
 -- Waitlist
 INSERT INTO enrollment.waitlist (studentId, sectionId, position, priority)
-SELECT st.personId, s.id, ROW_NUMBER() OVER (ORDER BY st.personId), 1
-FROM identity.student st
+SELECT st.userId, s.id, ROW_NUMBER() OVER (ORDER BY st.userId), 1
+FROM identity.students st
 JOIN enrollment.section s ON s.id IN (SELECT id FROM enrollment.section ORDER BY id LIMIT 5)
-WHERE st.accountNumber IN ('20202002001','20202002002','20202002003','20202002004','20202002005')
+WHERE st.studentNumber IN ('20202002001','20202002002','20202002003','20202002004','20202002005')
 LIMIT 5;
 
 -- Payments
 INSERT INTO enrollment.payment (studentId, termId, concept, amount, method, status, paidAt)
-SELECT st.personId, t.id, 'Enrollment', 1000.00, 'Card', 'Confirmed', NOW()
-FROM identity.student st
-JOIN academic.academicTerm t ON t.year=2025 AND t.number=1
-WHERE st.accountNumber IN ('20202002001','20202002002','20202002003','20202002004','20202002005')
+SELECT st.userId, t.id, 'EnrollmentFee', 1000.00, 'Card', 'Confirmed', NOW()
+FROM identity.students st
+JOIN academic.academicTerm t ON t.year=2025 AND t.termNumber=1
+WHERE st.studentNumber IN ('20202002001','20202002002','20202002003','20202002004','20202002005')
 LIMIT 5;
 
 -- Student enrollments
 INSERT INTO enrollment.studentEnrollment (studentId, sectionId, status, paymentId)
-SELECT st.personId, s.id, 'Active', pay.id
-FROM identity.student st
+SELECT st.userId, s.id, 'Active', pay.id
+FROM identity.students st
 JOIN enrollment.section s ON s.id IN (SELECT id FROM enrollment.section ORDER BY id LIMIT 5)
-JOIN enrollment.payment pay ON pay.studentId = st.personId
-WHERE st.accountNumber IN ('20202002001','20202002002','20202002003','20202002004','20202002005')
+JOIN enrollment.payment pay ON pay.studentId = st.userId
+WHERE st.studentNumber IN ('20202002001','20202002002','20202002003','20202002004','20202002005')
 LIMIT 5;
 
 
@@ -414,31 +414,31 @@ LIMIT 5;
    ----------------------------------------------------------------------*/
 INSERT INTO enrollment.studentRequest
   (studentId, currentProgramId, requestedProgramId, currentCampusId, requestedCampusId, termId,
-   requestType, justification, status, assignedCoordinatorId, approvedBy, requestedAt)
-SELECT st.personId,
+   requestType, justification, status, assignedCoordinatorId, approvedById, requestedAt)
+SELECT st.userId,
        p1.id,
        p2.id,
        cp1.id,
        cp2.id,
        t.id,
-       'ChangeProgram',
+       'ProgramChange',
        'Motivos académicos',
        'Review',
-       coord.personId,
-       dh.personId,
+       coord.userId,
+       dh.userId,
        NOW()
-FROM identity.student st
+FROM identity.students st
 JOIN academic.program p1 ON p1.programCode='IS-01'
 JOIN academic.program p2 ON p2.programCode='PSI-01'
 JOIN academic.campus  cp1 ON cp1.campusCode='CU'
 JOIN academic.campus  cp2 ON cp2.campusCode='CU'
-JOIN academic.academicTerm t ON t.year=2025 AND t.number=1
-JOIN identity.coordinator coord ON coord.area='BibliotecaVirtual'
-JOIN identity.departmentHead dh ON dh.departmentProgramId IS NULL
+JOIN academic.academicTerm t ON t.year=2025 AND t.termNumber=1
+JOIN identity.coordinators coord ON coord.area='VirtualLibrary'
+JOIN identity.departmentHead dh ON dh.academicDepartmentId IS NULL
 LIMIT 5;
 
-INSERT INTO enrollment.sectionRequest (requestId, sectionId, reason, status, approvedBy, reviewedAt)
-SELECT sr.id, s.id, 'Cambio de sección', 'Pending', sr.approvedBy, NULL
+INSERT INTO enrollment.sectionRequest (requestId, sectionId, reason, status, approvedById, reviewedAt)
+SELECT sr.id, s.id, 'Cambio de sección', 'Pending', sr.approvedById, NULL
 FROM enrollment.studentRequest sr
 JOIN enrollment.section s ON s.id IN (SELECT id FROM enrollment.section ORDER BY id LIMIT 5)
 LIMIT 5;
@@ -454,7 +454,7 @@ USE resources;
 /* ---------------------------------------------
    Tipos de recurso y licencia base
 --------------------------------------------- */
-INSERT IGNORE INTO resource_type (code, description) VALUES
+INSERT IGNORE INTO resourceType (code, description) VALUES
  ('PDF','Portable Document Format'),
  ('AUDIO','Audio file (MP3/WAV)'),
  ('SCORE','Musical score (PDF/MSCZ/MSCX/MXL)'),
@@ -486,47 +486,47 @@ INSERT INTO resource
 VALUES
   (
     'Fundamentos de Sistemas Operativos', 'Recurso académico de referencia',
-    'Library', (SELECT idResourceType FROM resource_type WHERE code='PDF'),
+    'Library', (SELECT idResourceType FROM resourceType WHERE code='PDF'),
     (SELECT idCareer FROM academic.career WHERE careerCode='IS-01'),
-    (SELECT idCourse  FROM academic.course  WHERE courseCode='IS-410'),
+    (SELECT id FROM academic.course  WHERE courseCode='IS-410'),
     (SELECT idLicense FROM license WHERE code='UNAH-INT'),
     'UniversityOnly','ViewOnly','Submitted'
   ),
   (
     'Cálculo I para Ingenierías', 'Recurso académico de referencia',
-    'Library', (SELECT idResourceType FROM resource_type WHERE code='PDF'),
+    'Library', (SELECT idResourceType FROM resourceType WHERE code='PDF'),
     (SELECT idCareer FROM academic.career WHERE careerCode='IS-01'),
-    (SELECT idCourse  FROM academic.course  WHERE courseCode='MM-110'),
+    (SELECT id FROM academic.course  WHERE courseCode='MM-110'),
     (SELECT idLicense FROM license WHERE code='UNAH-INT'),
     'UniversityOnly','ViewOnly','Submitted'
   ),
   (
     'Introducción al Derecho Hondureño', 'Recurso académico de referencia',
-    'Library', (SELECT idResourceType FROM resource_type WHERE code='PDF'),
+    'Library', (SELECT idResourceType FROM resourceType WHERE code='PDF'),
     (SELECT idCareer FROM academic.career WHERE careerCode='DERE-01'),
-    (SELECT idCourse  FROM academic.course  WHERE courseCode='DER-101'),
+    (SELECT id FROM academic.course  WHERE courseCode='DER-101'),
     (SELECT idLicense FROM license WHERE code='UNAH-INT'),
     'UniversityOnly','ViewOnly','Submitted'
   ),
   (
     'Principios de Psicología', 'Recurso académico de referencia',
-    'Library', (SELECT idResourceType FROM resource_type WHERE code='PDF'),
+    'Library', (SELECT idResourceType FROM resourceType WHERE code='PDF'),
     (SELECT idCareer FROM academic.career WHERE careerCode='PSI-01'),
-    (SELECT idCourse  FROM academic.course  WHERE courseCode='PSI-101'),
+    (SELECT id FROM academic.course  WHERE courseCode='PSI-101'),
     (SELECT idLicense FROM license WHERE code='UNAH-INT'),
     'UniversityOnly','ViewOnly','Submitted'
   ),
   (
     'Atlas de Anatomía Humana', 'Recurso académico de referencia',
-    'Library', (SELECT idResourceType FROM resource_type WHERE code='PDF'),
+    'Library', (SELECT idResourceType FROM resourceType WHERE code='PDF'),
     (SELECT idCareer FROM academic.career WHERE careerCode='MED-01'),
-    (SELECT idCourse  FROM academic.course  WHERE courseCode='MED-101'),
+    (SELECT id FROM academic.course  WHERE courseCode='MED-101'),
     (SELECT idLicense FROM license WHERE code='UNAH-INT'),
     'UniversityOnly','ViewOnly','Submitted'
   );
 
 /* Archivos primarios (PDF – BLOB) */
-INSERT INTO resource_file (resourceId, fileKind, fileBlob, originalFilename, mimeType, sizeBytes, pages)
+INSERT INTO resourceFile (resourceId, fileKind, fileBlob, originalFilename, mimeType, sizeBytes, pages)
 SELECT r.idResource, 'Primary', 0x25,
        CONCAT(REPLACE(r.title,' ','_'),'.pdf') AS originalFilename,
        'application/pdf', 1048576, NULL
@@ -534,7 +534,7 @@ FROM resource r
 WHERE r.module='Library';
 
 /* Autores  */
-INSERT INTO resource_author (resourceId, authorName, role)
+INSERT INTO resourceAuthor (resourceId, authorName, role)
 SELECT r.idResource,
        CASE r.title
          WHEN 'Fundamentos de Sistemas Operativos' THEN 'A. Silberschatz'
@@ -548,7 +548,7 @@ FROM resource r
 WHERE r.module='Library';
 
 /* Etiquetas por título */
-INSERT INTO resource_tag (resourceId, tagId)
+INSERT INTO resourceTag (resourceId, tagId)
 SELECT r.idResource, t.idTag
 FROM resource r
 JOIN tag t
@@ -567,47 +567,47 @@ INSERT INTO resource
 VALUES
   (
     'Canción de Programadores','Pieza musical educativa',
-    'Music', (SELECT idResourceType FROM resource_type WHERE code='AUDIO'),
+    'Music', (SELECT idResourceType FROM resourceType WHERE code='AUDIO'),
     (SELECT idCareer FROM academic.career WHERE careerCode='IS-01'),
-    (SELECT idCourse  FROM academic.course  WHERE courseCode='IS-110'),
+    (SELECT id FROM academic.course  WHERE courseCode='IS-110'),
     (SELECT idLicense FROM license WHERE code='UNAH-INT'),
     'UniversityOnly','ViewOnly','Submitted'
   ),
   (
     'Himno a la Sociología','Pieza musical educativa',
-    'Music', (SELECT idResourceType FROM resource_type WHERE code='AUDIO'),
+    'Music', (SELECT idResourceType FROM resourceType WHERE code='AUDIO'),
     (SELECT idCareer FROM academic.career WHERE careerCode='IS-01'), -- o la carrera que corresponda en tu plan
-    (SELECT idCourse  FROM academic.course  WHERE courseCode='SC-101'),
+    (SELECT id FROM academic.course  WHERE courseCode='SC-101'),
     (SELECT idLicense FROM license WHERE code='UNAH-INT'),
     'UniversityOnly','ViewOnly','Submitted'
   ),
   (
     'Melodía de la Mente','Pieza musical educativa',
-    'Music', (SELECT idResourceType FROM resource_type WHERE code='AUDIO'),
+    'Music', (SELECT idResourceType FROM resourceType WHERE code='AUDIO'),
     (SELECT idCareer FROM academic.career WHERE careerCode='PSI-01'),
-    (SELECT idCourse  FROM academic.course  WHERE courseCode='PSI-101'),
+    (SELECT id FROM academic.course  WHERE courseCode='PSI-101'),
     (SELECT idLicense FROM license WHERE code='UNAH-INT'),
     'UniversityOnly','ViewOnly','Submitted'
   ),
   (
     'Ritmo del Corazón','Pieza musical educativa',
-    'Music', (SELECT idResourceType FROM resource_type WHERE code='AUDIO'),
+    'Music', (SELECT idResourceType FROM resourceType WHERE code='AUDIO'),
     (SELECT idCareer FROM academic.career WHERE careerCode='MED-01'),
-    (SELECT idCourse  FROM academic.course  WHERE courseCode='MED-101'),
+    (SELECT id FROM academic.course  WHERE courseCode='MED-101'),
     (SELECT idLicense FROM license WHERE code='UNAH-INT'),
     'UniversityOnly','ViewOnly','Submitted'
   ),
   (
     'Sinfonía de la Arquitectura','Pieza musical educativa',
-    'Music', (SELECT idResourceType FROM resource_type WHERE code='AUDIO'),
+    'Music', (SELECT idResourceType FROM resourceType WHERE code='AUDIO'),
     (SELECT idCareer FROM academic.career WHERE careerCode='ARC-01'),
-    (SELECT idCourse  FROM academic.course  WHERE courseCode='ARC-101'),
+    (SELECT id FROM academic.course  WHERE courseCode='ARC-101'),
     (SELECT idLicense FROM license WHERE code='UNAH-INT'),
     'UniversityOnly','ViewOnly','Submitted'
   );
 
 /* Archivos (MP3 – BLOB) */
-INSERT INTO resource_file (resourceId, fileKind, fileBlob, originalFilename, mimeType, sizeBytes, durationSeconds)
+INSERT INTO resourceFile (resourceId, fileKind, fileBlob, originalFilename, mimeType, sizeBytes, durationSeconds)
 SELECT r.idResource, 'Primary', 0x25,
        CONCAT(REPLACE(r.title,' ','_'),'.mp3'),
        'audio/mpeg', 512000, 180
@@ -615,13 +615,13 @@ FROM resource r
 WHERE r.module='Music';
 
 /* Autores de música */
-INSERT INTO resource_author (resourceId, authorName, role)
+INSERT INTO resourceAuthor (resourceId, authorName, role)
 SELECT r.idResource, 'Autor Desconocido', 'Author'
 FROM resource r
 WHERE r.module='Music';
 
 /* Tags por título */
-INSERT INTO resource_tag (resourceId, tagId)
+INSERT INTO resourceTag (resourceId, tagId)
 SELECT r.idResource, t.idTag
 FROM resource r
 JOIN tag t
@@ -638,11 +638,11 @@ WHERE r.module='Music';
    ----------------------------------------------------------------------*/
 USE admissions;
 
--- Applicants (crear filas desde identity.person)
-INSERT IGNORE INTO applicant (personId, personalEmail, phone, status)
-SELECT p.id, p.personalEmail, p.contactPhone, 'Active'
-FROM identity.person p
-WHERE p.nationalId IN ('0801-2000-02964','0801-2000-02965','0801-2000-02966','0801-2000-02967');
+-- Applicants (crear filas desde identity.users)
+INSERT IGNORE INTO applicant (userId, personalEmail, phone, status)
+SELECT u.id, u.personalEmail, u.phone, 'Active'
+FROM identity.users u
+WHERE u.nationalId IN ('0801-2000-02964','0801-2000-02965','0801-2000-02966','0801-2000-02967');
 
 -- Applications
 INSERT INTO admissionApplication (applicantId, termId, primaryProgramId, campusId, secondaryProgramId, status, createdAt)
@@ -650,13 +650,13 @@ SELECT ap.id, t.id, p1.id, cp.id, p2.id, 'Pending', NOW()
 FROM applicant ap
 JOIN academic.program p1 ON p1.programCode='IS-01'
 JOIN academic.program p2 ON p2.programCode='PSI-01'
-JOIN academic.academicTerm t ON t.year=2025 AND t.number=1
+JOIN academic.academicTerm t ON t.year=2025 AND t.termNumber=1
 JOIN academic.campus cp ON cp.campusCode='CU'
 LIMIT 4;
 
 -- Documentation
-INSERT INTO documentation (applicationId, documentType, pdfFile, sizeBytes)
-SELECT aa.id, 'CertificadoSecundaria', 0x25, 1024
+INSERT INTO applicationDocument (applicationId, documentType, pdfFile, sizeBytes)
+SELECT aa.id, 'HighSchoolCertificate', 0x25, 1024
 FROM admissionApplication aa
 LIMIT 4;
 
@@ -668,7 +668,7 @@ VALUES
   (3,'PCCNS',800,'Prueba de Conocimientos de Ciencias Naturales y Sociales');
 
 -- Programs by exam (min scores)
-INSERT IGNORE INTO programsExams (programId, examTypeId, minScore, required)
+INSERT IGNORE INTO programExamRequirement (programId, examTypeId, minimumScore, required)
 SELECT p.id, et.id, 
        CASE p.programCode
          WHEN 'IS-01'  THEN 900
@@ -683,38 +683,38 @@ CROSS JOIN examType et
 WHERE et.name='PAA' AND p.programCode IN ('IS-01','DERE-01','PSI-01','MED-01','ARC-01');
 
 -- Scheduled exams
-INSERT INTO exam (applicationId, examTypeId, termId, campusId, classroomId, date, time, attended, score, gradedBy, status)
+INSERT INTO exam (applicationId, examTypeId, termId, campusId, classroomId, date, time, attended, score, gradedById, status)
 SELECT aa.id, et.id, t.id, cp.id, cr.id,
        DATE('2025-03-10'), TIME('08:00:00'), 0, NULL, NULL, 'Scheduled'
 FROM admissionApplication aa
 JOIN examType et ON et.name='PAA'
-JOIN academic.academicTerm t ON t.year=2025 AND t.number=1
+JOIN academic.academicTerm t ON t.year=2025 AND t.termNumber=1
 JOIN academic.campus cp ON cp.campusCode='CU'
 JOIN academic.classroom cr ON cr.roomNumber='101'
 LIMIT 4;
 
 -- Quotas
-INSERT IGNORE INTO programCampusTermQuota (programId, campusId, termId, availableSeats, assignedSeats, openDate, closeDate)
+INSERT IGNORE INTO programCampusTermCapacity (programId, campusId, termId, availableSeats, assignedSeats, openingDate, closingDate)
 SELECT p.id, cp.id, t.id, 50, 0, DATE('2025-02-01'), DATE('2025-02-28')
 FROM academic.program p
 JOIN academic.campus cp ON cp.campusCode='CU'
-JOIN academic.academicTerm t ON t.year=2025 AND t.number=1
+JOIN academic.academicTerm t ON t.year=2025 AND t.termNumber=1
 WHERE p.programCode IN ('IS-01','DERE-01','PSI-01','MED-01','ARC-01');
 
 -- Admissions waitlist
-INSERT INTO admissionsWaitlist (programId, campusId, termId, applicationId, position, status)
+INSERT INTO admissionWaitlist (programId, campusId, termId, applicationId, position, status)
 SELECT p.id, cp.id, t.id, aa.id, ROW_NUMBER() OVER (ORDER BY aa.id), 'Waiting'
 FROM academic.program p
 JOIN academic.campus cp ON cp.campusCode='CU'
-JOIN academic.academicTerm t ON t.year=2025 AND t.number=1
+JOIN academic.academicTerm t ON t.year=2025 AND t.termNumber=1
 JOIN admissionApplication aa ON aa.primaryProgramId = p.id
 WHERE p.programCode IN ('IS-01','DERE-01','PSI-01','MED-01','ARC-01')
 LIMIT 4;
 
 -- Results
-INSERT INTO admissionResult (applicationId, decision, paaScore, assignedProgramId, assignedCampusId, termId, notes)
+INSERT INTO admissionResult (applicationId, decision, scorePAA, assignedProgramId, assignedCampusId, termId, remarks)
 SELECT aa.id,
-       'AdmittedPrimary',
+       'ApprovedPrimary',
        1000,
        aa.primaryProgramId,
        aa.campusId,
@@ -724,10 +724,10 @@ FROM admissionApplication aa
 LIMIT 4;
 
 -- Seat acceptance
-INSERT INTO seatAcceptance (resultId, confirmToken, tokenExpiresAt, status)
+INSERT INTO seatAcceptance (resultId, confirmationToken, tokenExpiresAt, status)
 SELECT ar.id,
        UPPER(SHA2(CONCAT('token',ar.id,NOW()),256)),
-       DATE_ADD(ar.createdAt, INTERVAL 15 DAY),
+       DATE_ADD(ar.resultDate, INTERVAL 15 DAY),
        'Pending'
 FROM admissionResult ar;
 

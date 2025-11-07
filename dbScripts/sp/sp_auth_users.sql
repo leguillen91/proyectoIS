@@ -4,8 +4,8 @@ DELIMITER $$
    identity.sp_register_user
    Recibe: fullName, email, identityNumber, accountNumber, roleName, passwordHash
 ======================================================= */
-DROP PROCEDURE IF EXISTS identity.sp_register_user $$
-CREATE PROCEDURE identity.sp_register_user(
+DROP PROCEDURE IF EXISTS identity.spRegisterUser $$
+CREATE PROCEDURE identity.spRegisterUser(
   IN  pFullName       VARCHAR(120),
   IN  pEmail          VARCHAR(120),
   IN  pIdentityNumber VARCHAR(20),
@@ -18,10 +18,10 @@ CREATE PROCEDURE identity.sp_register_user(
   OUT pMessage        VARCHAR(200)
 )
 proc: BEGIN
-  DECLARE vProfileId  TINYINT UNSIGNED;
+  DECLARE vProfileId   TINYINT UNSIGNED;
   DECLARE vExistsEmail INT DEFAULT 0;
   DECLARE vExistsIdent INT DEFAULT 0;
-  DECLARE vNow DATETIME;
+  DECLARE vNow         DATETIME;
 
   SET pCredentialsId = NULL; SET pPersonId = NULL;
   SET pCode = 1; SET pMessage = 'Unspecified error';
@@ -58,7 +58,7 @@ proc: BEGIN
     SET pCredentialsId = LAST_INSERT_ID();
 
     /* Vincular a profile */
-    INSERT INTO identity.credentials_profile (idCredentials, idProfile, assignedAt)
+    INSERT INTO identity.credentialsProfile (idCredentials, idProfile, assignedAt)
     VALUES (pCredentialsId, vProfileId, vNow);
 
     /* Inserciones por rol */
@@ -95,8 +95,8 @@ END $$
 /* =======================================================
    identity.sp_create_admin (wrapper)
 ======================================================= */
-DROP PROCEDURE IF EXISTS identity.sp_create_admin $$
-CREATE PROCEDURE identity.sp_create_admin(
+DROP PROCEDURE IF EXISTS identity.spCreateAdmin $$
+CREATE PROCEDURE identity.spCreateAdmin(
   IN  pFullName       VARCHAR(120),
   IN  pEmail          VARCHAR(120),
   IN  pIdentityNumber VARCHAR(20),
@@ -107,7 +107,7 @@ CREATE PROCEDURE identity.sp_create_admin(
   OUT pMessage        VARCHAR(200)
 )
 BEGIN
-  CALL identity.sp_register_user(
+  CALL identity.spRegisterUser(
     pFullName,
     pEmail,
     pIdentityNumber,
@@ -126,8 +126,8 @@ END $$
    identity.sp_list_users
    Filtros: pSearch (nombre/email/identidad), pRoleName
 ======================================================= */
-DROP PROCEDURE IF EXISTS identity.sp_list_users $$
-CREATE PROCEDURE identity.sp_list_users(
+DROP PROCEDURE IF EXISTS identity.spListUsers $$
+CREATE PROCEDURE identity.spListUsers(
   IN pSearch   VARCHAR(100),
   IN pRoleName VARCHAR(20),
   IN pOffset   INT,
@@ -151,7 +151,7 @@ BEGIN
     cr.createdAt
   FROM identity.credentials cr
   JOIN identity.person per ON per.idPerson = cr.idPerson
-  LEFT JOIN identity.credentials_profile cp ON cp.idCredentials = cr.idCredentials
+  LEFT JOIN identity.credentialsProfile cp ON cp.idCredentials = cr.idCredentials
   LEFT JOIN identity.profile pr ON pr.idProfile = cp.idProfile
   WHERE (pSearch IS NULL OR pSearch='' OR
          per.firstName LIKE CONCAT('%',pSearch,'%') OR
@@ -166,7 +166,7 @@ BEGIN
   SELECT COUNT(*) AS total
   FROM identity.credentials cr
   JOIN identity.person per ON per.idPerson = cr.idPerson
-  LEFT JOIN identity.credentials_profile cp ON cp.idCredentials = cr.idCredentials
+  LEFT JOIN identity.credentialsProfile cp ON cp.idCredentials = cr.idCredentials
   LEFT JOIN identity.profile pr ON pr.idProfile = cp.idProfile
   WHERE (pSearch IS NULL OR pSearch='' OR
          per.firstName LIKE CONCAT('%',pSearch,'%') OR
