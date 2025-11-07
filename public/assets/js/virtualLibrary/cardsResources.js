@@ -1,0 +1,50 @@
+// Datos de ejemplo
+const recursos = [
+  {
+    titulo: "Libro de Historia de Honduras",
+    autor: "Guillermo Valera",
+    tipoArchivo: "PDF",
+    etiquetas: ["Libro", "Honduras"],
+    categoria: "Documento"
+  },
+  {
+    titulo: "Sociologia",
+    autor: "Hector Martinez",
+    tipoArchivo: "PDF",
+    etiquetas: ["Libro", "Sociología"],
+    categoria: "Documento"
+  },
+  {
+    titulo: "Discurso del Método",
+    autor: "René Descartes",
+    tipoArchivo: "PDF",
+    etiquetas: ["Libro", "Sociologia"],
+    categoria: "Documento"
+  }
+];
+
+// Contenedor donde se agregan las cards
+const contenedor = document.getElementById("contenedorCards");
+
+
+recursos.forEach(recurso => {
+  const card = document.createElement("div");
+  card.classList.add("col-12", "col-sm-6", "col-md-4", "col-lg-3");
+
+  card.innerHTML = `
+    <div class="card">
+      <div class="card-header">${recurso.categoria}</div>
+      <div class="card-body text-center">
+        <h5 class="card-title">${recurso.titulo}</h5>
+        <p class="card-text mb-2">${recurso.autor}</p>
+        <span class="badge">${recurso.tipoArchivo}</span>
+        <div class="mt-2 mb-2">
+          ${recurso.etiquetas.map(tag => `<span class="tag">${tag}</span>`).join("")}
+        </div>
+        <button class="btn btn-view w-100 action-btn">Ver Recurso ${recurso.tipoArchivo}</button>
+      </div>
+    </div>
+  `;
+
+  contenedor.appendChild(card);
+});

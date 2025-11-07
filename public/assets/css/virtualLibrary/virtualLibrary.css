@@ -1,0 +1,52 @@
+.navbar{
+
+padding: 1.5rem;
+background: linear-gradient(135deg, #012f5a 0%, #024c7a 50%, #046aa3 100%);
+}
+
+
+.navbar-brand{
+    font-size: 2rem;
+    color: #ffff !important;
+    font-weight: bold;
+}
+
+.navbar-logo {
+    height: 25%; 
+    width: 15%;  
+    object-fit: contain; 
+    padding-left: 25px;
+}
+.a{
+    padding-left: 35px;
+    align-content: space-between;
+}
+
+.buscador input{
+ width: 100%;
+    border-radius: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    display: flex;
+}
+
+.badge {
+      background-color: #007bff;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 8px;
+    }
+
+.tag {
+      display: inline-block;
+      background-color: #e9ecef;
+      color: #333;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-right: 5px;
+      font-size: 0.85rem;
+    }
+    .btn-view {
+      background-color: #024c7a;
+      color: white;
+    }

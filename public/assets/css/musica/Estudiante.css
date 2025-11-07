@@ -10,7 +10,6 @@ padding: 1.5rem;
 background: linear-gradient(135deg, #012f5a 0%, #024c7a 50%, #046aa3 100%);
 }
 
-
 .navbar-brand{
 
     font-size: 2rem;
@@ -19,14 +18,11 @@ background: linear-gradient(135deg, #012f5a 0%, #024c7a 50%, #046aa3 100%);
     
 }
 
-
-
 .buscador input{
  width: 100%;
     border-radius: 5px;
     padding: 10px;
     border: 1px solid #ccc;
-
 }
 
 .card{
