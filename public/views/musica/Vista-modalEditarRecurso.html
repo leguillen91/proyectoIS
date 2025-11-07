@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="/public/assets/css/musica/modalEditarRecurso.css">
+</head>
+<body>
+    
+    <button class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#editarModal" >Editar</button>
+   
+
+    <!-- Modal para Editar un recurso-->
+    <div class="modal fade" id="editarModal" tabindex="-1" ariea-labelledby="modalEditarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg ">
+            <div class="modal-content">
+    
+                <form id="newProjectForm">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">Editar Recurso</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Cerrar"></button>
+                    </div>
+    
+                    <div class="modal-body">
+                        <div class="alert alert-danger d-none" id="formError"></div>
+    
+                        <div class="mb-3">
+                            <label class="form-label">Título</label>
+                            <input type="text" id="editTitulo" class="form-control" maxlength="160" required />
+                        </div>
+    
+                        <div class="mb-3">
+                            <label class="form-label">Autor</label>
+                            <input type="text" id="ediAutor" class="form-control" maxlength="100" required>
+                        </div>
+    
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de archivo</label>
+                            <select class="form-select" id="editTipo">
+                                <option>MP3</option>
+                                <option>WAV</option>
+                                <option>PDF</option>
+                                <option>XML</option>
+                                <option>MXL</option>
+                                <option>MSCX</option>
+                            </select>
+                        </div>
+    
+                        <div class="mb-3">
+                            <label class="form-label">Tags </label>
+                            <input type="text" id="editTags" class="form-control" placeholder="#Libro #Sistemas" />
+                        </div>
+    
+                        <div class="mb-3">
+                            <label class="form-label">Archivo (opcional)</label>
+                            <input type="file" id="editarArchivo" class="form-control" accept="mscx, mxl, .xml, .msc, .pdf, .mp3, .wav,"
+                                required />
+                        </div>
+    
+    
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

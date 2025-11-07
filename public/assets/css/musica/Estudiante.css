@@ -1,0 +1,109 @@
+
+body{
+
+    font-family: sans-serif;
+    background-color: rgb(245, 247, 250);
+}
+.navbar{
+
+padding: 1.5rem;
+background: linear-gradient(135deg, #012f5a 0%, #024c7a 50%, #046aa3 100%);
+}
+
+
+.navbar-brand{
+
+    font-size: 2rem;
+    color: #ffff !important;
+    font-weight: bold;
+    
+}
+
+
+
+.buscador input{
+ width: 100%;
+    border-radius: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+
+}
+
+.card{
+
+    border-radius: 10px;
+    box-shadow:rgba(0,0,0,0.1) ;
+    text-align:center;
+}
+
+.card-header{
+
+    background-color: #003366;
+    color: #ffff;
+    font-weight: 400;
+    text-align: center;
+
+}
+.card:hover{
+
+    background-color: rgba(0, 136, 255, 0.2);
+    font-weight: 400;
+}
+
+.badge{
+    background-color: #2563eb;
+
+}
+
+.tag{
+
+    background-color: aliceblue;
+    color: #1e3a8a;
+    border-radius: 5px;
+    padding: 4px 8px;
+    font-size: 10px;
+    margin-right: 5px;
+}
+
+.action-btn{
+
+    margin-top: 10px;
+
+}
+
+
+.btn-view{
+
+    background-color: #2563eb;
+    color: #ffff;
+
+}
+
+.btn-view:hover{
+
+    background-color: #2563eb;
+    color: #ffff;
+
+}
+.btn-descargar{
+
+    background-color: #22c55e;
+    color: #ffff;
+}
+
+.btn-descargar:hover{
+
+    background-color: #16a34a;
+
+}
+
+.btn-audio{
+
+    background-color: #FFCC00;
+
+}
+
+.btn-audio:hover{
+
+    background-color: #d97706;
+}

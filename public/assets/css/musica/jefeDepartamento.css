@@ -1,0 +1,53 @@
+:root{
+  --blue-dark:#003366; --blue:#0055A4; --gold:#FFCC00; --bg:#F5F6FA; --white:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0; font-family:"Segoe UI",sans-serif; background:var(--bg); color:#1d2330; display:flex; min-height:100vh}
+.sidebar{width:250px; min-height:100vh; background:var(--blue-dark); color:var(--white); padding:1.25rem; display:flex; flex-direction:column; justify-content:space-between}
+.sidebar h4{color:var(--gold); text-align:center; margin:0 0 1rem}
+.sidebar a{display:block; padding:.6rem .8rem; color:var(--white); text-decoration:none; border-radius:.5rem; margin-bottom:.25rem}
+.sidebar a.active,.sidebar a:hover{background:var(--blue); color:var(--gold)}
+.main{flex:1; padding:1.5rem; overflow:auto}
+.pageHeader{display:flex; align-items:center; justify-content:space-between; background:var(--white); padding:1rem 1.25rem; border-radius:.8rem; box-shadow:0 6px 16px rgba(0,0,0,.08); margin-bottom:1rem}
+.pageHeader h2{color:var(--blue-dark); margin:0}
+.headerActions .btn{border:none; background:var(--blue); color:var(--white); font-weight:600}
+.card{border:none; border-radius:.8rem; box-shadow:0 6px 16px rgba(0,0,0,.06)}
+.table th{color:#6b7280; font-weight:600}
+.badge{font-weight:600}
+#formContainer {
+  transition: all 0.3s ease-in-out;
+}
+
+body {
+  background-color: #f8f9fa;
+}
+
+.card {
+  border-radius: 0.75rem;
+  transition: transform 0.15s ease;
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+.modal-header {
+  background-color: #003366 !important;
+}
+.modal-dialog-scrollable .modal-content {
+  max-height: 90vh; 
+}
+
+.modal-body {
+  max-height: calc(90vh - 150px); 
+  overflow-y: auto;
+}
+
+.tag{
+  background-color: #f8f9fa;
+  color: #0055A4;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 10px;
+  margin-right: 5px;
+}
