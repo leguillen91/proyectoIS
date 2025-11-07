@@ -394,7 +394,7 @@ USE resources;
 /* ---------------------------------------------
    Catálogos
 --------------------------------------------- */
-CREATE TABLE resource_type (
+CREATE TABLE resourceType (
   idResourceType   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   code             VARCHAR(20)  NOT NULL UNIQUE,      -- Como ejemplo tenemos de PDF, AUDIO, SCORE, CODE, etc...
   description      VARCHAR(120) NULL
@@ -434,27 +434,26 @@ CREATE TABLE resource (
   createdAt         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updatedAt         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-  KEY idx_res_mod_status (module, status),
-  KEY idx_res_course (courseId),
-  KEY idx_res_career (careerId),
+  KEY idxResModStatus (module, status),
+  KEY idxResCourse (courseId),
+  KEY idxResCareer (careerId),
 
-  CONSTRAINT fk_res_type
-    FOREIGN KEY (resourceTypeId) REFERENCES resource_type(idResourceType),
+  CONSTRAINT fkResType
+    FOREIGN KEY (resourceTypeId) REFERENCES resourceType(idResourceType),
 
-  CONSTRAINT fk_res_license
+  CONSTRAINT fkResLicense
     FOREIGN KEY (licenseId) REFERENCES license(idLicense),
 
-  
-  CONSTRAINT fk_res_person    FOREIGN KEY (createdByPersonId) REFERENCES identity.person(idPerson),
-  CONSTRAINT fk_res_career    FOREIGN KEY (careerId)          REFERENCES academic.career(idCareer),
-  CONSTRAINT fk_res_course    FOREIGN KEY (courseId)          REFERENCES academic.course(idCourse),
-  CONSTRAINT fk_res_section   FOREIGN KEY (sectionId)         REFERENCES enrollment.section(idSection)
+  CONSTRAINT fkResPerson    FOREIGN KEY (createdByPersonId) REFERENCES identity.person(idPerson),
+  CONSTRAINT fkResCareer    FOREIGN KEY (careerId)          REFERENCES academic.career(idCareer),
+  CONSTRAINT fkResCourse    FOREIGN KEY (courseId)          REFERENCES academic.course(idCourse),
+  CONSTRAINT fkResSection   FOREIGN KEY (sectionId)         REFERENCES enrollment.section(idSection)
 ) ENGINE=InnoDB;
 
 /* ---------------------------------------------
    Archivos del recurso (BLOBs)
 --------------------------------------------- */
-CREATE TABLE resource_file (
+CREATE TABLE resourceFile (
   idResourceFile   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   resourceId       INT UNSIGNED NOT NULL,
   fileKind         ENUM('Primary','Readme','Preview') NOT NULL DEFAULT 'Primary',
@@ -467,62 +466,62 @@ CREATE TABLE resource_file (
   checksum         VARCHAR(64) NULL,                 -- opcional
   createdAt        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-  KEY idx_rf_res (resourceId),
-  CONSTRAINT fk_rf_res FOREIGN KEY (resourceId) REFERENCES resource(idResource) ON DELETE CASCADE
+  KEY idxRfRes (resourceId),
+  CONSTRAINT fkRfRes FOREIGN KEY (resourceId) REFERENCES resource(idResource) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 /* ---------------------------------------------
    Autores/Editorial 
 --------------------------------------------- */
-CREATE TABLE resource_author (
+CREATE TABLE resourceAuthor (
   idResourceAuthor INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   resourceId       INT UNSIGNED NOT NULL,
   personId         INT UNSIGNED NULL,  -- si el autor existe en identity.person
   authorName       VARCHAR(120) NULL,  -- si es autor externo (texto)
   role             ENUM('Author','CoAuthor','Composer','Editor') NOT NULL DEFAULT 'Author',
 
-  KEY idx_ra_res (resourceId),
-  CONSTRAINT fk_ra_res    FOREIGN KEY (resourceId) REFERENCES resource(idResource) ON DELETE CASCADE,
-  CONSTRAINT fk_ra_person FOREIGN KEY (personId)   REFERENCES identity.person(idPerson)
+  KEY idxRaRes (resourceId),
+  CONSTRAINT fkRaRes    FOREIGN KEY (resourceId) REFERENCES resource(idResource) ON DELETE CASCADE,
+  CONSTRAINT fkRaPerson FOREIGN KEY (personId)   REFERENCES identity.person(idPerson)
 ) ENGINE=InnoDB;
 
 /* ---------------------------------------------
    Etiquetas (N:M)
 --------------------------------------------- */
-CREATE TABLE resource_tag (
+CREATE TABLE resourceTag (
   resourceId INT UNSIGNED NOT NULL,
   tagId      INT UNSIGNED NOT NULL,
   PRIMARY KEY (resourceId, tagId),
-  KEY idx_rt_tag (tagId),
-  CONSTRAINT fk_rt_res FOREIGN KEY (resourceId) REFERENCES resource(idResource) ON DELETE CASCADE,
-  CONSTRAINT fk_rt_tag FOREIGN KEY (tagId)      REFERENCES tag(idTag)
+  KEY idxRtTag (tagId),
+  CONSTRAINT fkRtRes FOREIGN KEY (resourceId) REFERENCES resource(idResource) ON DELETE CASCADE,
+  CONSTRAINT fkRtTag FOREIGN KEY (tagId)      REFERENCES tag(idTag)
 ) ENGINE=InnoDB;
 
 /* ---------------------------------------------
    Alcance adicional (si un recurso aplica a varios ámbitos)
 --------------------------------------------- */
-CREATE TABLE resource_scope (
+CREATE TABLE resourceScope (
   idResourceScope INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   resourceId      INT UNSIGNED NOT NULL,
   scopeType       ENUM('Career','Course','Section','Campus') NOT NULL,
   scopeId         INT UNSIGNED NOT NULL,
-  KEY idx_rs_res (resourceId),
-  CONSTRAINT fk_rs_res FOREIGN KEY (resourceId) REFERENCES resource(idResource) ON DELETE CASCADE
+  KEY idxRsRes (resourceId),
+  CONSTRAINT fkRsRes FOREIGN KEY (resourceId) REFERENCES resource(idResource) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 /* ---------------------------------------------
    Revisión 
 --------------------------------------------- */
-CREATE TABLE review_assignment (
+CREATE TABLE reviewAssignment (
   idAssignment       INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   resourceId         INT UNSIGNED NOT NULL,
   assignedToPersonId INT UNSIGNED NOT NULL,   -- Jefe o Coordinador
   assignedRole       ENUM('DEPT_HEAD','COORDINATOR') NOT NULL,
   assignedAt         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   active             TINYINT(1) NOT NULL DEFAULT 1,
-  KEY idx_ra2_res (resourceId),
-  CONSTRAINT fk_ras_res    FOREIGN KEY (resourceId)         REFERENCES resource(idResource) ON DELETE CASCADE,
-  CONSTRAINT fk_ras_person FOREIGN KEY (assignedToPersonId) REFERENCES identity.person(idPerson)
+  KEY idxRa2Res (resourceId),
+  CONSTRAINT fkRasRes    FOREIGN KEY (resourceId)         REFERENCES resource(idResource) ON DELETE CASCADE,
+  CONSTRAINT fkRasPerson FOREIGN KEY (assignedToPersonId) REFERENCES identity.person(idPerson)
 ) ENGINE=InnoDB;
 
 CREATE TABLE review (
@@ -532,9 +531,9 @@ CREATE TABLE review (
   decision          ENUM('Approved','NeedsCorrection','Rejected') NOT NULL,
   comments          VARCHAR(255) NULL,
   reviewedAt        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  KEY idx_rev_res (resourceId),
-  CONSTRAINT fk_rev_res   FOREIGN KEY (resourceId)       REFERENCES resource(idResource) ON DELETE CASCADE,
-  CONSTRAINT fk_rev_user  FOREIGN KEY (reviewerPersonId) REFERENCES identity.person(idPerson)
+  KEY idxRevRes (resourceId),
+  CONSTRAINT fkRevRes   FOREIGN KEY (resourceId)       REFERENCES resource(idResource) ON DELETE CASCADE,
+  CONSTRAINT fkRevPerson FOREIGN KEY (reviewerPersonId) REFERENCES identity.person(idPerson)
 ) ENGINE=InnoDB;
 
 
