@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal UNAH</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/landingPage/landingPage.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+                <img src="../../assets/Logo.png" alt="Logo" class="navbar-logo">
+            </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarContenido">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+          <li class="nav-item dropdown">
+            <a class="nav-link" href="#" id="admisionesDropdown" role="link" data-bs-toggle="dropdown">
+              Inicio
+            </a>
+            </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="estudiantesDropdown" role="button" data-bs-toggle="dropdown">
+              Estudiantes
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" id="pregradoLink" href="#">Pregrado</a></li>
+              <li><a class="dropdown-item" id="postgradoLink" href="#">Postgrado</a></li>
+            </ul>
+          </li>
+
+          
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="admisionesDropdown" role="button" data-bs-toggle="dropdown">
+              Admisiones
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" id="inscripcionesLink" href="#">Inscripciones</a></li>
+              <li><a class="dropdown-item" id="resultadosLink" href="#">Resultados</a></li>
+            </ul>
+          </li>
+
+
+          <li class="nav-item dropdown">
+            <a class="nav-link" href="#" id="libraryLink" role="link" data-bs-toggle="dropdown">
+              Biblioteca
+            </a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="container mt-4" id="mainContent">
+    <h2>Bienvenido(a) al Portal de la </h2>
+    <h2 class="fw-bold">Universidad Nacional Atonoma de Honduras</h2>
+    <p class="welcome">
+        Aquí puedes realizar tu matrícula, revisar tu resultado de examen de admision, visitar la Biblioteca Virtual e interactuar con otros estudiantes
+    </p>
+  </div>
+
+  <section class="py-5 section-gris" id="tablon-avisos">
+        <div class="container">
+            <h2 class="text-center fw-bold">Tablón de avisos</h2>
+            <p class="text-center subtitulo">
+                Avisos recientes del portal 
+            </p>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-lg-flex justify-content-lg-between align-content-lg-center">
+                        <h5 class="card-title">Fechas para Inscripción de prueba PHUMA</h5>
+                    </div>
+                    <p class="card-text">
+                    </p>
+                    <a target="_blank" class="btn btn-card">
+                        Ver Aviso
+                    </a>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-lg-flex justify-content-lg-between align-content-lg-center">
+                        <h5 class="card-title">Calendario de aplicación de prueba PHUMA</h5>
+                    </div>
+                    <p class="card-text">
+                    </p>
+                    <a target="_blank" class="btn btn-card">
+                        Ver Calendario
+                    </a>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-lg-flex justify-content-lg-between align-content-lg-center">
+                        <h5 class="card-title">Calendario de Pre-Matrícula III PAC - Carreras de 3 Períodos</h5>
+                    </div>
+                    <p class="card-text">
+                    </p>
+                    <button type="button" class="btn btn-card" data-bs-toggle="modal" data-bs-target="#aviso3">
+                        Ver Aviso
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+</body>
+</html>
