@@ -55,11 +55,11 @@ background: linear-gradient(135deg, #012f5a 0%, #024c7a 50%, #046aa3 100%);
     }
 
   .fondo {
-    background-image: url("/public/assets/biblioteca.jpg"); /* Ruta de la imagen */
+    background-image: url("/public/assets/biblioteca.jpg"); 
     background-size: cover;
     background-position: center;
     position: absolute;
     inset: 0;
-    opacity: 0.4; /* 🔹 opacidad solo al fondo */
+    opacity: 0.4;
     z-index: -1; 
   }
