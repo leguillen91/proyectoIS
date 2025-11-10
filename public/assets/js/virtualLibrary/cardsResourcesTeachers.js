@@ -23,16 +23,14 @@ const recursos = [
   }
 ];
 
-// Contenedor donde se agregan las cards
 const contenedor = document.getElementById("contenedorCards");
-
 
 recursos.forEach(recurso => {
   const card = document.createElement("div");
   card.classList.add("col-12", "col-sm-6", "col-md-4", "col-lg-3");
 
   card.innerHTML = `
-    <div class="card">
+    <div class="card position-relative">
       <div class="card-header">${recurso.categoria}</div>
       <div class="card-body text-center">
         <h5 class="card-title">${recurso.titulo}</h5>
@@ -41,10 +39,18 @@ recursos.forEach(recurso => {
         <div class="mt-2 mb-2">
           ${recurso.etiquetas.map(tag => `<span class="tag">${tag}</span>`).join("")}
         </div>
-        <button class="btn btn-view w-100 action-btn">Ver Recurso ${recurso.tipoArchivo}</button>
+        <div class="d-flex justify-content-center gap-2 mt-3">
+          <button class="btn btn-view btn-outline-primary flex-fill action-btn">
+            <i class="bi bi-eye-fill"></i> Ver
+          </button>
+          <button class="btn btn-danger flex-fill action-btn">
+            <i class="bi bi-trash3-fill"></i> Eliminar
+          </button>
+        </div>
       </div>
     </div>
   `;
 
   contenedor.appendChild(card);
 });
+
