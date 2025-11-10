@@ -1,4 +1,4 @@
-// Datos de ejemplo
+// Datos para pruebas
 const recursos = [
   {
     titulo: "Historia de Honduras",

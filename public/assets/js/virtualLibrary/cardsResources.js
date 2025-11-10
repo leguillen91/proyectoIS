@@ -1,4 +1,4 @@
-// Datos de ejemplo
+// Datos para prueba
 const recursos = [
   {
     titulo: "Historia de Honduras",
@@ -23,7 +23,7 @@ const recursos = [
   }
 ];
 
-// Contenedor donde se agregan las cards
+
 const contenedor = document.getElementById("contenedorCards");
 
 
