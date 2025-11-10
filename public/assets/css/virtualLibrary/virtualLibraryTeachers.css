@@ -3,7 +3,6 @@ padding: 1.5rem;
 background: linear-gradient(135deg, #012f5a 0%, #024c7a 50%, #046aa3 100%);
 }
 
-
 .navbar-brand{
     font-size: 2rem;
     color: #ffff !important;
@@ -63,6 +62,7 @@ background: linear-gradient(135deg, #012f5a 0%, #024c7a 50%, #046aa3 100%);
     opacity: 0.4;
     z-index: -1; 
   }
+
 
 .modal-header {
   background-color: #3b5998;
