@@ -1,5 +1,5 @@
 <?php
-//“Verificar que el usuario esté autenticado y devolver su contexto (ID, email, rol, permisos).”
+// Verificar que el usuario esté autenticado y devolver su contexto (ID, email, rol, permisos, carrera)
 
 require_once __DIR__ . '/../config/connection.php';
 $config = require __DIR__ . '/../config/env.php';
@@ -39,13 +39,14 @@ function requireAuth(): array {
 
   if (!$token) {
     http_response_code(401);
-    echo json_encode(['error' => 'Token Faltante']);
+    echo json_encode(['error' => 'Token faltante']);
     exit;
   }
 
   try {
     $payload = $jwtService->verify($token);
-    // Validar si el token está revocado
+
+    // Verificar si el token fue revocado
     if (!empty($payload['jti'])) {
       $stmt = $pdo->prepare("SELECT id FROM revokedTokens WHERE jti = ? LIMIT 1");
       $stmt->execute([$payload['jti']]);
@@ -57,10 +58,9 @@ function requireAuth(): array {
     }
   } catch (Exception $e) {
     http_response_code(401);
-    echo json_encode(['error' => 'Token invalido o expirado', 'detail' => $e->getMessage()]);
+    echo json_encode(['error' => 'Token inválido o expirado', 'detail' => $e->getMessage()]);
     exit;
   }
-  //El token se verifica y revoca en cada logout para impedir que un token antiguo o robado siga siendo válido
 
   // Buscar usuario por ID del token
   $user = $userModel->findById((int)$payload['sub']);
@@ -73,11 +73,33 @@ function requireAuth(): array {
   // Obtener permisos del rol
   $permissions = $userModel->getPermissionsByRoleId((int)$user['roleId']);
 
+  // ============================
+  // Obtener carrera según rol
+  // ============================
+  $career = null;
+  try {
+    if (strtolower($user['roleName']) === 'student') {
+      $stmt = $pdo->prepare("SELECT career FROM students WHERE userId = ?");
+      $stmt->execute([$user['id']]);
+      $career = $stmt->fetchColumn();
+    } elseif (in_array(strtolower($user['roleName']), ['teacher', 'coordinator', 'depthead'])) {
+      $stmt = $pdo->prepare("SELECT career FROM teachers WHERE userId = ?");
+      $stmt->execute([$user['id']]);
+      $career = $stmt->fetchColumn();
+    }
+  } catch (Exception $e) {
+    $career = null;
+  }
+
+  // ============================
+  // Retornar contexto del usuario
+  // ============================
   return [
     'userId' => (int)$user['id'],
     'email' => $user['email'],
     'fullName' => $user['fullName'],
     'role' => $user['roleName'],
+    'career' => $career,
     'permissions' => $permissions
   ];
 }

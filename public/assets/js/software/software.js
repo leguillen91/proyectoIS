@@ -340,6 +340,7 @@ async function viewProjectDetails(projectId) {
           </ul>`
         : `<p class="text-muted">No hay archivos registrados.</p>`}
       <hr>
+      
       <h6>Tags</h6>
       ${data.tags?.length
         ? data.tags.map(t => `<span class="badge bg-info me-1">${t}</span>`).join("")

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Módulo de Recursos</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./../assets/css/resource/resource.css">
+</head>
+<body class="bg-light">
+
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3 id="moduleTitle">Módulo de Recursos</h3>
+      <button class="btn btn-primary" id="btnNew">Nuevo Recurso</button>
+    </div>
+
+    <div id="resourceContainer" class="row g-3"></div>
+  </div>
+
+  <!-- ============================= -->
+  <!-- Modal Crear / Editar Recurso -->
+  <!-- ============================= -->
+  <div class="modal fade" id="modalCreate" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <form id="formCreate">
+          <div class="modal-header">
+            <h5 class="modal-title">Nuevo Recurso</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" name="resourceId" />
+            <input type="hidden" id="moduleInput" name="module" value="">
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Título</label>
+                <input type="text" name="title" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Tipo de Recurso</label>
+                <select name="resourceTypeId" class="form-select" required>
+                  <option value="1">Documento</option>
+                  <option value="2">Código</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Descripción</label>
+              <textarea name="description" rows="2" class="form-control"></textarea>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Autores</label>
+                <input type="text" name="authors" class="form-control" placeholder="Ej: Jhonny, Milton">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Tags</label>
+                <input type="text" name="tags" class="form-control" placeholder="Ej: PHP, MySQL, MVC">
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Licencia</label>
+                <select name="licenseId" class="form-select"></select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Archivo README (opcional)</label>
+                <input type="file" name="readmeFile" class="form-control" accept=".md,.txt">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Archivos del Recurso</label>
+              <input type="file" name="files[]" class="form-control" multiple>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Detalles del Recurso -->
+  <div class="modal fade" id="modalDetail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Detalles del Recurso</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <div id="detailError" class="alert alert-danger d-none"></div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Título</label>
+            <p id="detailTitle" class="form-control-plaintext"></p>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Descripción</label>
+            <p id="detailDescription" class="form-control-plaintext"></p>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Tipo de Recurso</label>
+              <p id="detailType" class="form-control-plaintext"></p>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Licencia</label>
+              <p id="detailLicense" class="form-control-plaintext"></p>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Autores</label>
+            <p id="detailAuthors" class="form-control-plaintext"></p>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Tags</label>
+            <p id="detailTags" class="form-control-plaintext"></p>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Archivos</label>
+            <div id="detailFiles" class="border rounded p-2 bg-light"></div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btnEdit" class="btn btn-outline-primary">Editar</button>
+          <button type="button" id="btnDelete" class="btn btn-outline-danger">Eliminar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="./../assets/js/resource/resource.js"></script>
+  <script src="./../assets/js/resource/resourceModal.js"></script>
+</body>
+</html>

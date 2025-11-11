@@ -1,0 +1,27 @@
+<!-- /public/views/components/sidebar.html -->
+<aside class="sidebar d-flex flex-column">
+  <div class="brand text-center py-3">
+    <img src="../assets/unah_logo.png" alt="Logo UNAH" width="60" class="mb-2" />
+    <h5 class="fw-bold text-white mb-0">UNAH Systems</h5>
+  </div>
+  <nav class="flex-grow-1 px-3 mt-3">
+    <a href="../dashboard.html" class="nav-link"><i class="bi bi-house-door-fill me-2"></i>Inicio</a>
+    <a href="../createUser.html" id="linkCreateUser" class="nav-link d-none">
+      <i class="bi bi-person-plus-fill me-2"></i>Crear Usuario
+    </a>
+    <a href="../adminPanel.html" id="linkAdminPanel" class="nav-link d-none">
+      <i class="bi bi-gear-fill me-2"></i>Panel Admin
+    </a>
+    <a href="../students.html" id="linkStudents" class="nav-link d-none">
+      <i class="bi bi-mortarboard-fill me-2"></i>Estudiantes
+    </a>
+    <a href="../resource.html" id="linkSoftware" class="nav-link d-none">
+      <i class="bi bi-code-slash me-2"></i>Biblioteca Software
+    </a>
+  </nav>
+  <div class="mt-auto p-3">
+    <button id="btnLogout" class="btn btn-warning w-100 fw-bold text-dark">
+      <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
+    </button>
+  </div>
+</aside>

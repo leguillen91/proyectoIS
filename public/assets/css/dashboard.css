@@ -1,30 +1,71 @@
-:root{
-  --blue-dark:#003366; --blue-light:#0055A4; --gold:#FFCC00;
-  --white:#FFFFFF; --gray-bg:#F5F6FA;
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #f5f6fa;
+  display: flex;
 }
-*{box-sizing:border-box}
-body{
-  margin:0; background:var(--gray-bg); font-family:'Segoe UI',system-ui,Roboto,Arial,sans-serif;
-  height:100vh; display:flex; overflow:hidden;
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  background-color: #003366;
+  color: #fff;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
 }
-.sidebar{
-  width:250px; min-height:100vh; background:var(--blue-dark); color:var(--white);
-  padding:1.5rem 1rem; display:flex; flex-direction:column; justify-content:space-between;
+
+.sidebar .brand h5 {
+  font-size: 18px;
 }
-.sidebar h4{color:var(--gold); text-align:center; margin-bottom:2rem; font-weight:700}
-.sidebar a{
-  color:var(--white); text-decoration:none; display:block; padding:.7rem 1rem;
-  border-radius:.5rem; transition:.25s; font-weight:500;
+
+.sidebar .nav-link {
+  display: block;
+  color: #d1d9e6;
+  font-weight: 500;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease;
 }
-.sidebar a:hover, .sidebar a.active{background:var(--blue-light); color:var(--gold)}
-.main-content{
-  flex:1; padding:2rem; overflow:auto;
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  background-color: #0059b3;
+  color: #fff;
 }
-.header h2{color:var(--blue-dark); font-weight:700; margin-bottom:.25rem}
-.card{
-  border:none; border-radius:1rem; box-shadow:0 4px 12px rgba(0,0,0,.1);
+
+/* MAIN */
+.main-content {
+  margin-left: 260px;
+  flex: 1;
+  padding: 30px;
 }
-.metric{font-weight:800}
-::-webkit-scrollbar{width:8px}
-::-webkit-scrollbar-thumb{background:var(--blue-light); border-radius:10px}
-::-webkit-scrollbar-thumb:hover{background:var(--blue-dark)}
+
+header {
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 10px;
+}
+
+.stat-card {
+  border-radius: 10px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+}
+
+.btn-warning {
+  border: none;
+  font-weight: 600;
+}
+
+.user-info i:hover {
+  cursor: pointer;
+  color: #0059b3 !important;
+}
