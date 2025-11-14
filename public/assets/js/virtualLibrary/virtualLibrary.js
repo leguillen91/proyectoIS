@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function getUserContext() {
     try {
-      const res = await fetch("/api/auth/me.php", {
+      const res = await fetch("/public/api/auth/me.php", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();

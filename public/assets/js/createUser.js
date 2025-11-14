@@ -1,4 +1,4 @@
-const API_URL = "/api/auth/register.php";
+const API_URL = "/public/api/auth/register.php";
 const token = localStorage.getItem("accessToken");
 
 if (!token) {
@@ -41,7 +41,7 @@ document.getElementById("createUserForm").addEventListener("submit", async (e) =
 
 // Logout
 document.getElementById("btnLogout").addEventListener("click", async () => {
-  await fetch("/api/auth/logout.php", { headers: { Authorization: `Bearer ${token}` } });
+  await fetch("/public/api/auth/logout.php", { headers: { Authorization: `Bearer ${token}` } });
   localStorage.removeItem("accessToken");
   window.location.href = "./../index.php";
 });

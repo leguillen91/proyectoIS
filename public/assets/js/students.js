@@ -1,7 +1,7 @@
 // public/assets/students.js
 
-const API_STUDENTS = "/api/students";
-const API_AUTH = "/api/auth";
+const API_STUDENTS = "/public/api/students";
+const API_AUTH = "/public/api/auth/";
 const token = localStorage.getItem("accessToken");
 
 // Redirige si no hay sesión

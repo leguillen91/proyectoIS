@@ -6,7 +6,7 @@ const allowedCareersUp = ["Ingeniería en Sistemas", "Licenciatura en Informáti
 document.addEventListener("DOMContentLoaded", async () => {
   // Validación de acceso: solo student o admin y carrera permitida
   try {
-    const me = await fetch("/api/auth/me.php", { headers:{Authorization:`Bearer ${tokenUp}`} }).then(r=>r.json());
+    const me = await fetch("/public/api/auth/me.php", { headers:{Authorization:`Bearer ${tokenUp}`} }).then(r=>r.json());
     const role = me.user.role;
     const career = me.user.career || "";
     const canCreate = (role === "student" || role === "admin") && allowedCareersUp.includes(career);
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   document.getElementById("btnLogout").addEventListener("click", async () => {
-    try{ await fetch("/api/auth/logout.php",{headers:{Authorization:`Bearer ${tokenUp}`}}) }catch{}
+    try{ await fetch("/public/api/auth/logout.php",{headers:{Authorization:`Bearer ${tokenUp}`}}) }catch{}
     localStorage.removeItem("accessToken");
     window.location.href = "./../index.php";
   });

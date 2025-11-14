@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ===================================
   let me;
   try {
-    me = await fetchJSONAuth("/api/auth/me.php");
+    me = await fetchJSONAuth("/public/api/auth/me.php");
   } catch (err) {
     console.error("No se pudo obtener el usuario:", err);
     localStorage.removeItem("accessToken");

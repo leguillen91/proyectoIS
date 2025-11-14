@@ -11,7 +11,7 @@ async function init(){
   if (!projectId) { location.href="./software.html"; return; }
 
   try{
-    const me = await fetch("/api/auth/me.php", { headers:{Authorization:`Bearer ${tokenDet}`} }).then(r=>r.json());
+    const me = await fetch("/public/api/auth/me.php", { headers:{Authorization:`Bearer ${tokenDet}`} }).then(r=>r.json());
     const role = me.user.role; const career = me.user.career || "";
     const canEnter = ["student","teacher","coordinator","deptHead","admin"].includes(role) && allowedCareersDet.includes(career);
     if (!canEnter){ document.getElementById("blocked").classList.remove("d-none"); return; }
@@ -32,7 +32,7 @@ async function init(){
   }
 
   document.getElementById("btnLogout").addEventListener("click", async ()=>{
-    try{ await fetch("/api/auth/logout.php", {headers:{Authorization:`Bearer ${tokenDet}`}}) }catch{}
+    try{ await fetch("/public/api/auth/logout.php", {headers:{Authorization:`Bearer ${tokenDet}`}}) }catch{}
     localStorage.removeItem("accessToken"); window.location.href="./../index.php";
   });
 }

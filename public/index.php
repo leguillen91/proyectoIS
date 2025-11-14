@@ -167,7 +167,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    const res = await fetch("/api/auth/me.php", {
+    const res = await fetch("/public/api/auth/me.php", {
       method: "GET",
       headers: { "Authorization": "Bearer " + token }
     });
