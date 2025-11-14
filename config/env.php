@@ -6,7 +6,7 @@ return [
   //  Configuración de la base de datos
   'db' => [
     'host' => 'localhost',
-    //'port' => 3306,
+    'port' => 3306,
     'name' => 'unahsystems',
     'user' => 'unahuser',
     'pass' => 'UnahPassword2024!',   // recuerden cambiarlo segun su entorno
