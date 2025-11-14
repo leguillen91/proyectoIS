@@ -1,0 +1,114 @@
+/* =========================================================
+   🎨 Biblioteca de Software - Estilo general
+   ========================================================= */
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background-color: #f8f9fa;
+}
+
+h4, h5, h6 {
+  letter-spacing: 0.3px;
+}
+
+.navbar-brand i {
+  font-size: 1.3rem;
+  margin-right: 0.3rem;
+}
+
+/* =========================================================
+   📦 Tarjetas de proyectos
+   ========================================================= */
+.card {
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-weight: 600;
+}
+
+.badge {
+  font-size: 0.8rem;
+  padding: 0.4em 0.6em;
+}
+
+/* =========================================================
+   🧩 Modal Crear / Editar Proyecto
+   ========================================================= */
+#modalCreate .modal-content {
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+#modalCreate .modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+#modalCreate .modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+#modalCreate .modal-body::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+  #modalCreate .modal-body {
+    padding: 1rem;
+  }
+}
+
+/* =========================================================
+   📘 Modal Detalles
+   ========================================================= */
+#modalDetail .modal-content {
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+#modalDetail .modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+#modalDetail pre {
+  background-color: #f8f9fa;
+  font-size: 0.9rem;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+/* =========================================================
+   🔍 Buscador
+   ========================================================= */
+#searchInput:focus {
+  box-shadow: 0 0 0 0.15rem rgba(0, 123, 255, 0.25);
+}
+
+/* =========================================================
+   💬 Chips (autores y tags)
+   ========================================================= */
+.chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.chip-container .badge {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.list-group-item-action {
+  font-size: 0.9rem;
+  padding: 0.4rem 0.6rem;
+}

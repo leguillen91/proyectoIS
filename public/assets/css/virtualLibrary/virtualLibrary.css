@@ -1,81 +1,208 @@
-.navbar{
-padding: 1.5rem;
-background: linear-gradient(135deg, #012f5a 0%, #024c7a 50%, #046aa3 100%);
+/* ===========================
+   Estilos generales
+=========================== */
+body {
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-
-.navbar-brand{
-    font-size: 2rem;
-    color: #ffff !important;
-    font-weight: bold;
+/* ===========================
+   Navbar
+=========================== */
+.navbar {
+  background-color: #004aad !important;
+}
+.navbar-brand {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+#btnBack {
+  background-color: #ffcc00;
+  border: none;
+  color: #000;
+  transition: background 0.3s ease;
+}
+#btnBack:hover {
+  background-color: #e0b700;
 }
 
-.navbar-logo {
-    height: 20%; 
-    width: 10%;  
-    object-fit: contain; 
-    padding-left: 25px;
-}
-.a{
-    padding-left: 35px;
-    align-content: space-between;
-}
-
-.h3{
-  color: #000000 !important;
-}
-
-.buscador input{
- width: 100%;
-    border-radius: 5px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    display: flex;
-}
-
-.badge {
-      background-color: #007bff;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 8px;
-    }
-
-.tag {
-      display: inline-block;
-      background-color: #e9ecef;
-      color: #333;
-      padding: 3px 8px;
-      border-radius: 6px;
-      margin-right: 5px;
-      font-size: 0.85rem;
-    }
-    .btn-view {
-      background-color: #024c7a;
-      color: white;
-    }
-
-  .fondo {
-    background-image: url("/public/assets/biblioteca.jpg"); 
-    background-size: cover;
-    background-position: center;
-    position: absolute;
-    inset: 0;
-    opacity: 0.4;
-    z-index: -1; 
-  }
-
-.modal-header {
-  background-color: #3b5998;
-  color: white;            
-  border-bottom: 2px solid #2e4372;
-}
-
-.modal-footer {
-   background-color: #6b89c8;
-  color: white;
-  border-top: 2px solid;
-}
-
-.btn-outline-success {
+/* ===========================
+   Botón Subir Recurso
+=========================== */
+#uploadResource {
+  background-color: #198754;
+  border: none;
   font-weight: 500;
+}
+#uploadResource:hover {
+  background-color: #157347;
+}
+
+/* ===========================
+   Buscador
+=========================== */
+#searchInput {
+  border-radius: 25px;
+  padding: 10px 20px;
+  border: 1px solid #ced4da;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+}
+#searchInput:focus {
+  border-color: #004aad;
+  box-shadow: 0 0 5px rgba(0, 74, 173, 0.3);
+}
+
+/* ===========================
+   Cards de Recursos
+=========================== */
+.card {
+  border: none;
+  border-radius: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+.card-title {
+  color: #004aad;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.card-text {
+  color: #555;
+}
+
+/* ===========================
+   Botón Ver PDF
+=========================== */
+.btn-primary {
+  background-color: #004aad;
+  border: none;
+  transition: background 0.3s ease;
+}
+.btn-primary:hover {
+  background-color: #003c8f;
+}
+
+/* ===========================
+   Visor PDF (modal)
+=========================== */
+#pdfModal .modal-dialog {
+  max-width: 90%;
+}
+
+#pdfTitle {
+  font-weight: 600;
+  color: #004aad;
+}
+
+/* Contenedor del PDF */
+#pdfFrame {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #1e1e1e;
+  height: 80vh;
+  overflow: auto;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Canvas del PDF */
+#pdfCanvas {
+  background: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+  margin: auto;
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ===========================
+   Controles del PDF
+=========================== */
+#pdfControls {
+  background-color: #2d2d2d;
+  padding: 10px 15px;
+  border-top: 1px solid #444;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+#pdfControls button {
+  border: none;
+  background: #444;
+  color: #fff;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  transition: background 0.3s ease;
+}
+
+#pdfControls button:hover {
+  background: #0056b3;
+}
+
+/* ===========================
+   Loader PDF
+=========================== */
+#loaderPdf {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 80vh;
+  color: #004aad;
+}
+#loaderPdf .spinner-border {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.25em;
+  color: #004aad;
+}
+#loaderText {
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+/* ===========================
+   Modal de subida
+=========================== */
+.modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.modal-header {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+.modal-footer {
+  border-top: none;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+@media (max-width: 768px) {
+  #pdfFrame {
+    height: 70vh;
+    padding: 5px;
+  }
+  #pdfControls {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .card-title {
+    font-size: 1rem;
+  }
 }

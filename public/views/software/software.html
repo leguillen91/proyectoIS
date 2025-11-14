@@ -13,7 +13,7 @@
         <h3 class="fw-bold text-primary mb-0">Proyectos de Software</h3>
 
         <div class="d-flex gap-2">
-        <button class="btn btn-primary" id="btnNewProject">+ Nuevo Proyecto</button>
+        <button id="btnNewProject" class="btn btn-primary">+ Nuevo Proyecto</button>
         <button id="btnBack" class="btn btn-secondary">Volver al Dashboard</button>
     </div>
   </div>
@@ -49,6 +49,12 @@
             <div class="mb-3">
               <label class="form-label">Descripción</label>
               <textarea id="description" class="form-control" rows="3" maxlength="500"></textarea>
+            </div>
+
+            <div class="mb-3">
+               <label class="form-label">Autores</label>
+              <textarea id="authors" class="form-control" rows="2" maxlength="250"
+                placeholder="Separar autores por coma"></textarea>
             </div>
 
             <div class="mb-3">

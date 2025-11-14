@@ -14,7 +14,9 @@ try {
   authorizeModuleAccess($ctx, $module);
 
   $controller = new ResourceController();
-  $controller->listResources($module);
+  $status = $_GET['status'] ?? null;
+  $controller->listResources($module, $status);
+
 
 } catch (Exception $e) {
   http_response_code(400);

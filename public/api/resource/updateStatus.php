@@ -7,25 +7,27 @@ header('Content-Type: application/json');
 
 try {
   $ctx = requireAuth();
-  
-  $model = new ResourceModel();
-    $module = $model->getModuleByResource($resourceId);
-    authorizeModuleAccess($ctx, $module);
   $data = json_decode(file_get_contents("php://input"), true);
   if (!$data) throw new Exception("Invalid JSON payload");
 
   $resourceId = $data['resourceId'] ?? null;
   $decision = $data['decision'] ?? null;
   $comments = $data['comments'] ?? null;
-  $reviewer = $ctx['personId'] ?? null;
+  $reviewer = $ctx['userId'] ?? null; //  usamos userId porque personId no existe en tu users table
 
   if (!$resourceId || !$decision) {
     throw new Exception("resourceId and decision required");
   }
 
+  //  ahora sí podemos autorizar
+  $model = new ResourceModel();
+  $module = $model->getModuleByResource($resourceId);
+  if (!$module) throw new Exception("Resource not found");
+  authorizeModuleAccess($ctx, $module);
+
+  //  Actualizar estado
   $controller = new ResourceController();
   $controller->updateStatus($resourceId, $decision, $reviewer, $comments);
-
 } catch (Exception $e) {
   http_response_code(400);
   echo json_encode(['ok' => false, 'error' => $e->getMessage()]);

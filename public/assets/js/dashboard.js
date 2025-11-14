@@ -36,28 +36,42 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("linkCreateUser")?.classList.remove("d-none");
       document.getElementById("linkAdminPanel")?.classList.remove("d-none");
       document.getElementById("linkStudents")?.classList.remove("d-none");
-      document.getElementById("linkSoftware")?.classList.remove("d-none"); // admin siempre ve
+      document.getElementById("linkSoftware")?.classList.remove("d-none");
+      document.getElementById("linkVirtualLibrary")?.classList.remove("d-none");
       loadMetrics();
+
     } else if (["coordinator", "teacher", "depthead"].includes(role)) {
       document.getElementById("studentSection")?.classList.remove("d-none");
       document.getElementById("dashboardTitle").textContent = "Panel Docente";
       document.getElementById("linkSoftware")?.classList.remove("d-none");
+      document.getElementById("linkVirtualLibrary")?.classList.remove("d-none");
+
     } else if (role === "student") {
       document.getElementById("studentSection")?.classList.remove("d-none");
       document.getElementById("studentName").textContent = name;
       document.getElementById("studentRole").textContent = role;
       document.getElementById("dashboardTitle").textContent = "Portal del Estudiante";
 
-      //  Mostrar botón solo si tiene carrera válida
-      const allowedCareers = ["ingeniería en sistemas", "ingenieria en sistemas", "licenciatura en informática", "licenciatura en informatica"];
+      const allowedCareers = [
+        "ingeniería en sistemas",
+        "ingenieria en sistemas",
+        "licenciatura en informática",
+        "licenciatura en informatica"
+      ];
+
       if (career && allowedCareers.includes(career)) {
         document.getElementById("linkSoftware")?.classList.remove("d-none");
       } else {
         document.getElementById("linkSoftware")?.classList.add("d-none");
       }
+
+      // Mostrar biblioteca virtual a todos los estudiantes
+      document.getElementById("linkVirtualLibrary")?.classList.remove("d-none");
+
     } else {
-      // Cualquier otro rol sin permiso, ocultar software
+      // Cualquier otro rol sin permiso
       document.getElementById("linkSoftware")?.classList.add("d-none");
+      document.getElementById("linkVirtualLibrary")?.classList.add("d-none");
     }
 
   } catch (err) {

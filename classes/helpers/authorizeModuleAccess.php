@@ -24,7 +24,7 @@ function authorizeModuleAccess($ctx, $module) {
     echo json_encode(['ok' => false, 'error' => 'Access denied: role not permitted']);
     exit;
   }
-
+  if ($role === 'admin') return;
   $allowed = false;
   switch (strtolower($module)) {
     case 'software':

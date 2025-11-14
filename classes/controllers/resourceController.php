@@ -25,9 +25,9 @@ class ResourceController {
   /* ===========================
      LISTAR
   =========================== */
-  public function listResources($module) {
+  public function listResources($module, $status = null) {
     try {
-      $result = $this->service->list($module);
+      $result = $this->service->list($module, $status);
       echo json_encode($result);
     } catch (Exception $e) {
       http_response_code(500);
@@ -51,7 +51,7 @@ class ResourceController {
   /* ===========================
      ACTUALIZAR
   =========================== */
-  public function updateResource($ctx, $data) {
+  /* public function updateResource($ctx, $data) {
     try {
         $service = new ResourceService();
         $updated = $service->updateResource($ctx, $data);
@@ -60,8 +60,17 @@ class ResourceController {
         http_response_code(400);
         echo json_encode(['ok' => false, 'error' => $e->getMessage()]);
     }
-    }
+    } */
+  public function updateResource($ctx, $data) {
+        $service = new ResourceService();
 
+        $id = $data['idResource'] ?? null;
+        if (!$id) throw new Exception("Resource ID missing");
+
+        $updated = $service->update($id, $data);
+        echo json_encode(['ok' => true, 'data' => $updated]);
+    
+    }
 
   /* ===========================
      ELIMINAR
@@ -170,7 +179,17 @@ class ResourceController {
    public function previewFile($ctx, int $id) {
   try {
     $service = new ResourceService();
-    $file = $service->getFileById($id);
+
+    // 🔹 Buscar por resourceId, no por idResourceFile
+    $files = $service->getFiles($id);
+    if (empty($files['data']) || count($files['data']) === 0) {
+      http_response_code(404);
+      echo json_encode(['ok' => false, 'error' => 'File not found']);
+      return;
+    }
+
+    // Tomar el primer archivo asociado
+    $file = $service->getFileById($files['data'][0]['idResourceFile']);
 
     if (!$file) {
       http_response_code(404);
@@ -178,24 +197,16 @@ class ResourceController {
       return;
     }
 
-    $safeExtensions = ['txt', 'md', 'json', 'html', 'css', 'js'];
     $ext = strtolower(pathinfo($file['originalFilename'], PATHINFO_EXTENSION));
 
-    if (in_array($ext, $safeExtensions)) {
-      header("Content-Type: {$file['mimeType']}; charset=utf-8");
-      header('Content-Disposition: inline; filename="' . basename($file['originalFilename']) . '"');
-      echo $file['fileBlob'];
-    } elseif ($ext === 'pdf') {
-      // Mostrar PDF en visor del navegador
+    if ($ext === 'pdf') {
       header("Content-Type: application/pdf");
       header('Content-Disposition: inline; filename="' . basename($file['originalFilename']) . '"');
       echo $file['fileBlob'];
     } else {
-      // Archivos binarios o no seguros → forzar descarga
       header("Content-Type: {$file['mimeType']}");
       header('Content-Length: ' . (int)$file['sizeBytes']);
       header('Content-Disposition: attachment; filename="' . basename($file['originalFilename']) . '"');
-      while (ob_get_level()) ob_end_clean();
       echo $file['fileBlob'];
     }
 
@@ -205,7 +216,8 @@ class ResourceController {
     http_response_code(400);
     echo json_encode(['ok' => false, 'error' => $e->getMessage()]);
   }
-    }
+}
+
 
 
 

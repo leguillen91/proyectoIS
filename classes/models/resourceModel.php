@@ -114,12 +114,19 @@ class ResourceModel {
 }
 
 
-  public function listResources($module) {
-    $sql = "SELECT * FROM resource WHERE module = ? ORDER BY createdAt DESC";
+  public function listResources($module, $status = null) {
+    $sql = "SELECT * FROM resource WHERE module = ?";
+    $params = [$module];
+    if ($status) {
+      $sql .= " AND status = ?";
+      $params[] = $status;
+    }
+    $sql .= " ORDER BY createdAt DESC";
     $stmt = $this->db->prepare($sql);
-    $stmt->execute([$module]);
+    $stmt->execute($params);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
+
 
   public function updateResource($ctx, $data) {
   $db = $this->getConnection();

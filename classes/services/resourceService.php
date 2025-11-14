@@ -16,6 +16,25 @@ class ResourceService {
   $db->beginTransaction();
 
   try {
+    // 🔧 Normalizar authors y tags si vienen como JSON string
+    if (!empty($data['authors']) && is_string($data['authors'])) {
+      $decoded = json_decode($data['authors'], true);
+      if (json_last_error() === JSON_ERROR_NONE) {
+        $data['authors'] = $decoded;
+      } else {
+        $data['authors'] = [['authorName' => trim($data['authors'])]];
+      }
+    }
+
+    if (!empty($data['tags']) && is_string($data['tags'])) {
+      $decoded = json_decode($data['tags'], true);
+      if (json_last_error() === JSON_ERROR_NONE) {
+        $data['tags'] = $decoded;
+      } else {
+        $data['tags'] = array_map('trim', explode(',', $data['tags']));
+      }
+    }
+
     // --------------------------------------
     // 1. Validaciones básicas
     // --------------------------------------
@@ -119,8 +138,8 @@ class ResourceService {
   /* =======================================
      LISTAR / OBTENER
   ======================================= */
-  public function list($module) {
-    $resources = $this->model->listResources($module);
+  public function list($module, $status = null) {
+    $resources = $this->model->listResources($module, $status);
     return ['ok' => true, 'data' => $resources];
   }
 
@@ -238,7 +257,7 @@ class ResourceService {
 
 
     public function updateResource($ctx, $data) {
-        return $this->model->updateResource($ctx, $data);
+        return $this->update($data['idResource'], $data);
     }
 
             

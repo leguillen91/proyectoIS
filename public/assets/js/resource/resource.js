@@ -1,20 +1,3 @@
-/* // Cargar sidebar dinámicamente
-async function loadSidebar() {
-  const sidebarContainer = document.createElement("div");
-  document.body.prepend(sidebarContainer);
-
-  const res = await fetch("../views/components/sidebar.html");
-  const html = await res.text();
-  sidebarContainer.innerHTML = html;
-
-  // Reaplicar el JS de roles del dashboard
-  const script = document.createElement("script");
-  script.src = "../assets/js/dashboard.js";
-  document.body.appendChild(script);
-}
- */
-//document.addEventListener("DOMContentLoaded", loadSidebar);
-
 
 document.addEventListener("DOMContentLoaded", () => {
   const API_BASE = "/api/resource";
@@ -153,6 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
         form.querySelector('[name="title"]').value = d.title || "";
         form.querySelector('[name="description"]').value = d.description || "";
         form.querySelector('[name="licenseId"]').value = d.licenseId || "";
+        
 
         if (form.querySelector('[name="resourceTypeId"]') && d.resourceTypeId)
           form.querySelector('[name="resourceTypeId"]').value = d.resourceTypeId;
@@ -278,6 +262,6 @@ document.addEventListener("DOMContentLoaded", () => {
       modalCreate.show();
     });
   }
-
+  
   loadResources();
 });

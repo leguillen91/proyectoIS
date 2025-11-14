@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("accessToken");
   if (token) {
     // Si ya hay sesión, vamos al dashboard
-    window.location.href = "./dashboard.html";
+    window.location.href = "../index.php";
     return;
   }
 
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.user?.role === "admin") {
         window.location.href = "./dashboard.html";
       } else {
-        window.location.href = "./dashboard.html";
+        window.location.href = "../index.php";
       }
     } catch (err) {
       msg.textContent = err.message;
