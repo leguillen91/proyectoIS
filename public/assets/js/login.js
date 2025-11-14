@@ -1,4 +1,4 @@
-const API_AUTH = "/public/api/auth";
+const API_AUTH = "/api/auth";
 
 document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("accessToken");

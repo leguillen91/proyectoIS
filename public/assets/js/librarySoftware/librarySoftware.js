@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   //  Contexto de usuario
   // ==========================================================
   async function getUserContext() {
-    const res = await fetch("/public/api/auth/me.php", {
+    const res = await fetch("/api/auth/me.php", {
       headers: { Authorization: `Bearer ${token}` },
     });
     showAlert("No tiene acceso a este modulo", "warning");

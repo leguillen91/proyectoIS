@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   try {
-    const me = await fetchJSON("/public/api/auth/me.php");
+    const me = await fetchJSON("/api/auth/me.php");
     const user = me.user || {};
     const role = (user.role || "").toLowerCase();
     const name = user.fullName || "Usuario";
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Logout
   document.getElementById("btnLogout").addEventListener("click", async () => {
     try {
-      await fetch("/public/api/auth/logout.php", { headers: { Authorization: `Bearer ${token}` } });
+      await fetch("/api/auth/logout.php", { headers: { Authorization: `Bearer ${token}` } });
     } catch {}
     localStorage.removeItem("accessToken");
     window.location.href = "./../index.php";

@@ -1,5 +1,5 @@
 // URL base de la API
-const baseUrl = "/public/api/auth/";
+const baseUrl = "/api/auth";
 
 document.addEventListener("DOMContentLoaded", () => {
   const btnLogin = document.getElementById("btnLogin");
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnLogout) {
     btnLogout.addEventListener("click", async () => {
       const token = localStorage.getItem("accessToken");
-      await fetch(`/public/api/auth/logout.php`, {
+      await fetch(`/api/auth/logout.php`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       localStorage.removeItem("accessToken");
