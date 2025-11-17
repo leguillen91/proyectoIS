@@ -176,4 +176,48 @@ BEGIN
     AND (pRoleName IS NULL OR pRoleName='' OR pr.profileKey = UPPER(pRoleName));
 END $$
 
+
+
+/* =======================================================
+   identity.sp_getUserCareer
+   - Retorna la carrera (nombre de programa) según userId y rol
+   - Usa identity.students / identity.teachers + academic.program
+======================================================= */
+DROP PROCEDURE IF EXISTS identity.sp_getUserCareer $$
+CREATE PROCEDURE identity.sp_getUserCareer(
+  IN pUserId INT UNSIGNED,
+  IN pRole   VARCHAR(45)
+)
+BEGIN
+  DECLARE vRoleLower VARCHAR(45);
+  DECLARE vCareer    VARCHAR(100);
+
+  SET vRoleLower = LOWER(pRole);
+  SET vCareer    = NULL;
+
+  /* Caso estudiante: identity.students.programId → academic.program.name */
+  IF vRoleLower = 'student' THEN
+    SELECT p.name
+      INTO vCareer
+    FROM identity.students s
+    LEFT JOIN academic.program p
+           ON p.id = s.programId
+    WHERE s.userId = pUserId
+    LIMIT 1;
+
+  /* Docente / coordinador / jefe de depto: identity.teachers.academicDepartmentId */
+  ELSEIF vRoleLower IN ('teacher','coordinator','depthead','dept_head') THEN
+    SELECT p.name
+      INTO vCareer
+    FROM identity.teachers t
+    LEFT JOIN academic.program p
+           ON p.id = t.academicDepartmentId
+    WHERE t.userId = pUserId
+    LIMIT 1;
+  END IF;
+
+  /* Resultado final */
+  SELECT vCareer AS career;
+END $$
+
 DELIMITER ;

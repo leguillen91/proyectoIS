@@ -1,0 +1,154 @@
+/* Fondo general similar al panel de inicio */
+.adm-body {
+    background-color: #f4f6fb;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Contenedor principal, más ancho y centrado */
+.adm-container {
+    max-width: 1200px;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+    flex: 1;
+}
+
+/* Tarjeta grande blanca tipo panel */
+.nav-container {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 2.2rem 2.5rem 2.3rem;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+}
+
+/* Título y subtítulo */
+.main-title {
+    font-size: 1.9rem;
+    font-weight: 600;
+    text-align: left;
+    color: #1f2933;
+    margin-bottom: 0.3rem;
+}
+
+.subtitle {
+    text-align: left;
+    color: #6b7280;
+    font-size: 0.98rem;
+    margin: 0;
+}
+
+/* BOTONES TIPO CARDS ------------------------------------------------ */
+
+.nav-button {
+    border-radius: 18px;
+    border: 1px solid #e5e7eb;
+    padding: 1.1rem 1.15rem;
+    background: #f5f7ff;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+    transition:
+        transform 0.16s ease,
+        box-shadow 0.16s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+    text-align: left;
+}
+
+.nav-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.4);
+}
+
+.nav-button:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
+    border-color: transparent;
+    background: linear-gradient(135deg, #2563eb, #38bdf8);
+    color: #ffffff;
+}
+
+/* Icono redondo a la izquierda */
+.nav-icon-wrapper {
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(37, 99, 235, 0.09);
+    color: #2563eb;
+    margin-right: 0.95rem;
+    flex-shrink: 0;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.nav-icon-wrapper i {
+    font-size: 1.4rem;
+}
+
+/* Texto del botón */
+.nav-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.1rem;
+}
+
+.nav-title {
+    font-weight: 600;
+    font-size: 1.02rem;
+    color: #111827;
+}
+
+.nav-desc {
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+/* Cambios al pasar el mouse */
+.nav-button:hover .nav-icon-wrapper {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+}
+
+.nav-button:hover .nav-title,
+.nav-button:hover .nav-desc {
+    color: #f9fafb;
+}
+
+/* Ajustes responsive -------------------------------------------- */
+
+@media (max-width: 992px) {
+    .nav-container {
+        padding: 1.7rem 1.6rem;
+    }
+
+    .main-title {
+        font-size: 1.6rem;
+        text-align: center;
+    }
+
+    .subtitle {
+        text-align: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .nav-button {
+        padding: 0.9rem 0.95rem;
+    }
+
+    .nav-icon-wrapper {
+        width: 40px;
+        height: 40px;
+        margin-right: 0.75rem;
+    }
+
+    .nav-title {
+        font-size: 0.98rem;
+    }
+
+    .nav-desc {
+        font-size: 0.85rem;
+    }
+}

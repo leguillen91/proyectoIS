@@ -731,3 +731,36 @@ FROM credentials c
 JOIN users u              ON u.id = c.userId
 LEFT JOIN credentialRoles cr ON cr.credentialId = c.id
 LEFT JOIN roles r             ON r.id = cr.role;
+
+
+
+
+
+
+
+
+/* =======================================================
+   Asignar programa a estudiantes de ejemplo
+   (Milton, Luis, Javiary, Jhonny, Carlos)
+======================================================= */
+
+UPDATE identity.students st
+JOIN identity.users u ON u.id = st.userId
+LEFT JOIN academic.program pIS   ON pIS.programCode   = 'IS-01'
+LEFT JOIN academic.program pDER  ON pDER.programCode  = 'DERE-01'
+LEFT JOIN academic.program pPSI  ON pPSI.programCode  = 'PSI-01'
+LEFT JOIN academic.program pMED  ON pMED.programCode  = 'MED-01'
+SET st.programId = CASE u.nationalId
+  WHEN '0801-2000-02942' THEN pIS.id    -- Milton  → Ingeniería en Sistemas
+  WHEN '0801-2000-02947' THEN pDER.id   -- Luis    → Derecho
+  WHEN '0801-2000-02948' THEN pPSI.id   -- Javiary → Psicología
+  WHEN '0801-2000-02949' THEN pMED.id   -- Jhonny  → Medicina
+  WHEN '0801-2000-02950' THEN pIS.id    -- Carlos  → Ingeniería en Sistemas (repetido)
+END
+WHERE u.nationalId IN (
+  '0801-2000-02942',
+  '0801-2000-02947',
+  '0801-2000-02948',
+  '0801-2000-02949',
+  '0801-2000-02950'
+);

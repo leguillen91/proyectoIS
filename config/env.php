@@ -7,9 +7,9 @@ return [
   'db' => [
     'host' => 'localhost',
     'port' => 3306,
-    'name' => 'unahsystems',
-    'user' => 'unahuser',
-    'pass' => 'UnahPassword2024!',   // recuerden cambiarlo segun su entorno
+    'name' => 'projectUnahSistems',
+    'user' => 'root',
+    'pass' => 'Sistemas_12@',   // recuerden cambiarlo segun su entorno
     'charset' => 'utf8mb4'
   ],
   
