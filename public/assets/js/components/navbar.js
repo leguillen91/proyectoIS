@@ -36,7 +36,7 @@ export default class NavBar extends HTMLElement {
             </ul>
           </li>
           <li class="nav-item">
-            <a class="nav-link active fw-semibold" href="../../../admisiones/index.php">Admisiones</a>
+            <a class="nav-link active fw-semibold" href="../../../admission/index.php">Admisiones</a>
           </li>
           <li class="nav-item">
             <a class="nav-link fw-semibold" href="../../../views/library/virtualLibrary.html">Biblioteca Virtual</a>

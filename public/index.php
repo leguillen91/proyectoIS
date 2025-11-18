@@ -39,8 +39,7 @@ try {
   <custom-footer></custom-footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="./assets/js/components/NavBarSession.js" defer></script>
-  <script type="module" src="assets/js/admisiones/menu/main.js"></script>
+  <script type="module" src="assets/js/admission/menu/main.js"></script>
 
 </body>
 </html>

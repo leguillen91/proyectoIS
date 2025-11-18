@@ -1,19 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Admisión</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../../assets/css/formAdmision.css" rel="stylesheet">
-</head>
-
-<body>
-
-    <nav-bar></nav-bar>
-
-    <div class="container mt-5 mb-5">
+<div class="container mt-5 mb-5">
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="card shadow-lg">
@@ -135,11 +120,3 @@
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
     </div>
-
-    <custom-footer></custom-footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="../../assets/js/admisiones/formAdmision/main.js" defer></script>
-</body>
-
-</html>

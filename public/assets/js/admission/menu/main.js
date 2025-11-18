@@ -1,6 +1,5 @@
-// Importa y registra los componentes de NavBar y Footer
-import "../../components/NavBar.js";
-import "../../components/Footer.js";
+import "../../components/navbar.js";
+import "../../components/footer.js";
 
 function navigateTo(page) {
     document.body.style.opacity = '0.8';

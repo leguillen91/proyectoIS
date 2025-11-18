@@ -1,6 +1,5 @@
-// Importa y registra los componentes de NavBar y Footer
-import "../../components/NavBar.js";
-import "../../components/Footer.js";
+import "../../components/navbar.js";
+import "../../components/footer.js";
 
 // Referencias a elementos del DOM
 const form = document.getElementById("statusForm");

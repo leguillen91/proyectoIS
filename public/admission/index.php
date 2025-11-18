@@ -6,16 +6,16 @@
     <title>UNAH Admisiones</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="./../assets/css/menuAdmision.css">
+    <link rel="stylesheet" href="./../assets/css/admission/menuAdmission.css">
 </head>
 <body class="adm-body">
     <nav-bar></nav-bar>
 
-    <?php include __DIR__ . '../../views/admisiones/menu.php'; ?>
+    <?php include __DIR__ . '../../views/admission/menu.php'; ?>
 
     <custom-footer></custom-footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="./../assets/js/admisiones/menu/main.js"></script>
+    <script type="module" src="./../assets/js/admission/menu/main.js"></script>
 </body>
 </html>

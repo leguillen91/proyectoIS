@@ -9,7 +9,7 @@
                         <div class="col-lg-4 col-md-6">
                             <button
                                 class="btn nav-button btn-home w-100 d-flex align-items-center"
-                                onclick="navigateTo('/admisiones/inscripcion/formAdmisiones.php')"
+                                onclick="navigateTo('/admission/registerForm/formAdmission.php')"
                             >
                                 <div class="nav-icon-wrapper">
                                     <i class="bi bi-pencil"></i>
@@ -26,7 +26,7 @@
                         <div class="col-lg-4 col-md-6">
                             <button
                                 class="btn nav-button btn-about w-100 d-flex align-items-center"
-                                onclick="navigateTo('/admisiones/req/status.php')"
+                                onclick="navigateTo('/admission/req/status.php')"
                             >
                                 <div class="nav-icon-wrapper">
                                     <i class="bi bi-question-circle"></i>

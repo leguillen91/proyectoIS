@@ -1,7 +1,5 @@
-// admission-form/main.js
-// Importa y registra los componentes de NavBar y Footer
-import "../../components/NavBar.js";
-import "../../components/Footer.js";
+import "../../components/navbar.js";
+import "../../components/footer.js";
 import { FormManager } from './managerForm.js';
 
 document.addEventListener('DOMContentLoaded', () => {

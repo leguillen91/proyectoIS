@@ -1,8 +1,4 @@
-<?php
-    session_start();
-    include $_SERVER['DOCUMENT_ROOT'].'/config.php';
-    $baseURL = APP_ENV == 'PROD' ? BACKEND_BASE_PATH : '/public/api/';
-?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,7 +8,7 @@
     <title>Inicio sesión revisor</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="./../../assets/css/revisorAdmision.css">
+    <link rel="stylesheet" href="./../../assets/css/admission/reviewerLoginAdmission.css">
 </head>
 
 <body>
@@ -101,7 +97,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="./../../assets/js/loginReviewer.js" defer></script>
+    <script type="module" src="./../../assets/js/" defer></script>
 </body>
 
 </html>

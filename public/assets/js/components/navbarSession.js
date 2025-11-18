@@ -1,6 +1,5 @@
-// Importa y registra los componentes de NavBar y Footer
-import "/NavBar.js";
-import "/components/Footer.js";
+import "/navbar.js";
+import "/components/footer.js";
 
 
 document.addEventListener("DOMContentLoaded", async () => {
