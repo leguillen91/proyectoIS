@@ -40,12 +40,11 @@ try {
           <li class="nav-item">
             <a class="nav-link active fw-semibold" href="#">Inicio</a>
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle fw-semibold" href="#" data-bs-toggle="dropdown">Estudiantes</a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Pregrado</a></li>
-              <li><a class="dropdown-item" href="#">Postgrado</a></li>
-            </ul>
+          <li class="nav-item">
+            <a class="nav-link fw-semibold" id="linkStudents" href="./views/students/dashboard.html">Estudiantes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fw-semibold" id="linkEnrollment" href="./views/registrationModule/dashboard.html">Matricula</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle fw-semibold" href="#" data-bs-toggle="dropdown">Admisiones</a>
@@ -189,7 +188,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ---- Validación por carrera ----
     // ---- Validación por carrera + admin ----
 const linkSoftware = document.getElementById("linkSoftware");
-
+const linkStudents = document.getElementById("linkStudents");
 // Carreras permitidas
 const allowedCareers = [
   "Ingeniería en Sistemas",
@@ -202,11 +201,18 @@ const userRole = data.user.role || "";
 // Si NO pertenece a las carreras permitidas y NO es admin → ocultar
 const isCareerAllowed = allowedCareers.includes(userCareer);
 const isAdmin = userRole === "admin";
-
+const isStudent = userRole === "student";
 if (!isCareerAllowed && !isAdmin) {
   if (linkSoftware) linkSoftware.style.display = "none";
 }
 
+if (isAdmin) {
+  if (linkStudents) linkStudents.style.display = "none";
+}
+
+if (isStudent) {
+  if (linkEnrollment) linkEnrollment.style.display = "none";
+}
 
     const roleEs = roleMap[data.user.role] || data.user.role;
     const rawName = data.user.name || data.user.fullName || data.user.username || "Usuario";
@@ -224,10 +230,13 @@ if (!isCareerAllowed && !isAdmin) {
       </div>
     `;
 
-    document.getElementById("btnLogout").addEventListener("click", () => {
-      localStorage.removeItem("accessToken");
-      window.location.href = "index.php";
-    });
+    document.getElementById("btnLogout").addEventListener("click", async () => {
+        try {
+          await fetch("/api/auth/logout.php", { headers: { Authorization: `Bearer ${token}` } });
+        } catch {}
+        localStorage.removeItem("accessToken");
+        window.location.href = "./../index.php";
+      });
 
   } catch (error) {
     console.error("Error cargando sesión:", error);

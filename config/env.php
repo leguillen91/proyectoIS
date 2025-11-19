@@ -6,10 +6,10 @@ return [
   //  Configuración de la base de datos
   'db' => [
     'host' => 'localhost',
-    //'port' => 3306,
-    'name' => 'unahsystems',
-    'user' => 'unahuser',
-    'pass' => 'UnahPassword2024!',   // recuerden cambiarlo segun su entorno
+    'port' => 3306,
+    'name' => 'projectUnahSistems',
+    'user' => 'root',
+    'pass' => 'Sistemas_12@',   // recuerden cambiarlo segun su entorno
     'charset' => 'utf8mb4'
   ],
   

@@ -1,0 +1,211 @@
+/* ===============================
+   CONTENEDORES GENERALES
+   =============================== */
+.chat-wrapper {
+  display: flex;
+  height: calc(100vh - 120px);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  background: white;
+}
+
+/* PANEL DE CONTACTOS */
+.contacts-panel {
+  width: 300px;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  background: #f7f9fc;
+}
+
+.contact-item {
+  padding: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.contact-item:hover {
+  background: #e9eef5;
+}
+
+/* Avatar en lista de contactos */
+.avatar-sm {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* PANEL DE CHAT */
+.chat-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER DEL CHAT */
+.chat-header {
+  padding: 15px;
+  background: #0d6efd;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 70px;
+}
+
+.chat-header h5 {
+  margin: 0;
+}
+
+.chat-header small {
+  margin-top: -4px;
+  opacity: 0.85;
+}
+
+/* AREA DE MENSAJES */
+.messages-area {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: #f5f6fa;
+}
+
+/* ===============================
+   BURBUJAS DE MENSAJE
+   =============================== */
+.message-wrapper {
+  animation: msgFade .25s ease-out;
+  margin-bottom: 12px;
+}
+
+@keyframes msgFade {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.message {
+  max-width: 68%;
+  padding: 12px 15px;
+  border-radius: 12px;
+  font-size: 15px;
+  line-height: 1.4;
+  position: relative;
+}
+
+/* Mensaje propio */
+.message.mine {
+  background: #0d6efd;
+  color: white;
+  margin-left: auto;
+  border-bottom-right-radius: 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Mensaje de otro usuario */
+.message.theirs {
+  background: #ffffff;
+  color: #333;
+  border: 1px solid #e0e0e0;
+  margin-right: auto;
+  border-bottom-left-radius: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Hora del mensaje */
+.msg-time {
+  margin-top: 6px;
+  font-size: 11px;
+  opacity: 0.7;
+  text-align: right;
+}
+
+/* ===============================
+   SEPARADORES DE FECHA
+   =============================== */
+.date-separator {
+  text-align: center;
+  margin: 15px 0;
+}
+
+.date-separator span {
+  background: #dfe6e9;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #2d3436;
+}
+
+/* ===============================
+   INPUT PARA ENVIAR MENSAJES
+   =============================== */
+.chat-input-box {
+  padding: 15px;
+  background: white;
+  border-top: 1px solid #ddd;
+  display: flex;
+}
+
+#messageInput {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+#btnSend {
+  width: 55px;
+  margin-left: 10px;
+}
+
+/* ===============================
+   RESPONSIVE – CHAT MÓVIL
+   =============================== */
+
+@media (max-width: 768px) {
+
+    .chat-wrapper {
+        flex-direction: column;
+        height: calc(100vh - 80px);
+    }
+
+    /* Panel de contactos ocupa toda la pantalla */
+    .contacts-panel {
+        width: 100%;
+        height: 100%;
+        border-right: none;
+        display: block;
+    }
+
+    /* Panel del chat oculto inicialmente */
+    .chat-panel {
+        width: 100%;
+        height: 100%;
+        display: none;
+    }
+
+    /* Header del chat con botón atrás */
+    .chat-header {
+        position: relative;
+        height: 65px;
+    }
+
+    #btnBackContacts {
+        position: absolute;
+        left: 10px;
+        top: 18px;
+        font-size: 22px;
+        color: white;
+        background: none;
+        border: none;
+    }
+}
+
+/* Cuando estamos en modo chat en mobile */
+.chat-mobile-active .contacts-panel {
+    display: none !important;
+}
+
+.chat-mobile-active .chat-panel {
+    display: flex !important;
+}

@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Redirección por rol
       if (data.user?.role === "admin") {
-        window.location.href = "./dashboard.html";
+        window.location.href = "../index.php";
       } else {
         window.location.href = "../index.php";
       }

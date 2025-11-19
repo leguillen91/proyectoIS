@@ -1,0 +1,118 @@
+/* ================================
+   GENERAL LAYOUT
+=================================== */
+
+body {
+  display: flex;
+  background: #f8f9fa;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ================================
+   SIDEBAR
+=================================== */
+
+.sidebar {
+  width: 240px;
+  background: #003366;
+  min-height: 100vh;
+  padding-top: 20px;
+  color: #fff;
+}
+
+.sidebar .nav-link {
+  display: block;
+  padding: 10px;
+  color: #eee;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  transition: 0.2s ease-in-out;
+}
+
+.sidebar .nav-link.active,
+.sidebar .nav-link:hover {
+  background: rgba(255,255,255,0.18);
+  color: #fff !important;
+}
+
+/* ================================
+   MAIN CONTENT
+=================================== */
+
+.main-content {
+  flex: 1;
+  padding: 40px;
+}
+
+.table thead th {
+  background: #003366 !important;
+  color: #fff;
+}
+
+/* ================================
+   CHIPS / TAGS / BADGES
+=================================== */
+
+.badge-career {
+  display: inline-block;
+  background: #003366;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
+.badge-semester {
+  background: #0d6efd;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+}
+
+/* ================================
+   BUTTON STYLES
+=================================== */
+
+.btn-sm {
+  padding: 4px 10px !important;
+}
+
+.btn-rounded {
+  border-radius: 50px !important;
+}
+
+/* ================================
+   ALERTS (Bootstrap tweaks)
+=================================== */
+
+.alert {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+/* ================================
+   MODAL FIXES
+=================================== */
+
+.modal-header {
+  padding: 15px;
+}
+
+.modal-body input,
+.modal-body select {
+  border-radius: 4px !important;
+}
+
+/* ================================
+   UTILITY CLASSES
+=================================== */
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.text-small {
+  font-size: 0.85rem;
+}

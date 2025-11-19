@@ -1,5 +1,4 @@
 <?php
-
 function normalizeCareer($text) {
   $text = strtolower(trim($text));
   $map = [
@@ -18,24 +17,43 @@ function authorizeModuleAccess($ctx, $module) {
   $role = strtolower($ctx['role'] ?? '');
   $career = normalizeCareer($ctx['career'] ?? '');
 
+  // Roles permitidos globalmente
   $allowedRoles = ['student', 'teacher', 'coordinator', 'depthead', 'admin'];
+
   if (!in_array($role, $allowedRoles)) {
     http_response_code(403);
     echo json_encode(['ok' => false, 'error' => 'Access denied: role not permitted']);
     exit;
   }
+
+  // Admin siempre tiene acceso
   if ($role === 'admin') return;
+
   $allowed = false;
+
   switch (strtolower($module)) {
+
+    case 'registration': // MATRÍCULA
+      // ✔ Todas las carreras tienen acceso
+      $allowed = true;
+      break;
+
     case 'software':
       $allowed = in_array($career, ['ingenieria en sistemas', 'licenciatura en informatica']);
       break;
+
     case 'music':
       $allowed = ($career === 'musica');
       break;
+
     case 'library':
+      // Biblioteca virtual es general
       $allowed = true;
       break;
+
+    default:
+      // Si no se reconoce el módulo → bloqueo
+      $allowed = false;
   }
 
   if (!$allowed) {

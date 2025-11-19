@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Section Schedule - UNAH Systems</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4">
+
+        <h2 class="mb-4">Section Schedule</h2>
+
+        <!-- Select Section -->
+        <div class="mb-4">
+            <label class="form-label">Select Section</label>
+            <select id="sectionSelect" class="form-select"></select>
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Day</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th style="width:150px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="scheduleBody"></tbody>
+        </table>
+
+        <button class="btn btn-primary mt-3" id="btnAddSchedule">
+            <i class="bi bi-plus-circle"></i> Add Schedule
+        </button>
+
+    </div>
+
+    <!-- Modal CREATE -->
+    <div class="modal fade" id="modalAddSchedule">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Add Schedule</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <form>
+
+                        <div class="mb-3">
+                            <label class="form-label">Day</label>
+                            <select id="addDay" class="form-select">
+                                <option value="Lunes">Monday</option>
+                                <option value="Martes">Tuesday</option>
+                                <option value="Miercoles">Wednesday</option>
+                                <option value="Jueves">Thursday</option>
+                                <option value="Viernes">Friday</option>
+                                <option value="Sabado">Saturday</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Start Time</label>
+                            <input type="time" class="form-control" id="addStart">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">End Time</label>
+                            <input type="time" class="form-control" id="addEnd">
+                        </div>
+
+                    </form>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" id="btnSaveSchedule">Save</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="../../assets/js/registrationModule/sectionSchedule.js"></script>
+</body>
+</html>

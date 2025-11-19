@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Subject Prerequisites - UNAH Systems</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4">
+
+        <h2 class="mb-4">Subject Prerequisites</h2>
+
+        <!-- Select Subject -->
+        <div class="mb-4">
+            <label class="form-label">Select a Subject</label>
+            <select id="subjectSelect" class="form-select"></select>
+        </div>
+
+        <!-- Table -->
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Prerequisite</th>
+                    <th style="width:150px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="prereqBody"></tbody>
+        </table>
+
+        <button class="btn btn-primary mt-3" id="btnAddPrerequisite">
+            <i class="bi bi-plus-circle"></i> Add Prerequisite
+        </button>
+
+    </div>
+
+    <!-- Modal Add -->
+    <div class="modal fade" id="modalAddPrerequisite">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Add Prerequisite</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <label class="form-label">Select prerequisite subject</label>
+                    <select class="form-select" id="addPrerequisiteSelect"></select>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" id="btnSavePrerequisite">Save</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="../../assets/js/registrationModule/prerequisites.js"></script>
+</body>
+</html>

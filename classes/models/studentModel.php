@@ -9,36 +9,66 @@ class StudentModel {
     $this->db = $db;
   }
 
+  // ============================================================
+  //  LISTADO GENERAL
+  // ============================================================
+
   /**
-   * Obtener todos los estudiantes (para admin o coordinator)
+   * Obtener todos los estudiantes (vista consolidada).
+   * Usado por administración, jefes y coordinadores.
    */
   public function getAll(): array {
-    $stmt = $this->db->query("SELECT * FROM view_students ORDER BY studentId ASC");
+    $stmt = $this->db->query("
+      SELECT * 
+      FROM view_students 
+      ORDER BY studentId ASC
+    ");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
+  // ============================================================
+  //  BÚSQUEDAS INDIVIDUALES
+  // ============================================================
+
   /**
-   * Obtener información de un estudiante por su ID
+   * Obtener información detallada de un estudiante por ID.
    */
   public function getById(int $id): ?array {
-    $stmt = $this->db->prepare("SELECT * FROM view_students WHERE studentId = ?");
+    $stmt = $this->db->prepare("
+      SELECT * 
+      FROM view_students 
+      WHERE studentId = ?
+    ");
     $stmt->execute([$id]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     return $result ?: null;
   }
 
   /**
-   * Obtener información de un estudiante por ID de usuario (para 'student')
+   * Obtener datos de estudiante por ID de usuario.
+   * Usado por rol "student" para cargar su propio perfil.
    */
   public function getByUserId(int $userId): ?array {
-    $stmt = $this->db->prepare("SELECT * FROM view_students WHERE studentId = (SELECT id FROM students WHERE userId = ?)");
+    $stmt = $this->db->prepare("
+      SELECT * 
+      FROM view_students 
+      WHERE studentId = (
+        SELECT id FROM students WHERE userId = ?
+      )
+    ");
     $stmt->execute([$userId]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     return $result ?: null;
   }
 
+  // ============================================================
+  //  CREAR NUEVO ESTUDIANTE
+  // ============================================================
+
   /**
-   * Crear un nuevo registro de estudiante
+   * Crear un nuevo registro de estudiante.
+   * Este método es usado cuando Admision genera el estudiante
+   * y se crea automáticamente en esta tabla.
    */
   public function create(
     int $userId,
@@ -51,17 +81,37 @@ class StudentModel {
     ?string $phoneNumber,
     ?string $address
   ): int {
+
     $stmt = $this->db->prepare("
       INSERT INTO students (
-        userId, enrollmentCode, career, academicCenter, admissionYear, currentPeriod, status, phoneNumber, address
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        userId, enrollmentCode, career, academicCenter, 
+        admissionYear, currentPeriod, status, phoneNumber, address
+      ) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
-    $stmt->execute([$userId, $enrollmentCode, $career, $academicCenter, $admissionYear, $currentPeriod, $status, $phoneNumber, $address]);
+
+    $stmt->execute([
+      $userId,
+      $enrollmentCode,
+      $career,
+      $academicCenter,
+      $admissionYear,
+      $currentPeriod,
+      $status,
+      $phoneNumber,
+      $address
+    ]);
+
     return (int) $this->db->lastInsertId();
   }
 
+  // ============================================================
+  //  ACTUALIZAR ESTUDIANTE
+  // ============================================================
+
   /**
-   * Actualizar información de estudiante
+   * Actualizar información del estudiante.
+   * Usado principalmente por Administración o Coordinadores.
    */
   public function update(
     int $studentId,
@@ -72,19 +122,39 @@ class StudentModel {
     ?string $phoneNumber,
     ?string $address
   ): bool {
+
     $stmt = $this->db->prepare("
       UPDATE students 
-      SET career = ?, academicCenter = ?, currentPeriod = ?, status = ?, phoneNumber = ?, address = ?
+      SET career = ?, academicCenter = ?, currentPeriod = ?, status = ?, 
+          phoneNumber = ?, address = ?
       WHERE id = ?
     ");
-    return $stmt->execute([$career, $academicCenter, $currentPeriod, $status, $phoneNumber, $address, $studentId]);
+
+    return $stmt->execute([
+      $career,
+      $academicCenter,
+      $currentPeriod,
+      $status,
+      $phoneNumber,
+      $address,
+      $studentId
+    ]);
   }
 
+  // ============================================================
+  //  ELIMINAR ESTUDIANTE
+  // ============================================================
+
   /**
-   * Eliminar estudiante (solo admin)
+   * Eliminar estudiante.
+   * Solo debe utilizarse en administración (casos extremos).
    */
   public function delete(int $studentId): bool {
-    $stmt = $this->db->prepare("DELETE FROM students WHERE id = ?");
+    $stmt = $this->db->prepare("
+      DELETE FROM students 
+      WHERE id = ?
+    ");
     return $stmt->execute([$studentId]);
   }
 }
+

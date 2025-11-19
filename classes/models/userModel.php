@@ -47,7 +47,7 @@ class UserModel {
   public function getPermissionsByRoleId(int $roleId): array {
     $stmt = $this->db->prepare("
       SELECT p.permissionCode 
-      FROM rolePermissions rp
+      FROM rolepermissions rp
       JOIN permissions p ON p.id = rp.permissionId
       WHERE rp.roleId = ?
     ");
@@ -74,5 +74,15 @@ class UserModel {
     ");
     $stmt->execute([$fullName, $email, $identityNumber, $accountNumber, $roleId, $passwordHash, $passwordSalt]);
     return (int) $this->db->lastInsertId();
+  }
+
+  public function createTeacher($userId, $fullName, $employeeNumber, $career, $center)
+  {
+      $stmt = $this->db->prepare("
+          INSERT INTO teachers (userId, fullName, employeeNumber, career, academicCenter)
+          VALUES (?, ?, ?, ?, ?)
+      ");
+      $stmt->execute([$userId, $fullName, $employeeNumber, $career, $center]);
+      return $this->db->lastInsertId();
   }
 }

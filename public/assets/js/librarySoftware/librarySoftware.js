@@ -67,15 +67,30 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ==========================================================
   //  Contexto de usuario
   // ==========================================================
-  async function getUserContext() {
+ async function getUserContext() {
+  try {
     const res = await fetch("/api/auth/me.php", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    showAlert("No tiene acceso a este modulo", "warning");
-    window.location.href = "./../login.html";
+
+    if (!res.ok) throw new Error("Error al autenticar sesión");
     const data = await res.json();
+
+    if (!data.ok || !data.user) {
+      showAlert("Sesión inválida. Inicie sesión nuevamente.", "danger");
+      setTimeout(() => (window.location.href = "../../index.php"), 2000);
+      return;
+    }
+
     userCtx = data.user;
+    console.log(`✅ Sesión activa: ${userCtx.fullName} (${userCtx.role})`);
+
+  } catch (err) {
+    console.error("❌ Error al obtener contexto:", err);
+    showAlert("Error de sesión. Redirigiendo al inicio...", "danger");
+    setTimeout(() => (window.location.href = "../../index.php"), 2000);
   }
+}
 
   // ==========================================================
   //  Cargar metadata + inicializar chips

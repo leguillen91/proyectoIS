@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Certificado Académico - UNAH Systems</title>
+
+  <link rel="stylesheet" href="../../assets/css/shared/sidebar.css" />
+  <link rel="stylesheet" href="../../assets/css/students/certificate.css">
+</head>
+
+<body>
+  <div id="sidebarContainer"></div>
+  <div id="certificateContainer">
+    <div class="header">
+      <img src="../../assets/unah_logo.png" alt="UNAH" class="logo">
+      <div class="titles">
+        <h2>UNIVERSIDAD NACIONAL AUTÓNOMA DE HONDURAS</h2>
+        <h3>Certificado Académico</h3>
+      </div>
+    </div>
+
+    <hr>
+
+    <div id="studentInfo"></div>
+
+    <h3 class="section-title">Historial Académico</h3>
+
+    <table id="recordTable">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Asignatura</th>
+          <th>Nota</th>
+          <th>Periodo</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="footer">
+      <p>Este documento es generado digitalmente desde UNAH Systems.</p>
+      <p class="date" id="dateField"></p>
+    </div>
+  </div>
+
+  <div class="actions">
+    <a href="dashboard.html" id="btnLogout" class="nav-link text-danger"><i class="bi bi-box-arrow-right me-2"></i>VOLVER</a>
+    <button onclick="window.print()">Guardar como PDF</button>
+
+    
+  </div>
+
+  <script src="../../assets/js/students/certificate.js"></script>
+  
+</body>
+</html>

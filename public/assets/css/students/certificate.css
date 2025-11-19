@@ -1,0 +1,87 @@
+body {
+  background: #f0f0f0;
+  font-family: 'Arial';
+}
+
+#certificateContainer {
+  width: 800px;
+  margin: 30px auto;
+  background: white;
+  padding: 40px;
+  border: 1px solid #ccc;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 90px;
+  height: 90px;
+  margin-right: 20px;
+}
+
+.titles h2 {
+  margin: 0;
+  font-size: 20px;
+  text-align: left;
+}
+
+.titles h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #444;
+}
+
+.section-title {
+  margin-top: 30px;
+  background: #003366;
+  color: white;
+  padding: 8px;
+}
+
+#recordTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+#recordTable th,
+#recordTable td {
+  border: 1px solid #aaa;
+  padding: 6px;
+  font-size: 14px;
+}
+
+.footer {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.date {
+  margin-top: 8px;
+  font-style: italic;
+}
+
+.actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.actions button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+@media print {
+  .actions {
+    display: none;
+  }
+
+  body {
+    background: white;
+  }
+}

@@ -1,0 +1,200 @@
+/* ================================
+   LAYOUT GENERAL
+=================================== */
+body {
+  display: flex;
+  background: #f8f9fa;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ================================
+   SIDEBAR
+=================================== */
+.sidebar {
+  width: 240px;
+  background: #003366;
+  min-height: 100vh;
+  padding-top: 20px;
+  color: #fff;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.sidebar .nav-link {
+  display: block;
+  padding: 10px;
+  color: #eee;
+  margin: 5px 10px;
+  border-radius: 5px;
+}
+
+.sidebar .nav-link.active,
+.sidebar .nav-link:hover {
+  background: rgba(255,255,255,0.20);
+  color: #fff !important;
+}
+
+/* ================================
+   MAIN CONTENT
+=================================== */
+.main-content {
+  margin-left: 240px;
+  padding: 40px;
+  width: calc(100% - 240px);
+}
+
+/* ================================
+   DASHBOARD CARDS
+=================================== */
+.card-option {
+  border-radius: 12px;
+  cursor: pointer;
+  transition: .25s;
+  padding: 25px;
+  background: white;
+  border: 2px solid #00336620;
+}
+
+.card-option:hover {
+  transform: translateY(-3px);
+  border-color: #003366;
+  background: #f1f5ff;
+}
+
+.card-option i {
+  font-size: 2.2rem;
+  color: #003366;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+/* ================================
+   PERIOD CARDS
+=================================== */
+.period-card {
+  border-radius: 12px;
+  padding: 20px;
+  border: 2px solid #00336620;
+  transition: .25s;
+  background: white;
+}
+
+.period-card:hover {
+  transform: translateY(-3px);
+  border-color: #003366;
+}
+
+/* border by status */
+.border-created { border-color: #6c757d !important; }
+.border-opened  { border-color: #198754 !important; }
+.border-closed  { border-color: #dc3545 !important; }
+.border-finished{ border-color: #0d6efd !important; }
+
+/* badges */
+.badge-status {
+  font-size: .75rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* Contenedor de períodos (3 columnas por fila) */
+        .period-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .period-box {
+            background: white;
+            border: 2px solid #003366;
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 250px;
+        }
+
+        .period-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #003366;
+            margin-bottom: 10px;
+        }
+
+        .subject-item {
+            background: #f3f6ff;
+            border-left: 4px solid #003366;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .subject-remove {
+            float: right;
+            color: red;
+            cursor: pointer;
+        }
+
+        .scroll-box {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 10px;
+            background: #fafafa;
+        }
+
+
+        /* Estilos para el select con búsqueda */
+        .search-select {
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            padding: 8px 12px;
+            background: #fff;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .selected-option {
+            font-size: 14px;
+            color: #444;
+        }
+
+        .dropdown-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #fff;
+            z-index: 20;
+            max-height: 260px;
+            overflow: hidden;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 6px 10px;
+            border: none;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .options-container {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .option-item {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        .option-item:hover {
+            background: #f5f5f5;
+        }
+      

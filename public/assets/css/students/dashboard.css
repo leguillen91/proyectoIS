@@ -1,0 +1,31 @@
+body {
+  display: flex;
+}
+
+.sidebar {
+  width: 240px;
+  background: #003366;
+  min-height: 100vh;
+  padding-top: 20px;
+  color: #fff;
+}
+
+.sidebar .nav-link {
+  display: block;
+  padding: 10px;
+  color: #eee;
+  margin-bottom: 5px;
+  border-radius: 5px;
+}
+
+.sidebar .nav-link.active,
+.sidebar .nav-link:hover {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+
+.main-content {
+  flex: 1;
+  padding: 40px;
+}
+/* aqui */

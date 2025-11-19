@@ -1,0 +1,149 @@
+/* ============================================================
+   CONTENEDOR GENERAL
+   ============================================================ */
+body {
+    background: #f5f6fa !important;
+}
+
+.section-title {
+    font-weight: bold;
+    font-size: 1.15rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ============================================================
+   TARJETAS (CONTACTOS / SOLICITUDES / BÚSQUEDAS)
+   ============================================================ */
+.card {
+    border-radius: 14px;
+}
+
+.contact-card {
+    transition: 0.22s ease-in-out;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.contact-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.card p,
+.card small,
+.card strong {
+    user-select: none;
+}
+
+/* ============================================================
+   AVATAR
+   ============================================================ */
+.avatar-sm {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-xs {
+    width: 33px;
+    height: 33px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* ============================================================
+   BOTONES
+   ============================================================ */
+button.btn {
+    border-radius: 8px !important;
+}
+
+button.btn-sm {
+    padding: 6px 10px !important;
+}
+
+/* Botón agregar */
+.btn-success {
+    background: #00a82d !important;
+    border-color: #008f25 !important;
+}
+.btn-success:hover {
+    background: #009126 !important;
+}
+
+/* Botón cancelar solicitud */
+.btn-outline-danger {
+    border-radius: 20px !important;
+}
+
+/* Botón eliminar contacto */
+.btn-danger {
+    background: #d62828 !important;
+    border-color: #b81f1f !important;
+}
+
+/* ============================================================
+   BADGES (ESTADO)
+   ============================================================ */
+.badge-status {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.badge.bg-warning {
+    background: #ffe082 !important;
+    color: #4d3900 !important;
+}
+
+/* ============================================================
+   LISTAS VACÍAS O MENSAJES
+   ============================================================ */
+.text-muted {
+    font-size: 0.9rem;
+}
+
+/* ============================================================
+   HOVER EN SECCIONES CON CLIC
+   ============================================================ */
+.clickable {
+    cursor: pointer;
+    transition: 0.2s;
+}
+.clickable:hover {
+    background: #eef4ff;
+    transform: translateX(3px);
+}
+
+/* ============================================================
+   ANIMACIONES
+   ============================================================ */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.contact-card,
+.card {
+    animation: fadeIn 0.25s ease;
+}
+
+/* ============================================================
+   SCROLLBAR ELEGANTE
+   ============================================================ */
+::-webkit-scrollbar {
+    width: 7px;
+}
+::-webkit-scrollbar-thumb {
+    background: #b5b5b5;
+    border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #9b9b9b;
+}
